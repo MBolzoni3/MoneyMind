@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "140141439479",
+    "project_id": "moneymind-d4f19",
+    "storage_bucket": "moneymind-d4f19.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140141439479:android:434dbdda6e6c36437566f2",
+        "android_client_info": {
+          "package_name": "it.unimib.devtrinity.moneymind"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgf_zYHVXVArrXE64F0hL34qw2xF7aeyQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
