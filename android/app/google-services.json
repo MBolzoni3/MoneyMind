@@ -12,7 +12,12 @@
           "package_name": "it.unimib.devtrinity.moneymind"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "140141439479-3i97iltcru0i4smunl11ma6r1pc58nb2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAgf_zYHVXVArrXE64F0hL34qw2xF7aeyQ"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140141439479-3i97iltcru0i4smunl11ma6r1pc58nb2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

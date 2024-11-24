@@ -10,12 +10,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Base.Theme.MoneyMind"
+        android:theme="@style/AppTheme"
         tools:targetApi="31">
 
         <!-- Activity principale -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,7 @@
 
         <!-- Home Activity -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.MainNavigationActivity"
             android:exported="true" />
     </application>
 

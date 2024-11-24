@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_movements"
+        android:icon="@drawable/ic_list"
+        android:title="Movimenti" />
+    <item
+        android:id="@+id/nav_budget"
+        android:icon="@drawable/ic_budget"
+        android:title="Budget" />
+    <item
+        android:id="@+id/nav_charts"
+        android:icon="@drawable/ic_charts"
+        android:title="Grafici" />
+</menu>
