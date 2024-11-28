@@ -1,4 +1,4 @@
-package it.unimib.devtrinity.moneymind.ui.fragment.main;
+package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
