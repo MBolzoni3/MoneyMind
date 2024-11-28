@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.ui.MainActivity;
-import it.unimib.devtrinity.moneymind.ui.MainNavigationActivity;
+import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
+import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
 
 public class NavigationHelper {
    private static final String TAG = "NavigationHelper";

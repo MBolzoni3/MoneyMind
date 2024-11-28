@@ -1,13 +1,10 @@
-package it.unimib.devtrinity.moneymind.ui;
+package it.unimib.devtrinity.moneymind.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.ui.fragment.login.LoginFragment;
+import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
 import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 

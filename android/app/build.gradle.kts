@@ -35,15 +35,21 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.ui.auth)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.material.v1110)
+
+    //firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.auth)
+
+    //room
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
 }

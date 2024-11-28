@@ -1,14 +1,6 @@
 package it.unimib.devtrinity.moneymind.utils;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import it.unimib.devtrinity.moneymind.ui.MainActivity;
-import it.unimib.devtrinity.moneymind.ui.MainNavigationActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,41 +33,49 @@ public class FirebaseHelper {
         return auth.getCurrentUser();
     }
 
-    public void loginUser(String email, String password, Context context) {
+    public void loginUser(String email, String password, GenericCallback<FirebaseUser> callback) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
-                        Log.d(TAG, "Login successful: " + user.getEmail());
-
-                        NavigationHelper.navigateToMain(context);
+                        Log.d(TAG, "Login successful: " + (user != null ? user.getEmail() : "No email"));
+                        callback.onSuccess(user);
                     } else {
-                        Toast.makeText(context, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Login failed: " + task.getException().getMessage());
+                        callback.onFailure(task.getException().getMessage());
                     }
                 });
     }
 
-    public void registerUser(String email, String password, Context context){
+    public void registerUser(String email, String password, String name, GenericCallback<FirebaseUser> callback) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
-                        Log.d(TAG, "Registration successful: " + user.getEmail());
-
-                        Toast.makeText(context, "Registrazione completata", Toast.LENGTH_SHORT).show();
-
-                        NavigationHelper.navigateToMain(context);
+                        if (user != null) {
+                            // Aggiorna il profilo con il nome
+                            user.updateProfile(new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(name)
+                                            .build())
+                                    .addOnCompleteListener(profileTask -> {
+                                        if (profileTask.isSuccessful()) {
+                                            callback.onSuccess(user);
+                                        } else {
+                                            callback.onFailure(profileTask.getException().getMessage());
+                                        }
+                                    });
+                        } else {
+                            callback.onFailure("User not found after registration");
+                        }
                     } else {
-                        Toast.makeText(context, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        callback.onFailure(task.getException().getMessage());
                     }
                 });
     }
 
-    public void logoutUser(Context context) {
+    public void logoutUser() {
         auth.signOut();
         Log.d(TAG, "User logged out");
-
-        NavigationHelper.navigateToLogin(context);
     }
 }
 
