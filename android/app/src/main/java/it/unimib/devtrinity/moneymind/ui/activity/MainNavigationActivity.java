@@ -1,4 +1,4 @@
-package it.unimib.devtrinity.moneymind.ui;
+package it.unimib.devtrinity.moneymind.ui.activity;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +8,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.ui.fragment.main.HomeFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
 import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 
@@ -64,7 +64,8 @@ public class MainNavigationActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if (itemId == R.id.action_logout) {
-                FirebaseHelper.getInstance().logoutUser(this);
+                FirebaseHelper.getInstance().logoutUser();
+                NavigationHelper.navigateToLogin(this);
             }
 
             return false;
