@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel;
 
 import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
 import it.unimib.devtrinity.moneymind.domain.usecase.RegisterUserUseCase;
-import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 
@@ -15,7 +14,7 @@ public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<GenericState<Void>> registerState = new MutableLiveData<>();
 
     public RegisterViewModel() {
-        this.registerUserUseCase = new RegisterUserUseCase(new UserRepository(FirebaseHelper.getInstance()));
+        this.registerUserUseCase = new RegisterUserUseCase(new UserRepository());
     }
 
     public LiveData<GenericState<Void>> getRegisterState() {

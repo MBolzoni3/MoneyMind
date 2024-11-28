@@ -3,10 +3,11 @@ package it.unimib.devtrinity.moneymind.ui.activity;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
-import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
+import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(FirebaseHelper.getInstance().isUserLoggedIn()){
+        if (FirebaseHelper.getInstance().isUserLoggedIn()) {
             NavigationHelper.navigateToMain(this);
         }
 

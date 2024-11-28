@@ -7,14 +7,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
-import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
-import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
+import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
+import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainNavigationActivity extends AppCompatActivity {
 
@@ -34,7 +35,7 @@ public class MainNavigationActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 

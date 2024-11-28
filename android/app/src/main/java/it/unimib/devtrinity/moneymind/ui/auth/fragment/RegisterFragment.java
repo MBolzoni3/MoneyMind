@@ -14,9 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModel;
-import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 
 public class RegisterFragment extends Fragment {

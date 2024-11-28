@@ -1,32 +1,34 @@
 package it.unimib.devtrinity.moneymind.data.local;
 
-import android.content.Context;
-
 import androidx.room.Database;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import it.unimib.devtrinity.moneymind.data.local.dao.UserDao;
-import it.unimib.devtrinity.moneymind.data.local.entity.UserEntity;
 
-@Database(entities = {UserEntity.class}, version = 1, exportSchema = false)
+import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.GoalDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+
+@Database(entities = {
+        BudgetEntity.class,
+        CategoryEntity.class,
+        GoalEntity.class,
+        TransactionEntity.class,
+        //UserEntity.class
+}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
-    private static volatile AppDatabase INSTANCE;
 
-    public abstract UserDao userDao();
+    public abstract BudgetDao budgetDao();
 
-    public static AppDatabase getInstance(Context context) {
-        if (INSTANCE == null) {
-            synchronized (AppDatabase.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(
-                            context.getApplicationContext(),
-                            AppDatabase.class,
-                            "moneymind_database"
-                    ).build();
-                }
-            }
-        }
-        return INSTANCE;
-    }
+    public abstract CategoryDao categoryDao();
+
+    public abstract GoalDao goalDao();
+
+    public abstract TransactionDao transactionDao();
+    //public abstract UserDao userDao();
+
 }
 
