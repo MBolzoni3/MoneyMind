@@ -2,6 +2,7 @@ package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -9,7 +10,7 @@ import androidx.room.PrimaryKey;
         tableName = "transactions",
         foreignKeys = @ForeignKey(
                 entity = CategoryEntity.class,
-                parentColumns = "id",
+                parentColumns = "firestoreId",
                 childColumns = "categoryId",
                 onDelete = ForeignKey.CASCADE
         ),
@@ -28,6 +29,7 @@ public class TransactionEntity {
     private boolean isSynced;
     private long lastUpdated;
 
+    @Ignore
     public TransactionEntity() {
 
     }

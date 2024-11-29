@@ -47,7 +47,7 @@ public class TranstactionRepository extends GenericRepository {
             data.put("date", transaction.getDate());
             data.put("lastUpdated", transaction.getLastUpdated());
 
-            FirestoreHelper.getInstance().addDocument(COLLECTION_NAME, data, new GenericCallback<String>() {
+            FirestoreHelper.getInstance().addDocument(COLLECTION_NAME, data, new GenericCallback<>() {
                 @Override
                 public void onSuccess(String documentId) {
                     transaction.setFirestoreId(documentId);
@@ -64,12 +64,11 @@ public class TranstactionRepository extends GenericRepository {
         }
     }
 
-    // Download delle transazioni modificate
     public void downloadNewTransactions(long lastSyncedTimestamp) {
-        Query query = FirestoreHelper.getInstance().getCollection(COLLECTION_NAME)
+        Query query = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
                 .whereGreaterThan("lastUpdated", lastSyncedTimestamp);
 
-        FirestoreHelper.getInstance().getDocuments(COLLECTION_NAME, query, new GenericCallback<QuerySnapshot>() {
+        FirestoreHelper.getInstance().getDocuments(query, new GenericCallback<>() {
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
                 List<TransactionEntity> transactions = new ArrayList<>();

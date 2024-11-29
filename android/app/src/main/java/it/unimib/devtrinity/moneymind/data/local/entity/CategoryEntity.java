@@ -1,32 +1,23 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.firebase.Timestamp;
+
 @Entity(tableName = "categories")
 public class CategoryEntity {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
+    @PrimaryKey
+    @NonNull
     private String firestoreId;
     private String name;
-    private boolean isSynced;
-    private long lastUpdated;
+    private Timestamp lastUpdated;
 
-    public CategoryEntity(int id, String firestoreId, String name, boolean isSynced, long lastUpdated) {
-        this.id = id;
+    public CategoryEntity(String firestoreId, String name, Timestamp lastUpdated) {
         this.firestoreId = firestoreId;
         this.name = name;
-        this.isSynced = isSynced;
         this.lastUpdated = lastUpdated;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getFirestoreId() {
@@ -45,19 +36,11 @@ public class CategoryEntity {
         this.name = name;
     }
 
-    public boolean isSynced() {
-        return isSynced;
-    }
-
-    public void setSynced(boolean synced) {
-        isSynced = synced;
-    }
-
-    public long getLastUpdated() {
+    public Timestamp getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(long lastUpdated) {
+    public void setLastUpdated(Timestamp lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 }

@@ -36,12 +36,16 @@ public class FirestoreHelper {
         return FirebaseHelper.getInstance().getCurrentUser().getUid();
     }
 
-    public CollectionReference getCollection(String collectionName) {
+    public CollectionReference getUserCollection(String collectionName) {
         return firestore.collection("users").document(getUserId()).collection(collectionName);
     }
 
+    public CollectionReference getGlobalCollection(String collectionName) {
+        return firestore.collection(collectionName);
+    }
+
     public void addDocument(String collectionName, Map<String, Object> data, GenericCallback<String> callback) {
-        getCollection(collectionName)
+        getUserCollection(collectionName)
                 .add(data)
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Document added with ID: " + documentReference.getId());
@@ -53,7 +57,7 @@ public class FirestoreHelper {
                 });
     }
 
-    public void getDocuments(String collectionName, Query query, GenericCallback<QuerySnapshot> callback) {
+    public void getDocuments(Query query, GenericCallback<QuerySnapshot> callback) {
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
                     Log.d(TAG, "Documents fetched: " + querySnapshot.size());

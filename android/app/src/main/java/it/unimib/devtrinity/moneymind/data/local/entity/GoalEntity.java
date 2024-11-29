@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -9,7 +10,7 @@ import androidx.room.PrimaryKey;
         tableName = "goals",
         foreignKeys = @ForeignKey(
                 entity = CategoryEntity.class,
-                parentColumns = "id",
+                parentColumns = "firestoreId",
                 childColumns = "categoryId",
                 onDelete = ForeignKey.CASCADE
         ),

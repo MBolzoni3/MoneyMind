@@ -2,9 +2,13 @@ package it.unimib.devtrinity.moneymind.data.local.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import com.google.firebase.Timestamp;
 
 import java.util.List;
 
@@ -16,13 +20,19 @@ public interface CategoryDao {
     @Insert
     void insert(CategoryEntity category);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(List<CategoryEntity> categories);
+
     @Update
     void update(CategoryEntity category);
+
+    @Query("DELETE from categories WHERE firestoreId IN(:categories)")
+    void delete(List<String> categories);
 
     @Query("SELECT * FROM categories")
     LiveData<List<CategoryEntity>> selectAll();
 
-    @Query("DELETE FROM categories WHERE id = :categoryId")
-    void deleteCategory(int categoryId);
+    @Query("SELECT lastUpdated FROM categories ORDER BY lastUpdated DESC LIMIT 1")
+    Timestamp getLastSyncedTimestamp();
 
 }
