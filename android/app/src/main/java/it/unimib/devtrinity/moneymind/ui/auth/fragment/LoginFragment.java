@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.auth.fragment;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
+
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
-import it.unimib.devtrinity.moneymind.utils.FirebaseHelper;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 
 public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;

@@ -1,21 +1,24 @@
-package it.unimib.devtrinity.moneymind.data.local.dao;
+/*package it.unimib.devtrinity.moneymind.data.local.dao;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import androidx.room.Update;
 import it.unimib.devtrinity.moneymind.data.local.entity.UserEntity;
 
 @Dao
 public interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(UserEntity user);
+    @Insert
+    void insertUser(UserEntity user);
 
-    @Query("SELECT * FROM users WHERE id = :userId")
+    @Update
+    void updateUser(UserEntity user);
+
+    @Query("SELECT * FROM users WHERE userId = :userId")
     UserEntity getUserById(String userId);
 
-    @Delete
-    void delete(UserEntity user);
+    @Query("DELETE FROM users WHERE userId = :userId")
+    void deleteUser(String userId);
 }
-
+ */
