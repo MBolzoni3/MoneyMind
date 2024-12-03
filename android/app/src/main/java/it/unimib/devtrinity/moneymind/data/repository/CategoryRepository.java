@@ -37,23 +37,19 @@ public class CategoryRepository extends GenericRepository {
             try {
                 Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
                 callback.onSuccess(timestamp);
-            } catch (Exception e){
+            } catch (Exception e) {
                 callback.onFailure(e.getMessage());
-                Log.e(CategoryRepository.class.getSimpleName(), e.getMessage(), e);
+                Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
             }
         });
     }
 
-    private void insertCategories(List<CategoryEntity> categories){
+    private void insertCategories(List<CategoryEntity> categories) {
         executorService.execute(() -> categoryDao.insert(categories));
     }
 
-    private void deleteCategories(List<String> categories){
-        executorService.execute(() -> categoryDao.delete(categories));
-    }
-
     public void syncCategories(Timestamp lastSyncedTimestamp) {
-        if(lastSyncedTimestamp == null){
+        if (lastSyncedTimestamp == null) {
             lastSyncedTimestamp = new Timestamp(new Date(0));
         }
 
@@ -64,33 +60,27 @@ public class CategoryRepository extends GenericRepository {
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
                 try {
-                    List<String> categoriesToDelete = new ArrayList<>();
                     List<CategoryEntity> categories = new ArrayList<>();
                     querySnapshot.forEach(document -> {
-                        if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
-                            categoriesToDelete.add(document.getId());
-                        } else {
-                            categories.add(new CategoryEntity(
-                                    document.getId(),
-                                    document.getString("name"),
-                                    document.getTimestamp("lastUpdated")
-                            ));
-                        }
+                        categories.add(new CategoryEntity(
+                                document.getId(),
+                                document.getString("name"),
+                                Boolean.TRUE.equals(document.getBoolean("deleted")),
+                                document.getTimestamp("lastUpdated")
+                        ));
                     });
 
-                    deleteCategories(categoriesToDelete);
                     insertCategories(categories);
 
-                    Log.d(CategoryRepository.class.getSimpleName(), "Categories deleted (" + categoriesToDelete.size() + ")");
-                    Log.d(CategoryRepository.class.getSimpleName(), "Categories downloaded/updated (" + categories.size() + ")");
-                } catch (Exception e){
-                    Log.e(CategoryRepository.class.getSimpleName(), e.getMessage(), e);
+                    Log.d(this.getClass().getSimpleName(), "Categories downloaded/updated (" + categories.size() + ")");
+                } catch (Exception e) {
+                    Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e(CategoryRepository.class.getSimpleName(), "Error downloading categories.\n" + errorMessage);
+                Log.e(this.getClass().getSimpleName(), "Error downloading categories.\n" + errorMessage);
             }
         });
     }

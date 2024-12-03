@@ -14,7 +14,6 @@ import androidx.lifecycle.LiveData;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
 
 import java.util.List;
@@ -94,7 +93,7 @@ public class MainNavigationActivity extends AppCompatActivity {
     }
 
     //TODO: move this to a separate class
-    private void loginStuff(Context context){
+    private void loginStuff(Context context) {
         CategoryRepository categoryRepository = new CategoryRepository(context);
         categoryRepository.getLastSyncedTimestamp(new GenericCallback<>() {
             @Override

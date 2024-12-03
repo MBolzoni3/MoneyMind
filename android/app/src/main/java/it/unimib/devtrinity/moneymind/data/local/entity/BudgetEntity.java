@@ -7,23 +7,24 @@ import androidx.room.PrimaryKey;
 public class BudgetEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     private String firestoreId;
     private double amount;
-    private String startDate; // ISO 8601
-    private String endDate;   // ISO 8601
-    private int categoryId;   // Foreign key to Category
-    private boolean isSynced;
+    private String startDate;
+    private String endDate;
+    private int categoryId;
+    private boolean deleted;
+    private boolean synced;
     private long lastUpdated;
 
-    public BudgetEntity(int id, String firestoreId, double amount, String startDate, String endDate, int categoryId, boolean isSynced, long lastUpdated) {
+    public BudgetEntity(int id, String firestoreId, double amount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, long lastUpdated) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
-        this.isSynced = isSynced;
+        this.deleted = deleted;
+        this.synced = synced;
         this.lastUpdated = lastUpdated;
     }
 
@@ -75,12 +76,20 @@ public class BudgetEntity {
         this.categoryId = categoryId;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public boolean isSynced() {
-        return isSynced;
+        return synced;
     }
 
     public void setSynced(boolean synced) {
-        isSynced = synced;
+        this.synced = synced;
     }
 
     public long getLastUpdated() {
