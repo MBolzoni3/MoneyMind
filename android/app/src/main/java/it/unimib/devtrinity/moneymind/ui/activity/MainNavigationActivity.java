@@ -1,19 +1,28 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.LiveData;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
+
+import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
@@ -79,5 +88,30 @@ public class MainNavigationActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
+
+        loginStuff(this);
+    }
+
+    //TODO: move this to a separate class
+    private void loginStuff(Context context) {
+        CategoryRepository categoryRepository = new CategoryRepository(context);
+        categoryRepository.getLastSyncedTimestamp(new GenericCallback<>() {
+            @Override
+            public void onSuccess(Timestamp result) {
+                categoryRepository.syncCategories(result);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e(TAG, "Something went wrong while getting last synced timestamp");
+            }
+        });
+
+        LiveData<List<CategoryEntity>> categories = categoryRepository.getAllCategories();
+        categories.observe(this, categoryEntities -> {
+            for (CategoryEntity category : categoryEntities) {
+                Log.d(TAG, "Category: " + category.getName());
+            }
+        });
     }
 }

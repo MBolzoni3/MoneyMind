@@ -1,39 +1,33 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.firebase.Timestamp;
+
 @Entity(tableName = "categories")
 public class CategoryEntity {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
+    @PrimaryKey
+    @NonNull
     private String firestoreId;
     private String name;
-    private boolean isSynced;
-    private long lastUpdated;
+    private boolean deleted;
+    private Timestamp lastUpdated;
 
-    public CategoryEntity(int id, String firestoreId, String name, boolean isSynced, long lastUpdated) {
-        this.id = id;
+    public CategoryEntity(@NonNull String firestoreId, String name, boolean deleted, Timestamp lastUpdated) {
         this.firestoreId = firestoreId;
         this.name = name;
-        this.isSynced = isSynced;
+        this.deleted = deleted;
         this.lastUpdated = lastUpdated;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    @NonNull
     public String getFirestoreId() {
         return firestoreId;
     }
 
-    public void setFirestoreId(String firestoreId) {
+    public void setFirestoreId(@NonNull String firestoreId) {
         this.firestoreId = firestoreId;
     }
 
@@ -45,19 +39,19 @@ public class CategoryEntity {
         this.name = name;
     }
 
-    public boolean isSynced() {
-        return isSynced;
+    public boolean isDeleted() {
+        return deleted;
     }
 
-    public void setSynced(boolean synced) {
-        isSynced = synced;
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
-    public long getLastUpdated() {
+    public Timestamp getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(long lastUpdated) {
+    public void setLastUpdated(Timestamp lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 }
