@@ -5,6 +5,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.google.firebase.Timestamp;
+
 @Entity(
         tableName = "goals",
         foreignKeys = @ForeignKey(
@@ -19,6 +21,7 @@ public class GoalEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
+    private String name;
     private double targetAmount;
     private double savedAmount;
     private String startDate;
@@ -26,11 +29,13 @@ public class GoalEntity {
     private int categoryId;
     private boolean deleted;
     private boolean synced;
-    private long lastUpdated;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public GoalEntity(int id, String firestoreId, double targetAmount, double savedAmount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, long lastUpdated) {
+    public GoalEntity(int id, String firestoreId, String name, double targetAmount, double savedAmount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.firestoreId = firestoreId;
+        this.name = name;
         this.targetAmount = targetAmount;
         this.savedAmount = savedAmount;
         this.startDate = startDate;
@@ -38,7 +43,8 @@ public class GoalEntity {
         this.categoryId = categoryId;
         this.deleted = deleted;
         this.synced = synced;
-        this.lastUpdated = lastUpdated;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public int getId() {
@@ -55,6 +61,14 @@ public class GoalEntity {
 
     public void setFirestoreId(String firestoreId) {
         this.firestoreId = firestoreId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getTargetAmount() {
@@ -113,12 +127,20 @@ public class GoalEntity {
         this.synced = synced;
     }
 
-    public long getLastUpdated() {
-        return lastUpdated;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
 

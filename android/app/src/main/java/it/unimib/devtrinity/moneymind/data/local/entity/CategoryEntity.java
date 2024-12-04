@@ -13,13 +13,15 @@ public class CategoryEntity {
     private String firestoreId;
     private String name;
     private boolean deleted;
-    private Timestamp lastUpdated;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public CategoryEntity(@NonNull String firestoreId, String name, boolean deleted, Timestamp lastUpdated) {
+    public CategoryEntity(@NonNull String firestoreId, String name, boolean deleted, Timestamp createdAt, Timestamp updatedAt) {
         this.firestoreId = firestoreId;
         this.name = name;
         this.deleted = deleted;
-        this.lastUpdated = lastUpdated;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     @NonNull
@@ -47,12 +49,20 @@ public class CategoryEntity {
         this.deleted = deleted;
     }
 
-    public Timestamp getLastUpdated() {
-        return lastUpdated;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLastUpdated(Timestamp lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
 
