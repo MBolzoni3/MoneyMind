@@ -25,6 +25,7 @@ public class CategoryRepository extends GenericRepository {
     private final CategoryDao categoryDao;
 
     public CategoryRepository(Context context) {
+        super();
         this.categoryDao = DatabaseClient.getInstance(context).categoryDao();
     }
 
@@ -66,7 +67,8 @@ public class CategoryRepository extends GenericRepository {
                                 document.getId(),
                                 document.getString("name"),
                                 Boolean.TRUE.equals(document.getBoolean("deleted")),
-                                document.getTimestamp("lastUpdated")
+                                document.getTimestamp("createdAt"),
+                                document.getTimestamp("updatedAt")
                         ));
                     });
 

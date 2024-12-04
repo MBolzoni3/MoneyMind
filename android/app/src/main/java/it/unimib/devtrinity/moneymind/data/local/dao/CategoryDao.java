@@ -25,13 +25,10 @@ public interface CategoryDao {
     @Update
     void update(CategoryEntity category);
 
-    @Query("DELETE from categories WHERE firestoreId IN(:categories)")
-    void delete(List<String> categories);
-
     @Query("SELECT * FROM categories")
     LiveData<List<CategoryEntity>> selectAll();
 
-    @Query("SELECT lastUpdated FROM categories ORDER BY lastUpdated DESC LIMIT 1")
+    @Query("SELECT updatedAt FROM categories ORDER BY updatedAt DESC LIMIT 1")
     Timestamp getLastSyncedTimestamp();
 
 }

@@ -1,31 +1,38 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.google.firebase.Timestamp;
 
 @Entity(tableName = "budgets")
 public class BudgetEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
+    private String name;
     private double amount;
     private String startDate;
     private String endDate;
     private int categoryId;
     private boolean deleted;
     private boolean synced;
-    private long lastUpdated;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public BudgetEntity(int id, String firestoreId, double amount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, long lastUpdated) {
+    public BudgetEntity(int id, String firestoreId, String name, double amount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.firestoreId = firestoreId;
+        this.name = name;
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
         this.deleted = deleted;
         this.synced = synced;
-        this.lastUpdated = lastUpdated;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public int getId() {
@@ -42,6 +49,14 @@ public class BudgetEntity {
 
     public void setFirestoreId(String firestoreId) {
         this.firestoreId = firestoreId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getAmount() {
@@ -92,11 +107,20 @@ public class BudgetEntity {
         this.synced = synced;
     }
 
-    public long getLastUpdated() {
-        return lastUpdated;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 }

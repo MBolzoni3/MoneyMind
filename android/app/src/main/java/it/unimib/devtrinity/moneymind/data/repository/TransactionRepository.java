@@ -21,6 +21,7 @@ public class TransactionRepository extends GenericRepository {
     private final SharedPreferences sharedPreferences;
 
     public TransactionRepository(Context context) {
+        super();
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }

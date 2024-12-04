@@ -27,6 +27,7 @@ public class RecurringTransactionEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
+    private String name;
     private MovementTypeEnum type;
     private BigDecimal amount;
     private String currency;
@@ -42,9 +43,10 @@ public class RecurringTransactionEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public RecurringTransactionEntity(int id, String firestoreId, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.firestoreId = firestoreId;
+        this.name = name;
         this.type = type;
         this.amount = amount;
         this.currency = currency;
@@ -75,6 +77,14 @@ public class RecurringTransactionEntity {
 
     public void setFirestoreId(String firestoreId) {
         this.firestoreId = firestoreId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public MovementTypeEnum getType() {

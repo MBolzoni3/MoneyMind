@@ -21,6 +21,7 @@ public class RecurringTransactionRepository extends GenericRepository {
     private final SharedPreferences sharedPreferences;
 
     public RecurringTransactionRepository(Context context) {
+        super();
         this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
@@ -29,7 +30,7 @@ public class RecurringTransactionRepository extends GenericRepository {
         executorService.execute(this::syncRecurringTransactions);
     }
 
-    public void syncRecurringTransactions() {
+    private void syncRecurringTransactions() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, 0);
 
         syncLocalToRemote();
