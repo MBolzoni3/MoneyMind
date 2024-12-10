@@ -1,35 +1,23 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 
-@Entity(
-        tableName = "recurring_transactions",
-        foreignKeys = @ForeignKey(
-                entity = CategoryEntity.class,
-                parentColumns = "firestoreId",
-                childColumns = "categoryId",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = "categoryId")}
-)
+@Entity(tableName = "recurring_transactions")
 public class RecurringTransactionEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
     private String name;
     private MovementTypeEnum type;
-    private BigDecimal amount;
+    private Long amount;
     private String currency;
     private Date date;
     private RecurrenceTypeEnum recurrenceType;
@@ -43,7 +31,7 @@ public class RecurringTransactionEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -95,11 +83,11 @@ public class RecurringTransactionEntity {
         this.type = type;
     }
 
-    public BigDecimal getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 

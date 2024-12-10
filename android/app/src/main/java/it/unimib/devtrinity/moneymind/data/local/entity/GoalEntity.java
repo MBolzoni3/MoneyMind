@@ -1,29 +1,18 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
 
-@Entity(
-        tableName = "goals",
-        foreignKeys = @ForeignKey(
-                entity = CategoryEntity.class,
-                parentColumns = "firestoreId",
-                childColumns = "categoryId",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = "categoryId")}
-)
+@Entity(tableName = "goals")
 public class GoalEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
     private String name;
-    private double targetAmount;
-    private double savedAmount;
+    private Long targetAmount;
+    private Long savedAmount;
     private String startDate;
     private String endDate;
     private int categoryId;
@@ -32,7 +21,7 @@ public class GoalEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public GoalEntity(int id, String firestoreId, String name, double targetAmount, double savedAmount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public GoalEntity(int id, String firestoreId, String name, Long targetAmount, Long savedAmount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -71,20 +60,20 @@ public class GoalEntity {
         this.name = name;
     }
 
-    public double getTargetAmount() {
+    public Long getTargetAmount() {
         return targetAmount;
     }
 
-    public void setTargetAmount(double targetAmount) {
-        this.targetAmount = targetAmount;
+    public void setTargetAmount(Long amount) {
+        this.targetAmount = amount;
     }
 
-    public double getSavedAmount() {
+    public Long getSavedAmount() {
         return savedAmount;
     }
 
-    public void setSavedAmount(double savedAmount) {
-        this.savedAmount = savedAmount;
+    public void setSavedAmount(Long amount) {
+        this.savedAmount = amount;
     }
 
     public String getStartDate() {

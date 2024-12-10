@@ -43,10 +43,8 @@ public class RegisterFragment extends Fragment {
         registerButton.setOnClickListener(v -> registerAction());
         loginLink.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        // Inizializza il ViewModel
         registerViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
-        // Osserva lo stato della registrazione
         registerViewModel.getRegisterState().observe(getViewLifecycleOwner(), state -> {
             if (state instanceof GenericState.Loading) {
                 // Mostra una progress bar

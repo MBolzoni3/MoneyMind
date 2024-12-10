@@ -28,8 +28,6 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainNavigationActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainNavigationActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,30 +86,5 @@ public class MainNavigationActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
-
-        loginStuff(this);
-    }
-
-    //TODO: move this to a separate class
-    private void loginStuff(Context context) {
-        CategoryRepository categoryRepository = new CategoryRepository(context);
-        categoryRepository.getLastSyncedTimestamp(new GenericCallback<>() {
-            @Override
-            public void onSuccess(Timestamp result) {
-                categoryRepository.syncCategories(result);
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e(TAG, "Something went wrong while getting last synced timestamp");
-            }
-        });
-
-        LiveData<List<CategoryEntity>> categories = categoryRepository.getAllCategories();
-        categories.observe(this, categoryEntities -> {
-            for (CategoryEntity category : categoryEntities) {
-                Log.d(TAG, "Category: " + category.getName());
-            }
-        });
     }
 }

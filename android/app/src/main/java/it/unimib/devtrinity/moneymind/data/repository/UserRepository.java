@@ -12,7 +12,6 @@ public class UserRepository {
         FirebaseHelper.getInstance().loginUser(email, password, new GenericCallback<>() {
             @Override
             public void onSuccess(FirebaseUser firebaseUser) {
-                // Converte FirebaseUser in User e passa al callback
                 User user = new User(
                         firebaseUser.getUid(),
                         firebaseUser.getDisplayName(),

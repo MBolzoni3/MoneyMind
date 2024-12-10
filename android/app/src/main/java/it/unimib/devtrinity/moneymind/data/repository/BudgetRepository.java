@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentReference;
+
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
@@ -22,16 +24,11 @@ public class BudgetRepository extends GenericRepository {
     private final SharedPreferences sharedPreferences;
 
     public BudgetRepository(Context context) {
-        super();
         this.budgetDao = DatabaseClient.getInstance(context).budgetDao();
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
-    public void syncBudgetsAsync() {
-        executorService.execute(this::syncBudgets);
-    }
-
-    private void syncBudgets() {
+    public void syncBudgets() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.BUDGETS_LAST_SYNC_KEY, 0);
 
         syncLocalToRemote();
@@ -44,17 +41,25 @@ public class BudgetRepository extends GenericRepository {
         List<BudgetEntity> unsyncedBudgets = budgetDao.getUnsyncedBudgets();
 
         for (BudgetEntity budget : unsyncedBudgets) {
-            FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
-                    .document(budget.getFirestoreId())
-                    .set(budget)
+            String documentId = budget.getFirestoreId();
+            DocumentReference docRef;
+
+            if (documentId == null || documentId.isEmpty()) {
+                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                budget.setFirestoreId(docRef.getId());
+            } else {
+                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+            }
+
+            docRef.set(budget)
                     .addOnSuccessListener(aVoid -> {
                         budget.setSynced(true);
-                        budgetDao.insertOrUpdate(budget);
+                        executorService.execute(() -> budgetDao.insertOrUpdate(budget));
 
-                        Log.d(TAG, "Budget synced to remote: " + budget.getId());
+                        Log.d(TAG, "Budget synced to remote: " + budget.getFirestoreId());
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing budgets to remote: " + e.getMessage(), e);
+                        Log.e(TAG, "Error syncing budget to remote: " + e.getMessage(), e);
                     });
         }
     }
@@ -68,10 +73,10 @@ public class BudgetRepository extends GenericRepository {
                         BudgetEntity localBudget = budgetDao.getByFirestoreId(remoteBudget.getFirestoreId());
 
                         if (localBudget == null) {
-                            budgetDao.insertOrUpdate(remoteBudget);
+                            executorService.execute(() -> budgetDao.insertOrUpdate(remoteBudget));
                         } else {
                             BudgetEntity resolvedBudget = resolveConflict(localBudget, remoteBudget);
-                            budgetDao.insertOrUpdate(resolvedBudget);
+                            executorService.execute(() -> budgetDao.insertOrUpdate(resolvedBudget));
                         }
                     }
                 })
@@ -83,5 +88,5 @@ public class BudgetRepository extends GenericRepository {
     private BudgetEntity resolveConflict(BudgetEntity local, BudgetEntity remote) {
         return (remote.getUpdatedAt().compareTo(local.getUpdatedAt()) > 0) ? remote : local;
     }
-    
+
 }

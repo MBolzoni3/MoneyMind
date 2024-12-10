@@ -1,6 +1,5 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -12,7 +11,7 @@ public class BudgetEntity {
     private int id;
     private String firestoreId;
     private String name;
-    private double amount;
+    private Long amount;
     private String startDate;
     private String endDate;
     private int categoryId;
@@ -21,7 +20,7 @@ public class BudgetEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public BudgetEntity(int id, String firestoreId, String name, double amount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public BudgetEntity(int id, String firestoreId, String name, Long amount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -59,11 +58,11 @@ public class BudgetEntity {
         this.name = name;
     }
 
-    public double getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 

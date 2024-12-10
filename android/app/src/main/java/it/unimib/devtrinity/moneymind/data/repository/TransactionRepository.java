@@ -4,9 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentReference;
+
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
+import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -21,13 +26,8 @@ public class TransactionRepository extends GenericRepository {
     private final SharedPreferences sharedPreferences;
 
     public TransactionRepository(Context context) {
-        super();
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
-    }
-
-    public void syncTransactionsAsyc() {
-        executorService.execute(this::syncTransactions);
     }
 
     public void syncTransactions() {
@@ -43,15 +43,25 @@ public class TransactionRepository extends GenericRepository {
         List<TransactionEntity> unsyncedTransactions = transactionDao.getUnsyncedTransactions();
 
         for (TransactionEntity transaction : unsyncedTransactions) {
-            FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
-                    .document(transaction.getFirestoreId())
-                    .set(transaction)
+            String documentId = transaction.getFirestoreId();
+            DocumentReference docRef;
+
+            if (documentId == null || documentId.isEmpty()) {
+                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                transaction.setFirestoreId(docRef.getId());
+            } else {
+                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+            }
+
+            docRef.set(transaction)
                     .addOnSuccessListener(aVoid -> {
                         transaction.setSynced(true);
-                        transactionDao.insertOrUpdate(transaction);
+                        executorService.execute(() -> transactionDao.insertOrUpdate(transaction));
+
+                        Log.d(TAG, "Transaction synced to remote: " + transaction.getFirestoreId());
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing transaction to remote: " + e.getMessage(), e);
+                        Log.e(TAG, "Error syncing Transaction to remote: " + e.getMessage(), e);
                     });
         }
     }
@@ -65,10 +75,10 @@ public class TransactionRepository extends GenericRepository {
                         TransactionEntity localTransaction = transactionDao.getByFirestoreId(remoteTransaction.getFirestoreId());
 
                         if (localTransaction == null) {
-                            transactionDao.insertOrUpdate(remoteTransaction);
+                            executorService.execute(() -> transactionDao.insertOrUpdate(remoteTransaction));
                         } else {
                             TransactionEntity resolvedTransaction = resolveConflict(localTransaction, remoteTransaction);
-                            transactionDao.insertOrUpdate(resolvedTransaction);
+                            executorService.execute(() -> transactionDao.insertOrUpdate(resolvedTransaction));
                         }
                     }
                 })

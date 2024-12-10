@@ -10,7 +10,7 @@ import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 
 public class FirebaseHelper {
 
-    private static final String TAG = "FirebaseHelper";
+    private static final String TAG = FirestoreHelper.class.getSimpleName();
 
     private static FirebaseHelper instance;
 
@@ -55,7 +55,6 @@ public class FirebaseHelper {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
-                            // Aggiorna il profilo con il nome
                             user.updateProfile(new UserProfileChangeRequest.Builder()
                                             .setDisplayName(name)
                                             .build())

@@ -12,7 +12,7 @@ import java.util.Map;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 
 public class FirestoreHelper {
-    private static final String TAG = "FirestoreHelper";
+    private static final String TAG = FirestoreHelper.class.getSimpleName();
 
     private static FirestoreHelper instance;
 
@@ -33,6 +33,7 @@ public class FirestoreHelper {
         if (FirebaseHelper.getInstance().getCurrentUser() == null) {
             throw new IllegalStateException("User is not logged in");
         }
+
         return FirebaseHelper.getInstance().getCurrentUser().getUid();
     }
 

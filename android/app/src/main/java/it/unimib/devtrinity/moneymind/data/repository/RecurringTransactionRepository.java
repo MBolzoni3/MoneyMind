@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentReference;
+
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
@@ -21,16 +23,11 @@ public class RecurringTransactionRepository extends GenericRepository {
     private final SharedPreferences sharedPreferences;
 
     public RecurringTransactionRepository(Context context) {
-        super();
         this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
-    public void syncRecurringTransactionsAsyc() {
-        executorService.execute(this::syncRecurringTransactions);
-    }
-
-    private void syncRecurringTransactions() {
+    public void syncRecurringTransactions() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, 0);
 
         syncLocalToRemote();
@@ -43,18 +40,30 @@ public class RecurringTransactionRepository extends GenericRepository {
         List<RecurringTransactionEntity> unsyncedRecurringTransactions = recurringTransactionDao.getUnsyncedTransactions();
 
         for (RecurringTransactionEntity recurringTransaction : unsyncedRecurringTransactions) {
-            FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
-                    .document(recurringTransaction.getFirestoreId())
-                    .set(recurringTransaction)
+            String documentId = recurringTransaction.getFirestoreId();
+            DocumentReference docRef;
+
+            if (documentId == null || documentId.isEmpty()) {
+                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                recurringTransaction.setFirestoreId(docRef.getId());
+            } else {
+                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+            }
+
+            docRef.set(recurringTransaction)
                     .addOnSuccessListener(aVoid -> {
                         recurringTransaction.setSynced(true);
-                        recurringTransactionDao.insertOrUpdate(recurringTransaction);
+                        executorService.execute(() -> recurringTransactionDao.insertOrUpdate(recurringTransaction));
+
+                        Log.d(TAG, "Recurring Transaction synced to remote: " + recurringTransaction.getFirestoreId());
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing recurring transaction to remote: " + e.getMessage(), e);
+                        Log.e(TAG, "Error syncing Recurring Transaction to remote: " + e.getMessage(), e);
                     });
         }
     }
+
+
 
     private void syncRemoteToLocal(long lastSyncedTimestamp) {
         FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
@@ -65,10 +74,10 @@ public class RecurringTransactionRepository extends GenericRepository {
                         RecurringTransactionEntity localRecurringTransaction = recurringTransactionDao.getByFirestoreId(remoteRecurringTransaction.getFirestoreId());
 
                         if (localRecurringTransaction == null) {
-                            recurringTransactionDao.insertOrUpdate(remoteRecurringTransaction);
+                            executorService.execute(() -> recurringTransactionDao.insertOrUpdate(remoteRecurringTransaction));
                         } else {
                             RecurringTransactionEntity resolvedTransaction = resolveConflict(localRecurringTransaction, remoteRecurringTransaction);
-                            recurringTransactionDao.insertOrUpdate(resolvedTransaction);
+                            executorService.execute(() -> recurringTransactionDao.insertOrUpdate(resolvedTransaction));
                         }
                     }
                 })

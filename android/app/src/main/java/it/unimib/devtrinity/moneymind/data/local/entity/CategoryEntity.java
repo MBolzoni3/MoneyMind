@@ -12,13 +12,15 @@ public class CategoryEntity {
     @NonNull
     private String firestoreId;
     private String name;
+    private int order;
     private boolean deleted;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    public CategoryEntity(@NonNull String firestoreId, String name, boolean deleted, Timestamp createdAt, Timestamp updatedAt) {
+    public CategoryEntity(@NonNull String firestoreId, String name, int order, boolean deleted, Timestamp createdAt, Timestamp updatedAt) {
         this.firestoreId = firestoreId;
         this.name = name;
+        this.order = order;
         this.deleted = deleted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -39,6 +41,14 @@ public class CategoryEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public boolean isDeleted() {

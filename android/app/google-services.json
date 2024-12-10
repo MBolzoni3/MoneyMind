@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "140141439479-8gpqbo0ccc1ladfvuaapnnbjnc0hce5d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.unimib.devtrinity.moneymind",
+            "certificate_hash": "af46cec53e76036399bb3266e7c50abda425c459"
+          }
+        },
+        {
           "client_id": "140141439479-3i97iltcru0i4smunl11ma6r1pc58nb2.apps.googleusercontent.com",
           "client_type": 3
         }
