@@ -12,6 +12,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
@@ -25,7 +26,6 @@ public class CategoryRepository extends GenericRepository {
     private final CategoryDao categoryDao;
 
     public CategoryRepository(Context context) {
-        super();
         this.categoryDao = DatabaseClient.getInstance(context).categoryDao();
     }
 
@@ -33,29 +33,20 @@ public class CategoryRepository extends GenericRepository {
         return categoryDao.selectAll();
     }
 
-    public void getLastSyncedTimestamp(GenericCallback<Timestamp> callback) {
-        executorService.execute(() -> {
-            try {
-                Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
-                callback.onSuccess(timestamp);
-            } catch (Exception e) {
-                callback.onFailure(e.getMessage());
-                Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
-            }
-        });
+    public void syncCategories() {
+        Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
+
+        syncLocalToRemote(timestamp);
     }
 
-    private void insertCategories(List<CategoryEntity> categories) {
-        executorService.execute(() -> categoryDao.insert(categories));
-    }
-
-    public void syncCategories(Timestamp lastSyncedTimestamp) {
+    public void syncLocalToRemote(Timestamp lastSyncedTimestamp) {
         if (lastSyncedTimestamp == null) {
             lastSyncedTimestamp = new Timestamp(new Date(0));
         }
 
         Query query = FirestoreHelper.getInstance().getGlobalCollection(COLLECTION_NAME)
-                .whereGreaterThan("lastUpdated", lastSyncedTimestamp);
+                .whereGreaterThan("updatedAt", lastSyncedTimestamp)
+                .orderBy("order", Query.Direction.ASCENDING);
 
         FirestoreHelper.getInstance().getDocuments(query, new GenericCallback<>() {
             @Override
@@ -66,13 +57,14 @@ public class CategoryRepository extends GenericRepository {
                         categories.add(new CategoryEntity(
                                 document.getId(),
                                 document.getString("name"),
+                                Objects.requireNonNull(document.getLong("order")).intValue(),
                                 Boolean.TRUE.equals(document.getBoolean("deleted")),
                                 document.getTimestamp("createdAt"),
                                 document.getTimestamp("updatedAt")
                         ));
                     });
 
-                    insertCategories(categories);
+                    executorService.execute(() -> categoryDao.insert(categories));
 
                     Log.d(this.getClass().getSimpleName(), "Categories downloaded/updated (" + categories.size() + ")");
                 } catch (Exception e) {

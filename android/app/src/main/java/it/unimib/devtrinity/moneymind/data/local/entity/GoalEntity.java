@@ -1,38 +1,31 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
 
-@Entity(
-        tableName = "goals",
-        foreignKeys = @ForeignKey(
-                entity = CategoryEntity.class,
-                parentColumns = "firestoreId",
-                childColumns = "categoryId",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = "categoryId")}
-)
+import java.util.Date;
+
+@Entity(tableName = "goals")
 public class GoalEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
     private String name;
-    private double targetAmount;
-    private double savedAmount;
-    private String startDate;
-    private String endDate;
+    private Long targetAmount;
+    private Long savedAmount;
+    private Date startDate;
+    private Date endDate;
     private int categoryId;
     private boolean deleted;
     private boolean synced;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String userId;
 
-    public GoalEntity(int id, String firestoreId, String name, double targetAmount, double savedAmount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public GoalEntity(int id, String firestoreId, String name, Long targetAmount, Long savedAmount, Date startDate, Date endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -45,6 +38,22 @@ public class GoalEntity {
         this.synced = synced;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userId = userId;
+    }
+
+    @Ignore
+    public GoalEntity(String name, Long targetAmount, Date startDate, Date endDate, int categoryId, String userId){
+        this.name = name;
+        this.targetAmount = targetAmount;
+        this.savedAmount = 0L;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.categoryId = categoryId;
+        this.deleted = false;
+        this.synced = false;
+        this.createdAt = Timestamp.now();
+        this.updatedAt = Timestamp.now();
+        this.userId = userId;
     }
 
     public int getId() {
@@ -71,35 +80,35 @@ public class GoalEntity {
         this.name = name;
     }
 
-    public double getTargetAmount() {
+    public Long getTargetAmount() {
         return targetAmount;
     }
 
-    public void setTargetAmount(double targetAmount) {
-        this.targetAmount = targetAmount;
+    public void setTargetAmount(Long amount) {
+        this.targetAmount = amount;
     }
 
-    public double getSavedAmount() {
+    public Long getSavedAmount() {
         return savedAmount;
     }
 
-    public void setSavedAmount(double savedAmount) {
-        this.savedAmount = savedAmount;
+    public void setSavedAmount(Long amount) {
+        this.savedAmount = amount;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
@@ -141,6 +150,14 @@ public class GoalEntity {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
 

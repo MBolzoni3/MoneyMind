@@ -25,7 +25,7 @@ public interface CategoryDao {
     @Update
     void update(CategoryEntity category);
 
-    @Query("SELECT * FROM categories")
+    @Query("SELECT * FROM categories ORDER BY `order`")
     LiveData<List<CategoryEntity>> selectAll();
 
     @Query("SELECT updatedAt FROM categories ORDER BY updatedAt DESC LIMIT 1")

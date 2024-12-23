@@ -1,10 +1,12 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
+
+import java.util.Date;
 
 @Entity(tableName = "budgets")
 public class BudgetEntity {
@@ -12,16 +14,17 @@ public class BudgetEntity {
     private int id;
     private String firestoreId;
     private String name;
-    private double amount;
-    private String startDate;
-    private String endDate;
+    private Long amount;
+    private Date startDate;
+    private Date endDate;
     private int categoryId;
     private boolean deleted;
     private boolean synced;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String userId;
 
-    public BudgetEntity(int id, String firestoreId, String name, double amount, String startDate, String endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public BudgetEntity(int id, String firestoreId, String name, Long amount, Date startDate, Date endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -33,6 +36,21 @@ public class BudgetEntity {
         this.synced = synced;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userId = userId;
+    }
+
+    @Ignore
+    public BudgetEntity(String name, Long amount, Date startDate, Date endDate, int categoryId, String userId){
+        this.name = name;
+        this.amount = amount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.categoryId = categoryId;
+        this.deleted = false;
+        this.synced = false;
+        this.createdAt = Timestamp.now();
+        this.updatedAt = Timestamp.now();
+        this.userId = userId;
     }
 
     public int getId() {
@@ -59,27 +77,27 @@ public class BudgetEntity {
         this.name = name;
     }
 
-    public double getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
@@ -121,6 +139,14 @@ public class BudgetEntity {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 }

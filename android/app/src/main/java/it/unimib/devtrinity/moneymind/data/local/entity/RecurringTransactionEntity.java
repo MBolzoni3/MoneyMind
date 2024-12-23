@@ -1,8 +1,7 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
@@ -12,24 +11,16 @@ import java.util.Date;
 
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
-@Entity(
-        tableName = "recurring_transactions",
-        foreignKeys = @ForeignKey(
-                entity = CategoryEntity.class,
-                parentColumns = "firestoreId",
-                childColumns = "categoryId",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = "categoryId")}
-)
+@Entity(tableName = "recurring_transactions")
 public class RecurringTransactionEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
     private String name;
     private MovementTypeEnum type;
-    private BigDecimal amount;
+    private Long amount;
     private String currency;
     private Date date;
     private RecurrenceTypeEnum recurrenceType;
@@ -42,8 +33,9 @@ public class RecurringTransactionEntity {
     private boolean synced;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String userId;
 
-    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
+    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -61,6 +53,27 @@ public class RecurringTransactionEntity {
         this.synced = synced;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userId = userId;
+    }
+
+    @Ignore
+    public RecurringTransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, String userId) {
+        this.name = name;
+        this.type = type;
+        this.amount = Utils.bigDecimalToLong(amount);
+        this.currency = currency;
+        this.date = date;
+        this.recurrenceType = recurrenceType;
+        this.recurrenceInterval = recurrenceInterval;
+        this.recurrenceEndDate = recurrenceEndDate;
+        this.lastGeneratedDate = lastGeneratedDate;
+        this.categoryId = categoryId;
+        this.notes = notes;
+        this.deleted = false;
+        this.synced = false;
+        this.createdAt = Timestamp.now();
+        this.updatedAt = Timestamp.now();
+        this.userId = userId;
     }
 
     public int getId() {
@@ -95,11 +108,11 @@ public class RecurringTransactionEntity {
         this.type = type;
     }
 
-    public BigDecimal getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 
@@ -197,5 +210,13 @@ public class RecurringTransactionEntity {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

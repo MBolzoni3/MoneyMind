@@ -44,6 +44,10 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.material.v1110)
 
+    //android worker
+    implementation(libs.work.runtime.v291)
+    implementation(libs.guava)
+
     //firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
