@@ -30,6 +30,10 @@ public class TransactionRepository extends GenericRepository {
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
+    public void insertTransaction(TransactionEntity transaction) {
+        executorService.execute(() -> transactionDao.insertOrUpdate(transaction));
+    }
+
     public void syncTransactions() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, 0);
 

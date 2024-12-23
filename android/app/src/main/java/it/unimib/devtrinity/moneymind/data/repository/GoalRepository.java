@@ -27,6 +27,10 @@ public class GoalRepository extends GenericRepository {
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
+    public void insertGoal(GoalEntity goal) {
+        executorService.execute(() -> goalDao.insertOrUpdate(goal));
+    }
+
     public void syncGoals() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.GOALS_LAST_SYNC_KEY, 0);
 

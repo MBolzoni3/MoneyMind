@@ -27,6 +27,10 @@ public class RecurringTransactionRepository extends GenericRepository {
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
+    public void insertRecurringTransaction(RecurringTransactionEntity recurringTransaction) {
+        executorService.execute(() -> recurringTransactionDao.insertOrUpdate(recurringTransaction));
+    }
+
     public void syncRecurringTransactions() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, 0);
 

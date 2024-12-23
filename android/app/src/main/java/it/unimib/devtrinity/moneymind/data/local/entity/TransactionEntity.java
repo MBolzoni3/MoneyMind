@@ -28,9 +28,9 @@ public class TransactionEntity {
     private boolean synced;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String userId;
 
-    public TransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt) {
-        this.id = id;
+    public TransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {        this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
         this.type = type;
@@ -43,10 +43,11 @@ public class TransactionEntity {
         this.synced = synced;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userId = userId;
     }
 
     @Ignore
-    public TransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, int categoryId, String notes) {
+    public TransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, int categoryId, String notes, String userId) {
         this.name = name;
         this.type = type;
         this.amount = Utils.bigDecimalToLong(amount);
@@ -58,6 +59,7 @@ public class TransactionEntity {
         this.synced = false;
         this.createdAt = Timestamp.now();
         this.updatedAt = Timestamp.now();
+        this.userId = userId;
     }
 
     public int getId() {
@@ -162,5 +164,13 @@ public class TransactionEntity {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

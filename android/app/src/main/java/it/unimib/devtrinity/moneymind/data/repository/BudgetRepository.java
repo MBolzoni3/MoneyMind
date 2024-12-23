@@ -28,6 +28,10 @@ public class BudgetRepository extends GenericRepository {
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
+    public void insertBudget(BudgetEntity budget) {
+        executorService.execute(() -> budgetDao.insertOrUpdate(budget));
+    }
+
     public void syncBudgets() {
         long lastSyncedTimestamp = sharedPreferences.getLong(Constants.BUDGETS_LAST_SYNC_KEY, 0);
 
