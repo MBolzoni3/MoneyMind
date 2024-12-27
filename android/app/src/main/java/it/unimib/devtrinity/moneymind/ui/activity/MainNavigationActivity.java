@@ -21,6 +21,7 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
@@ -57,9 +58,9 @@ public class MainNavigationActivity extends AppCompatActivity {
                 // loadFragment(new MovementsFragment());
                 //return true;
             } else if (itemId == R.id.nav_budget) {
-                // loadFragment(new BudgetFragment());
-                //return true;
-            } else if (itemId == R.id.nav_charts) {
+                NavigationHelper.loadFragment(this, new BudgetFragment());
+                return true;
+            } else if (itemId == R.id.nav_goals) {
                 // loadFragment(new ChartsFragment());
                 //return true;
             }
