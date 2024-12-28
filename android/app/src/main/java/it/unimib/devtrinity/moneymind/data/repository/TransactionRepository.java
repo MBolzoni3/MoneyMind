@@ -19,17 +19,21 @@ import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
-public class TranstactionRepository extends GenericRepository {
+public class TransactionRepository extends GenericRepository {
     private static final String COLLECTION_NAME = "transactions";
 
     private final TransactionDao transactionDao;
 
-    public TranstactionRepository(Context context) {
+    public TransactionRepository(Context context) {
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
     }
 
     public LiveData<List<TransactionEntity>> getAllTransactions() {
         return transactionDao.selectAll();
+    }
+
+    public void getPositiveTransactions(GenericCallback<List<TransactionEntity>> callback) {
+        callback.onSuccess(transactionDao.selectPositiveTransactions());
     }
 
     public void insertTransaction(TransactionEntity transaction) {

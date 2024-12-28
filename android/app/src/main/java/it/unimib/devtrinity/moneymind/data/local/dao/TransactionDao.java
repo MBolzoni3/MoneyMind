@@ -35,4 +35,6 @@ public interface TransactionDao {
     @Query("UPDATE transactions SET isSynced = 1 WHERE id = :transactionId")
     void markAsSynced(int transactionId);
 
+    @Query("SELECT * FROM transactions WHERE amount > 0")
+    LiveData<List<TransactionEntity>> selectPositiveTransactions();
 }

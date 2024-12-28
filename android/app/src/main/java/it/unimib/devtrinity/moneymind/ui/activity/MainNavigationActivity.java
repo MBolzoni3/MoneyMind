@@ -13,7 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.fragment.HomeFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
