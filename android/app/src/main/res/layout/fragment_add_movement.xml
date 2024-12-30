@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Nome -->
+        <EditText
+            android:id="@+id/et_nome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/nome"
+            android:inputType="text"
+            android:minHeight="48dp" />
+
+        <!-- Importo -->
+        <EditText
+            android:id="@+id/et_importo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/importo"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Data -->
+        <EditText
+            android:id="@+id/et_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:hint="@string/data"
+            android:inputType="date"
+            android:minHeight="48dp" />
+
+        <!-- Valuta -->
+        <Spinner
+            android:id="@+id/sp_valuta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/valuta"
+            android:minHeight="48dp" />
+
+        <!-- Tipologia -->
+        <Spinner
+            android:id="@+id/sp_tipologia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/tipologia"
+            android:minHeight="48dp" />
+
+        <!-- Note -->
+        <EditText
+            android:id="@+id/et_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/note"
+            android:inputType="textMultiLine"
+            android:focusable="true"
+            android:minHeight="48dp" />
+
+        <!-- Movimento ricorrente -->
+        <CheckBox
+            android:id="@+id/cb_ricorrente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/movimento_ricorrente" />
+
+        <!-- Tipologia Ricorrenza -->
+        <Spinner
+            android:id="@+id/sp_tipologia_ricorrenza"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/tipologia_ricorrenza"
+            android:visibility="gone" />
+
+        <!-- Intervallo Ricorrenza -->
+        <EditText
+            android:id="@+id/et_intervallo_ricorrenza"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/intervallo_ricorrenza"
+            android:inputType="number"
+            android:visibility="gone" />
+
+        <!-- Data Fine -->
+        <EditText
+            android:id="@+id/et_data_fine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:hint="@string/data_fine"
+            android:inputType="date"
+            android:clickable="true"
+            android:visibility="gone" />
+
+        <!-- Pulsante -->
+        <Button
+            android:id="@+id/btn_aggiungi_movimento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/aggiungi_movimento" />
+    </LinearLayout>
+</ScrollView>
