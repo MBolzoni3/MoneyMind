@@ -15,4 +15,6 @@
     <string name="data_fine">Data fine</string>
     <string name="aggiungi_movimento">Aggiungi movimento</string>
     <string name="lista_movimenti">Lista movimenti</string>
+    <string name="nome">Nome</string>
+    <string name="importo">Importo</string>
 </resources>
