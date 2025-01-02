@@ -16,38 +16,42 @@ import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<GenericState<Double>> homeState = new MutableLiveData<>();
+    private final MutableLiveData<GenericState<Double>> income = new MutableLiveData<>();
     private final TransactionRepository transactionRepository;
-    private Context context; //DA RIVEDERE
 
     public HomeViewModel(Application application) {
         this.transactionRepository = new TransactionRepository(application.getApplicationContext());
     }
 
-    public LiveData<GenericState<Double>> expense() {
-        homeState.setValue(new GenericState.Loading<>());
+    public LiveData<GenericState<Double>> getPositiveTransactions() {
+        income.setValue(new GenericState.Loading<>());
 
         transactionRepository.getPositiveTransactions(new GenericCallback<List<TransactionEntity>>() {
 
             @Override
             public void onSuccess(List<TransactionEntity> positiveTransactions) {
-                double total = 0.0;
-
-                if (positiveTransactions != null && !positiveTransactions.isEmpty()) {
-                    for (TransactionEntity transaction : positiveTransactions) {
-                        total += transaction.getAmount(); // Somma i valori
-                    }
-                }
-
-                homeState.setValue(new GenericState.Success<>(total));
+                income.setValue(new GenericState.Success<>(total));
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                homeState.setValue(new GenericState.Failure<>(errorMessage));
+                income.setValue(new GenericState.Failure<>(errorMessage));
             }
         });
 
-        return homeState;
+        return income;
     }
+
+    public void getPositiveTransactions(List<TransactionEntity> positiveTransactions) {
+        double total = 0.0;
+
+        if (positiveTransactions != null && !positiveTransactions.isEmpty()) {
+            for (TransactionEntity transaction : positiveTransactions) {
+                total += transaction.getAmount(); // Somma i valori
+            }
+        }
+
+        homeState.setValue(new GenericState<Double>);
+    }
+
 }

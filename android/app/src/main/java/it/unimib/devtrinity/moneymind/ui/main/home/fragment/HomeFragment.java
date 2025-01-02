@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,31 +20,33 @@ import it.unimib.devtrinity.moneymind.utils.GenericState;
 
 public class HomeFragment extends Fragment {
 
-    private LiveData<GenericState<Double>> transactions = new MutableLiveData<>();
-    private final HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+    private HomeViewModel homeViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
-    }
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        homeViewModel.expense().observe(getViewLifecycleOwner(), state -> {
+        TextView incomeText = rootView.findViewById(R.id.incomeText);
+
+        homeViewModel.getHomeViewState().observe(getViewLifecycleOwner(), state -> {
             if (state instanceof GenericState.Loading) {
-                Log.i("CARICAMENTO", "Caricamento in corso"); //DA RIVEDERE
-                // CARICAMENTO DA FARE
+                Log.i("CARICAMENTO", "Caricamento in corso"); // DA RIVEDERE
             } else if (state instanceof GenericState.Success) {
                 double amount = ((GenericState.Success<Double>) state).getData();
+                if (incomeText != null) {
+                    incomeText.setText(String.format("€ %.2f", amount));
+                }
             } else if (state instanceof GenericState.Failure) {
                 String errorMessage = ((GenericState.Failure<?>) state).getErrorMessage();
+                Log.e("ERRORE", errorMessage);
             }
         });
 
-
+        return rootView;
     }
 
+    homeViewModel.
 }
