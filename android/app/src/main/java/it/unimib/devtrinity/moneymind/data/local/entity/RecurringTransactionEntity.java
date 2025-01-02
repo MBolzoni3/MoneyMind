@@ -10,10 +10,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
+import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
-@Entity(tableName = "transactions")
-public class TransactionEntity {
+@Entity(tableName = "recurring_transactions")
+public class RecurringTransactionEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
@@ -22,6 +23,10 @@ public class TransactionEntity {
     private Long amount;
     private String currency;
     private Date date;
+    private RecurrenceTypeEnum recurrenceType;
+    private int recurrenceInterval;
+    private Date recurrenceEndDate;
+    private Date lastGeneratedDate;
     private int categoryId;
     private String notes;
     private boolean deleted;
@@ -30,13 +35,18 @@ public class TransactionEntity {
     private Timestamp updatedAt;
     private String userId;
 
-    public TransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {        this.id = id;
+    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+        this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
         this.type = type;
         this.amount = amount;
         this.currency = currency;
         this.date = date;
+        this.recurrenceType = recurrenceType;
+        this.recurrenceInterval = recurrenceInterval;
+        this.recurrenceEndDate = recurrenceEndDate;
+        this.lastGeneratedDate = lastGeneratedDate;
         this.categoryId = categoryId;
         this.notes = notes;
         this.deleted = deleted;
@@ -47,12 +57,16 @@ public class TransactionEntity {
     }
 
     @Ignore
-    public TransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, int categoryId, String notes, String userId) {
+    public RecurringTransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, String userId) {
         this.name = name;
         this.type = type;
         this.amount = Utils.bigDecimalToLong(amount);
         this.currency = currency;
         this.date = date;
+        this.recurrenceType = recurrenceType;
+        this.recurrenceInterval = recurrenceInterval;
+        this.recurrenceEndDate = recurrenceEndDate;
+        this.lastGeneratedDate = lastGeneratedDate;
         this.categoryId = categoryId;
         this.notes = notes;
         this.deleted = false;
@@ -116,6 +130,38 @@ public class TransactionEntity {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public RecurrenceTypeEnum getRecurrenceType() {
+        return recurrenceType;
+    }
+
+    public void setRecurrenceType(RecurrenceTypeEnum recurrenceType) {
+        this.recurrenceType = recurrenceType;
+    }
+
+    public int getRecurrenceInterval() {
+        return recurrenceInterval;
+    }
+
+    public void setRecurrenceInterval(int recurrenceInterval) {
+        this.recurrenceInterval = recurrenceInterval;
+    }
+
+    public Date getRecurrenceEndDate() {
+        return recurrenceEndDate;
+    }
+
+    public void setRecurrenceEndDate(Date recurrenceEndDate) {
+        this.recurrenceEndDate = recurrenceEndDate;
+    }
+
+    public Date getLastGeneratedDate() {
+        return lastGeneratedDate;
+    }
+
+    public void setLastGeneratedDate(Date lastGeneratedDate) {
+        this.lastGeneratedDate = lastGeneratedDate;
     }
 
     public int getCategoryId() {

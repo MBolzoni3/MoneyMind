@@ -5,7 +5,6 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import java.util.List;
 
@@ -14,26 +13,17 @@ import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 @Dao
 public interface TransactionDao {
 
-    @Query("SELECT * FROM transactions")
-    LiveData<List<TransactionEntity>> selectAll();
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(TransactionEntity transaction);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(List<TransactionEntity> transactions);
-
-    @Update
-    void update(TransactionEntity transaction);
-
-    @Query("DELETE FROM transactions WHERE id = :transactionId")
-    void delete(int transactionId);
-
-    @Query("SELECT * FROM transactions WHERE isSynced = 0")
+    @Query("SELECT * FROM transactions WHERE deleted = 0 AND synced = 0")
     List<TransactionEntity> getUnsyncedTransactions();
 
-    @Query("UPDATE transactions SET isSynced = 1 WHERE id = :transactionId")
-    void markAsSynced(int transactionId);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertOrUpdate(TransactionEntity transaction);
+
+    @Query("SELECT * FROM transactions WHERE firestoreId = :firestoreId")
+    TransactionEntity getByFirestoreId(String firestoreId);
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
+    LiveData<Long> getSumForCategoryAndDateRange(int categoryId, long startDate, long endDate);
 
     @Query("SELECT * FROM transactions WHERE amount > 0")
     List<TransactionEntity> selectPositiveTransactions();

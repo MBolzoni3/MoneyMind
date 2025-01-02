@@ -31,18 +31,14 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inizializza il ViewModel
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        // Configura osservatori per il LiveData del LoginState
         loginViewModel.getLoginState().observe(getViewLifecycleOwner(), state -> {
             if (state instanceof GenericState.Loading) {
                 // Mostra una progress bar
             } else if (state instanceof GenericState.Success) {
-                // Navigazione verso la schermata principale
                 NavigationHelper.navigateToMain(getContext());
             } else if (state instanceof GenericState.Failure) {
-                // Mostra un messaggio di errore
                 String error = ((GenericState.Failure<String>) state).getErrorMessage();
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }

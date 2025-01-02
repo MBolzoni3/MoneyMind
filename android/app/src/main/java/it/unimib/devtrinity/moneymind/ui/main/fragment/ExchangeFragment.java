@@ -1,19 +1,20 @@
-package it.unimib.devtrinity.moneymind;
+package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+
+import it.unimib.devtrinity.moneymind.R;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link fragment_exchange#newInstance} factory method to
+ * Use the {@link ExchangeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_exchange extends Fragment {
+public class ExchangeFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +25,7 @@ public class fragment_exchange extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public fragment_exchange() {
+    public ExchangeFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +35,11 @@ public class fragment_exchange extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment fragment_exchange.
+     * @return A new instance of fragment ExchangeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static fragment_exchange newInstance(String param1, String param2) {
-        fragment_exchange fragment = new fragment_exchange();
+    public static ExchangeFragment newInstance(String param1, String param2) {
+        ExchangeFragment fragment = new ExchangeFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

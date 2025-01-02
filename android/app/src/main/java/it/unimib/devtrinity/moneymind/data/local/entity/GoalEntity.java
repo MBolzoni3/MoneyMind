@@ -1,42 +1,59 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-@Entity(
-        tableName = "goals",
-        foreignKeys = @ForeignKey(
-                entity = CategoryEntity.class,
-                parentColumns = "id",
-                childColumns = "categoryId",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = "categoryId")}
-)
+import com.google.firebase.Timestamp;
+
+import java.util.Date;
+
+@Entity(tableName = "goals")
 public class GoalEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String firestoreId;
-    private double targetAmount;
-    private double savedAmount;
-    private String startDate; // ISO 8601
-    private String endDate;   // ISO 8601
-    private int categoryId;   // Foreign key to Category
-    private boolean isSynced;
-    private long lastUpdated;
+    private String name;
+    private Long targetAmount;
+    private Long savedAmount;
+    private Date startDate;
+    private Date endDate;
+    private int categoryId;
+    private boolean deleted;
+    private boolean synced;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private String userId;
 
-    public GoalEntity(int id, String firestoreId, double targetAmount, double savedAmount, String startDate, String endDate, int categoryId, boolean isSynced, long lastUpdated) {
+    public GoalEntity(int id, String firestoreId, String name, Long targetAmount, Long savedAmount, Date startDate, Date endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
+        this.name = name;
         this.targetAmount = targetAmount;
         this.savedAmount = savedAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
-        this.isSynced = isSynced;
-        this.lastUpdated = lastUpdated;
+        this.deleted = deleted;
+        this.synced = synced;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.userId = userId;
+    }
+
+    @Ignore
+    public GoalEntity(String name, Long targetAmount, Date startDate, Date endDate, int categoryId, String userId){
+        this.name = name;
+        this.targetAmount = targetAmount;
+        this.savedAmount = 0L;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.categoryId = categoryId;
+        this.deleted = false;
+        this.synced = false;
+        this.createdAt = Timestamp.now();
+        this.updatedAt = Timestamp.now();
+        this.userId = userId;
     }
 
     public int getId() {
@@ -55,35 +72,43 @@ public class GoalEntity {
         this.firestoreId = firestoreId;
     }
 
-    public double getTargetAmount() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getTargetAmount() {
         return targetAmount;
     }
 
-    public void setTargetAmount(double targetAmount) {
-        this.targetAmount = targetAmount;
+    public void setTargetAmount(Long amount) {
+        this.targetAmount = amount;
     }
 
-    public double getSavedAmount() {
+    public Long getSavedAmount() {
         return savedAmount;
     }
 
-    public void setSavedAmount(double savedAmount) {
-        this.savedAmount = savedAmount;
+    public void setSavedAmount(Long amount) {
+        this.savedAmount = amount;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
@@ -95,20 +120,44 @@ public class GoalEntity {
         this.categoryId = categoryId;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public boolean isSynced() {
-        return isSynced;
+        return synced;
     }
 
     public void setSynced(boolean synced) {
-        isSynced = synced;
+        this.synced = synced;
     }
 
-    public long getLastUpdated() {
-        return lastUpdated;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
 

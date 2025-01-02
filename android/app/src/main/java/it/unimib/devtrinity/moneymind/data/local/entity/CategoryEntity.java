@@ -1,39 +1,37 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.firebase.Timestamp;
+
 @Entity(tableName = "categories")
 public class CategoryEntity {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
+    @PrimaryKey
+    @NonNull
     private String firestoreId;
     private String name;
-    private boolean isSynced;
-    private long lastUpdated;
+    private int order;
+    private boolean deleted;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public CategoryEntity(int id, String firestoreId, String name, boolean isSynced, long lastUpdated) {
-        this.id = id;
+    public CategoryEntity(@NonNull String firestoreId, String name, int order, boolean deleted, Timestamp createdAt, Timestamp updatedAt) {
         this.firestoreId = firestoreId;
         this.name = name;
-        this.isSynced = isSynced;
-        this.lastUpdated = lastUpdated;
+        this.order = order;
+        this.deleted = deleted;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    @NonNull
     public String getFirestoreId() {
         return firestoreId;
     }
 
-    public void setFirestoreId(String firestoreId) {
+    public void setFirestoreId(@NonNull String firestoreId) {
         this.firestoreId = firestoreId;
     }
 
@@ -45,20 +43,36 @@ public class CategoryEntity {
         this.name = name;
     }
 
-    public boolean isSynced() {
-        return isSynced;
+    public int getOrder() {
+        return order;
     }
 
-    public void setSynced(boolean synced) {
-        isSynced = synced;
+    public void setOrder(int order) {
+        this.order = order;
     }
 
-    public long getLastUpdated() {
-        return lastUpdated;
+    public boolean isDeleted() {
+        return deleted;
     }
 
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
 

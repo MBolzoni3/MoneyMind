@@ -13,7 +13,7 @@ import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
 import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
 
 public class NavigationHelper {
-    private static final String TAG = "NavigationHelper";
+    private static final String TAG = NavigationHelper.class.getSimpleName();
 
     public static void navigateToActivity(Context context, Class<?> targetActivity) {
         Intent intent = new Intent(context, targetActivity);
