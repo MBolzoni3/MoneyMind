@@ -22,7 +22,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public LiveData<List<TransactionEntity>> getPositiveTransactions() {
-        return transactionRepository.getPositiveTransactions();
+        return transactionRepository.getTransactions();
     }
 
 }

@@ -40,8 +40,8 @@ public class TransactionRepository extends GenericRepository {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
 
-    public LiveData<List<TransactionEntity>> getPositiveTransactions() {
-        return transactionDao.selectPositiveTransactions();
+    public LiveData<List<TransactionEntity>> getTransactions() {
+        return transactionDao.selectTransactions();
     }
 
     public void syncTransactions() {

@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import org.w3c.dom.Text;
+
 import java.math.BigDecimal;
 
 import it.unimib.devtrinity.moneymind.R;
@@ -26,8 +28,6 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,16 +35,23 @@ public class HomeFragment extends Fragment {
 
         TransactionRepository transactionRepository = new TransactionRepository(requireContext());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
-        homeViewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
         TextView incomeText = rootView.findViewById(R.id.incomeText);
+        TextView outflowText = rootView.findViewById(R.id.outflowText);
 
         homeViewModel.getPositiveTransactions().observe(getViewLifecycleOwner(), positiveTransactions -> {
-            BigDecimal total = BigDecimal.ZERO;
+            BigDecimal incomeTotal = BigDecimal.ZERO;
+            BigDecimal outflowTotal = BigDecimal.ZERO;
+
             for (TransactionEntity transaction : positiveTransactions) {
-                total = total.add(Utils.longToBigDecimal(transaction.getAmount()));
+                if(transaction.getAmount() > 0)
+                    incomeTotal = incomeTotal.add(Utils.longToBigDecimal(transaction.getAmount()));
+                else outflowTotal = outflowTotal.add(Utils.longToBigDecimal(transaction.getAmount()));
             }
-            incomeText.setText(total+"€");
+
+            incomeText.setText("€ "+incomeTotal);
+            outflowText.setText("€ " + outflowTotal);
         });
 
         return rootView;
