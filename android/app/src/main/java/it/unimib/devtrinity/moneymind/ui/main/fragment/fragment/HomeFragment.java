@@ -20,7 +20,7 @@ import it.unimib.devtrinity.moneymind.utils.GenericState;
 
 public class HomeFragment extends Fragment {
 
-    private LiveData<GenericState<List<TransactionEntity>>> transactions = new MutableLiveData<>();
+    private LiveData<GenericState<Double>> transactions = new MutableLiveData<>();
     private HomeViewModel homeViewModel;
 
     @Nullable
@@ -33,7 +33,15 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        transactions = homeViewModel.expense();
+        homeViewModel.expense().observe(getViewLifecycleOwner(), state -> {
+            if (state instanceof GenericState.Loading) {
+                // CARICAMENTO DA FARE
+            } else if (state instanceof GenericState.Success) {
+                double transactions = ((GenericState.Success<Double>) state).getData();
+            } else if (state instanceof GenericState.Failure) {
+                String errorMessage = ((GenericState.Failure) state).getErrorMessage();
+            }
+        });
 
 
     }

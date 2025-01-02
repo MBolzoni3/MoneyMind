@@ -36,5 +36,5 @@ public interface TransactionDao {
     void markAsSynced(int transactionId);
 
     @Query("SELECT * FROM transactions WHERE amount > 0")
-    LiveData<List<TransactionEntity>> selectPositiveTransactions();
+    List<TransactionEntity> selectPositiveTransactions();
 }

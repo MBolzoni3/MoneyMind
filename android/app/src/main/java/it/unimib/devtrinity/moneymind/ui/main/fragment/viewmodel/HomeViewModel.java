@@ -1,5 +1,7 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment.viewmodel;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -13,21 +15,30 @@ import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<GenericState<List<TransactionEntity>>> homeState = new MutableLiveData<>();
+    private final MutableLiveData<GenericState<Double>> homeState = new MutableLiveData<>();
     private TransactionRepository transactionRepository;
+    private Context context; //DA RIVEDERE
 
     public HomeViewModel() {
-        this.transactionRepository = new TransactionRepository();
+        this.transactionRepository = new TransactionRepository(context);
     }
 
-    public LiveData<GenericState<List<TransactionEntity>>> expense() {
+    public LiveData<GenericState<Double>> expense() {
         homeState.setValue(new GenericState.Loading<>());
 
-        transactionRepository.getPositiveTransactions(new GenericCallback<LiveData<List<TransactionEntity>>>() {
+        transactionRepository.getPositiveTransactions(new GenericCallback<List<TransactionEntity>>() {
 
             @Override
-            public void onSuccess(LiveData<List<TransactionEntity>> positiveTransactions) {
-                homeState.setValue(new GenericState.Success<>(positiveTransactions));
+            public void onSuccess(List<TransactionEntity> positiveTransactions) {
+                double total = 0.0;
+
+                if (positiveTransactions != null && !positiveTransactions.isEmpty()) {
+                    for (TransactionEntity transaction : positiveTransactions) {
+                        total += transaction.getAmount(); // Somma i valori
+                    }
+                }
+
+                homeState.setValue(new GenericState.Success<>(total));
             }
 
             @Override
