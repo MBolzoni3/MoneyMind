@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.math.BigDecimal;
@@ -32,6 +34,10 @@ public class TransactionRepository extends GenericRepository {
 
     public void insertTransaction(TransactionEntity transaction) {
         executorService.execute(() -> transactionDao.insertOrUpdate(transaction));
+    }
+
+    public LiveData<Long> getSpentAmount(int categoryId, long startDate, long endDate) {
+        return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
 
     public void syncTransactions() {

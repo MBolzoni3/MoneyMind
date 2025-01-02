@@ -43,6 +43,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.material.v1110)
+    implementation(libs.google.material.v190)
 
     //android worker
     implementation(libs.work.runtime.v291)

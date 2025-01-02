@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
@@ -26,6 +29,10 @@ public class BudgetRepository extends GenericRepository {
     public BudgetRepository(Context context) {
         this.budgetDao = DatabaseClient.getInstance(context).budgetDao();
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
+    }
+
+    public LiveData<List<BudgetEntity>> getAll() {
+        return budgetDao.getAll();
     }
 
     public void insertBudget(BudgetEntity budget) {

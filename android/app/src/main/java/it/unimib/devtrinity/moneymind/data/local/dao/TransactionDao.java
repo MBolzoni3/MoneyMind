@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.local.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -20,5 +21,8 @@ public interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE firestoreId = :firestoreId")
     TransactionEntity getByFirestoreId(String firestoreId);
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
+    LiveData<Long> getSumForCategoryAndDateRange(int categoryId, long startDate, long endDate);
 
 }
