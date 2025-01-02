@@ -17,7 +17,6 @@ import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
-import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -41,8 +40,8 @@ public class TransactionRepository extends GenericRepository {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
 
-    public void getPositiveTransactions(GenericCallback<List<TransactionEntity>> callback) {
-        callback.onSuccess(transactionDao.selectPositiveTransactions());
+    public LiveData<List<TransactionEntity>> getPositiveTransactions() {
+        return transactionDao.selectPositiveTransactions();
     }
 
     public void syncTransactions() {

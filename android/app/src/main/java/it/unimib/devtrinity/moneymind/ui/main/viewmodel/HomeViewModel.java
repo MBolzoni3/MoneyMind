@@ -15,34 +15,14 @@ import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<GenericState<Double>> income = new MutableLiveData<>();
     private final TransactionRepository transactionRepository;
 
     public HomeViewModel(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
 
-    public LiveData<GenericState<Double>> getPositiveTransactions() {
-        income.setValue(new GenericState.Loading<>());
-
-        transactionRepository.getPositiveTransactions(new GenericCallback<List<TransactionEntity>>() {
-
-            @Override
-            public void onSuccess(List<TransactionEntity> positiveTransactions) {
-                double total = 0;
-                for (TransactionEntity transaction : positiveTransactions) {
-                    total += transaction.getAmount();
-                }
-                income.setValue(new GenericState.Success<>(total));
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                income.setValue(new GenericState.Failure<>(errorMessage));
-            }
-        });
-
-        return income;
+    public LiveData<List<TransactionEntity>> getPositiveTransactions() {
+        return transactionRepository.getPositiveTransactions();
     }
 
 }

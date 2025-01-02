@@ -12,13 +12,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.math.BigDecimal;
+
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class HomeFragment extends Fragment {
 
@@ -35,18 +39,12 @@ public class HomeFragment extends Fragment {
 
         TextView incomeText = rootView.findViewById(R.id.incomeText);
 
-        homeViewModel.getPositiveTransactions().observe(getViewLifecycleOwner(), state -> {
-            if (state instanceof GenericState.Loading) {
-                Log.i("CARICAMENTO", "Caricamento in corso"); // DA RIVEDERE
-            } else if (state instanceof GenericState.Success) {
-                double amount = ((GenericState.Success<Double>) state).getData();
-                if (incomeText != null) {
-                    incomeText.setText(String.format("€ %.2f", amount));
-                }
-            } else if (state instanceof GenericState.Failure) {
-                String errorMessage = ((GenericState.Failure<?>) state).getErrorMessage();
-                Log.e("ERRORE", errorMessage);
+        homeViewModel.getPositiveTransactions().observe(getViewLifecycleOwner(), positiveTransactions -> {
+            BigDecimal total = BigDecimal.ZERO;
+            for (TransactionEntity transaction : positiveTransactions) {
+                total = total.add(Utils.longToBigDecimal(transaction.getAmount()));
             }
+            incomeText.setText(total+"€");
         });
 
         return rootView;
