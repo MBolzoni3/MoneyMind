@@ -1,5 +1,6 @@
-package it.unimib.devtrinity.moneymind.ui.main.fragment.viewmodel;
+package it.unimib.devtrinity.moneymind.ui.main.home.viewmodel;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
@@ -16,11 +17,11 @@ import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class HomeViewModel extends ViewModel {
     private final MutableLiveData<GenericState<Double>> homeState = new MutableLiveData<>();
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
     private Context context; //DA RIVEDERE
 
-    public HomeViewModel() {
-        this.transactionRepository = new TransactionRepository(context);
+    public HomeViewModel(Application application) {
+        this.transactionRepository = new TransactionRepository(application.getApplicationContext());
     }
 
     public LiveData<GenericState<Double>> expense() {
