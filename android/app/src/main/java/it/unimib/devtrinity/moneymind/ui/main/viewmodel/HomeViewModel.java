@@ -1,7 +1,6 @@
-package it.unimib.devtrinity.moneymind.ui.main.home.viewmodel;
+package it.unimib.devtrinity.moneymind.ui.main.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,8 +18,8 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<GenericState<Double>> income = new MutableLiveData<>();
     private final TransactionRepository transactionRepository;
 
-    public HomeViewModel(Application application) {
-        this.transactionRepository = new TransactionRepository(application.getApplicationContext());
+    public HomeViewModel(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
     }
 
     public LiveData<GenericState<Double>> getPositiveTransactions() {
@@ -30,6 +29,10 @@ public class HomeViewModel extends ViewModel {
 
             @Override
             public void onSuccess(List<TransactionEntity> positiveTransactions) {
+                double total = 0;
+                for (TransactionEntity transaction : positiveTransactions) {
+                    total += transaction.getAmount();
+                }
                 income.setValue(new GenericState.Success<>(total));
             }
 
@@ -40,18 +43,6 @@ public class HomeViewModel extends ViewModel {
         });
 
         return income;
-    }
-
-    public void getPositiveTransactions(List<TransactionEntity> positiveTransactions) {
-        double total = 0.0;
-
-        if (positiveTransactions != null && !positiveTransactions.isEmpty()) {
-            for (TransactionEntity transaction : positiveTransactions) {
-                total += transaction.getAmount(); // Somma i valori
-            }
-        }
-
-        homeState.setValue(new GenericState<Double>);
     }
 
 }
