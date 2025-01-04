@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -25,8 +27,14 @@ public class ExchangeFragment extends Fragment {
 
         ExchangeViewModel exchangeViewModel = new ViewModelProvider(this).get(ExchangeViewModel.class);
 
-        exchangeViewModel.callAPI().observe(getViewLifecycleOwner(), positiveTransactions -> {
-            //DA FARE
+        TextView prova1 = rootView.findViewById(R.id.prova1);
+        TextView prova2 = rootView.findViewById(R.id.prova2);
+
+        exchangeViewModel.callAPI().observe(getViewLifecycleOwner(), exchanges -> {
+            for (Map.Entry<String, Double> entry : exchanges.entrySet()) {
+                prova1.setText(entry.getKey());
+                prova2.setText(entry.getValue().toString());
+            }
         });
 
         return rootView;

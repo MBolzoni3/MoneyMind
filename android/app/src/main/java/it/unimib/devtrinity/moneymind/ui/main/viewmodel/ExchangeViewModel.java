@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import it.unimib.devtrinity.moneymind.domain.model.ExchangeAPIResponse;
 import it.unimib.devtrinity.moneymind.utils.ExchangeRateService;
@@ -15,9 +16,9 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class ExchangeViewModel extends ViewModel {
     private static final String BASE_URL = "https://www.ecb.europa.eu/";
-    private final MutableLiveData<List<Pair<String, Double>>> exchangeRates = new MutableLiveData<>();
+    private final MutableLiveData<HashMap<String, Double>> exchangeRates = new MutableLiveData<>();
 
-    public MutableLiveData<List<Pair<String, Double>>> callAPI() {
+    public MutableLiveData<HashMap<String, Double>> callAPI() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
@@ -27,7 +28,7 @@ public class ExchangeViewModel extends ViewModel {
 
         Call<ExchangeAPIResponse> call = service.getExchangeRates();
 
-        List<Pair<String, Double>> exchangeRatesList = new ArrayList<>();
+        HashMap<String, Double> exchangeRatesHashMap = new HashMap<>();
 
         try {
 
@@ -38,10 +39,9 @@ public class ExchangeViewModel extends ViewModel {
                 ExchangeAPIResponse exchangeRateResponse = response.body();
 
                 String date = exchangeRateResponse.getCube().getTime();
-                System.out.println("Date: " + date);
 
                 for (ExchangeAPIResponse.CurrencyRate rate : exchangeRateResponse.getCube().getCurrencyRates()) {
-                    exchangeRatesList.add(new Pair<>(rate.getCurrency(), rate.getRate()));
+                    exchangeRatesHashMap.put(rate.getCurrency(), rate.getRate());
                 }
 
             } else {
@@ -51,7 +51,7 @@ public class ExchangeViewModel extends ViewModel {
             exchangeRates.setValue(null);
         }
 
-        exchangeRates.setValue(exchangeRatesList);
+        exchangeRates.setValue(exchangeRatesHashMap);
 
         return exchangeRates;
     }
