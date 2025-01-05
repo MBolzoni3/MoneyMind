@@ -5,6 +5,8 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.PropertyName;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,14 +22,15 @@ public class RecurringTransactionEntity {
     private String firestoreId;
     private String name;
     private MovementTypeEnum type;
-    private Long amount;
+    @Exclude
+    private BigDecimal amount;
     private String currency;
     private Date date;
     private RecurrenceTypeEnum recurrenceType;
     private int recurrenceInterval;
     private Date recurrenceEndDate;
     private Date lastGeneratedDate;
-    private int categoryId;
+    private String categoryId;
     private String notes;
     private boolean deleted;
     private boolean synced;
@@ -35,7 +38,7 @@ public class RecurringTransactionEntity {
     private Timestamp updatedAt;
     private String userId;
 
-    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, Long amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+    public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, String categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -57,10 +60,10 @@ public class RecurringTransactionEntity {
     }
 
     @Ignore
-    public RecurringTransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, int categoryId, String notes, String userId) {
+    public RecurringTransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, String categoryId, String notes, String userId) {
         this.name = name;
         this.type = type;
-        this.amount = Utils.bigDecimalToLong(amount);
+        this.amount = amount;
         this.currency = currency;
         this.date = date;
         this.recurrenceType = recurrenceType;
@@ -108,11 +111,13 @@ public class RecurringTransactionEntity {
         this.type = type;
     }
 
-    public Long getAmount() {
+    @Exclude
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    @Exclude
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -164,11 +169,11 @@ public class RecurringTransactionEntity {
         this.lastGeneratedDate = lastGeneratedDate;
     }
 
-    public int getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -218,5 +223,17 @@ public class RecurringTransactionEntity {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Ignore
+    @PropertyName("amount")
+    public Long getAmountForFirestore() {
+        return Utils.bigDecimalToLong(this.amount);
+    }
+
+    @Ignore
+    @PropertyName("amount")
+    public void setAmountFromFirestore(long amountInCents) {
+        this.amount = Utils.longToBigDecimal(amountInCents);
     }
 }

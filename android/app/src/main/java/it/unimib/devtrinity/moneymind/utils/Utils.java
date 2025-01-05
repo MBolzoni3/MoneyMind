@@ -8,21 +8,21 @@ import java.util.Date;
 
 public class Utils {
 
-   public static Long bigDecimalToLong(BigDecimal value) {
-      return value == null ? null : value.multiply(BigDecimal.valueOf(100)).longValue();
-   }
+    public static Long bigDecimalToLong(BigDecimal value) {
+        return value == null ? null : value.multiply(BigDecimal.valueOf(100)).longValue();
+    }
 
-   public static BigDecimal longToBigDecimal(Long value) {
-      return value == null ? null : BigDecimal.valueOf(value).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-   }
+    public static BigDecimal longToBigDecimal(Long value) {
+        return value == null ? null : BigDecimal.valueOf(value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_EVEN);
+    }
 
-   public static Date stringToDate(String dateString) {
-      try {
-         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-         return dateFormat.parse(dateString);
-      } catch (ParseException e) {
-         return null;
-      }
-   }
+    public static Date stringToDate(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 
 }

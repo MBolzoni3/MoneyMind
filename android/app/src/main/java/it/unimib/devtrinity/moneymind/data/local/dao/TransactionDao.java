@@ -23,6 +23,6 @@ public interface TransactionDao {
     TransactionEntity getByFirestoreId(String firestoreId);
 
     @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
-    LiveData<Long> getSumForCategoryAndDateRange(int categoryId, long startDate, long endDate);
+    LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
 }

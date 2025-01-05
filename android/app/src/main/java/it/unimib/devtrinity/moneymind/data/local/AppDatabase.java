@@ -6,6 +6,7 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import it.unimib.devtrinity.moneymind.data.local.converter.BigDecimalConverter;
 import it.unimib.devtrinity.moneymind.data.local.converter.MovementTypeConverter;
 import it.unimib.devtrinity.moneymind.data.local.converter.RecurrenceTypeConverter;
 import it.unimib.devtrinity.moneymind.data.local.converter.TimestampConverter;
@@ -30,7 +31,8 @@ import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 @TypeConverters({
         TimestampConverter.class,
         MovementTypeConverter.class,
-        RecurrenceTypeConverter.class
+        RecurrenceTypeConverter.class,
+        BigDecimalConverter.class
 })
 public abstract class AppDatabase extends RoomDatabase {
 

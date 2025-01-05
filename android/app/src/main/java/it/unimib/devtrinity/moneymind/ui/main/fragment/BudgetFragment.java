@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
+import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.BudgetAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
@@ -42,6 +42,8 @@ public class BudgetFragment extends Fragment {
 
         BudgetRepository budgetRepository = new BudgetRepository(requireContext());
         TransactionRepository transactionRepository = new TransactionRepository(requireContext());
+        CategoryRepository categoryRepository = new CategoryRepository(requireContext());
+
         BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
         budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
 

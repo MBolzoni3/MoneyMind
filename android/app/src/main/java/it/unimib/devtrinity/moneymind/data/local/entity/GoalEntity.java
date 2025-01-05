@@ -5,8 +5,13 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.PropertyName;
 
+import java.math.BigDecimal;
 import java.util.Date;
+
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "goals")
 public class GoalEntity {
@@ -14,18 +19,20 @@ public class GoalEntity {
     private int id;
     private String firestoreId;
     private String name;
-    private Long targetAmount;
-    private Long savedAmount;
+    @Exclude
+    private BigDecimal targetAmount;
+    @Exclude
+    private BigDecimal savedAmount;
     private Date startDate;
     private Date endDate;
-    private int categoryId;
+    private String categoryId;
     private boolean deleted;
     private boolean synced;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String userId;
 
-    public GoalEntity(int id, String firestoreId, String name, Long targetAmount, Long savedAmount, Date startDate, Date endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+    public GoalEntity(int id, String firestoreId, String name, BigDecimal targetAmount, BigDecimal savedAmount, Date startDate, Date endDate, String categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -42,10 +49,10 @@ public class GoalEntity {
     }
 
     @Ignore
-    public GoalEntity(String name, Long targetAmount, Date startDate, Date endDate, int categoryId, String userId){
+    public GoalEntity(String name, BigDecimal targetAmount, Date startDate, Date endDate, String categoryId, String userId) {
         this.name = name;
         this.targetAmount = targetAmount;
-        this.savedAmount = 0L;
+        this.savedAmount = BigDecimal.ZERO;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
@@ -80,19 +87,23 @@ public class GoalEntity {
         this.name = name;
     }
 
-    public Long getTargetAmount() {
+    @Exclude
+    public BigDecimal getTargetAmount() {
         return targetAmount;
     }
 
-    public void setTargetAmount(Long amount) {
+    @Exclude
+    public void setTargetAmount(BigDecimal amount) {
         this.targetAmount = amount;
     }
 
-    public Long getSavedAmount() {
+    @Exclude
+    public BigDecimal getSavedAmount() {
         return savedAmount;
     }
 
-    public void setSavedAmount(Long amount) {
+    @Exclude
+    public void setSavedAmount(BigDecimal amount) {
         this.savedAmount = amount;
     }
 
@@ -112,11 +123,11 @@ public class GoalEntity {
         this.endDate = endDate;
     }
 
-    public int getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -158,6 +169,30 @@ public class GoalEntity {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Ignore
+    @PropertyName("targetAmount")
+    public Long getTargetAmountForFirestore() {
+        return Utils.bigDecimalToLong(this.targetAmount);
+    }
+
+    @Ignore
+    @PropertyName("targetAmount")
+    public void setTargetAmountFromFirestore(long amountInCents) {
+        this.targetAmount = Utils.longToBigDecimal(amountInCents);
+    }
+
+    @Ignore
+    @PropertyName("savedAmount")
+    public Long getSavedAmountForFirestore() {
+        return Utils.bigDecimalToLong(this.savedAmount);
+    }
+
+    @Ignore
+    @PropertyName("savedAmount")
+    public void setSavedAmountFromFirestore(long amountInCents) {
+        this.savedAmount = Utils.longToBigDecimal(amountInCents);
     }
 }
 

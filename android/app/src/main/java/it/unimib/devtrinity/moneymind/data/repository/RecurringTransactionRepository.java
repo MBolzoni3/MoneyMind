@@ -32,12 +32,16 @@ public class RecurringTransactionRepository extends GenericRepository {
     }
 
     public void syncRecurringTransactions() {
-        long lastSyncedTimestamp = sharedPreferences.getLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, 0);
+        try {
+            long lastSyncedTimestamp = sharedPreferences.getLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, 0);
 
-        syncLocalToRemote();
-        syncRemoteToLocal(lastSyncedTimestamp);
+            syncLocalToRemote();
+            syncRemoteToLocal(lastSyncedTimestamp);
 
-        sharedPreferences.edit().putLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+            sharedPreferences.edit().putLong(Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+        } catch (Exception e) {
+            Log.e(TAG, "Error syncing recurring transactions: " + e.getMessage(), e);
+        }
     }
 
     private void syncLocalToRemote() {
@@ -66,7 +70,6 @@ public class RecurringTransactionRepository extends GenericRepository {
                     });
         }
     }
-
 
 
     private void syncRemoteToLocal(long lastSyncedTimestamp) {

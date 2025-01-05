@@ -32,12 +32,16 @@ public class GoalRepository extends GenericRepository {
     }
 
     public void syncGoals() {
-        long lastSyncedTimestamp = sharedPreferences.getLong(Constants.GOALS_LAST_SYNC_KEY, 0);
+        try {
+            long lastSyncedTimestamp = sharedPreferences.getLong(Constants.GOALS_LAST_SYNC_KEY, 0);
 
-        syncLocalToRemote();
-        syncRemoteToLocal(lastSyncedTimestamp);
+            syncLocalToRemote();
+            syncRemoteToLocal(lastSyncedTimestamp);
 
-        sharedPreferences.edit().putLong(Constants.GOALS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+            sharedPreferences.edit().putLong(Constants.GOALS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+        } catch (Exception e) {
+            Log.e(TAG, "Error syncing goals: " + e.getMessage(), e);
+        }
     }
 
     private void syncLocalToRemote() {

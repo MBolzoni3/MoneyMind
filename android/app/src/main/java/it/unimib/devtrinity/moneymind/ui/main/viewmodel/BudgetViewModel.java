@@ -1,12 +1,12 @@
 package it.unimib.devtrinity.moneymind.ui.main.viewmodel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
@@ -19,7 +19,7 @@ public class BudgetViewModel extends ViewModel {
         this.transactionRepository = transactionRepository;
     }
 
-    public LiveData<List<BudgetEntity>> getBudgets() {
+    public LiveData<List<BudgetEntityWithCategory>> getBudgets() {
         return budgetRepository.getAll();
     }
 
@@ -27,19 +27,11 @@ public class BudgetViewModel extends ViewModel {
         budgetRepository.insertBudget(budget);
     }
 
-    public LiveData<Integer> getProgress(BudgetEntity budget) {
-        return Transformations.map(
-                transactionRepository.getSpentAmount(
-                        budget.getCategoryId(),
-                        budget.getStartDate().getTime(),
-                        budget.getEndDate().getTime()
-                ),
-                spentAmount -> {
-                    if (spentAmount == null) {
-                        return 0;
-                    }
-                    return (int) ((double) (spentAmount * budget.getAmount()) / 100);
-                }
+    public LiveData<Long> getSpentAmount(BudgetEntityWithCategory budget) {
+        return transactionRepository.getSpentAmount(
+                budget.getBudget().getCategoryId(),
+                budget.getBudget().getStartDate().getTime(),
+                budget.getBudget().getEndDate().getTime()
         );
     }
 }

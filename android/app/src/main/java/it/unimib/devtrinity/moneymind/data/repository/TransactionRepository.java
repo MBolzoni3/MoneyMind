@@ -8,12 +8,9 @@ import androidx.lifecycle.LiveData;
 
 import com.google.firebase.firestore.DocumentReference;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
-import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -36,17 +33,21 @@ public class TransactionRepository extends GenericRepository {
         executorService.execute(() -> transactionDao.insertOrUpdate(transaction));
     }
 
-    public LiveData<Long> getSpentAmount(int categoryId, long startDate, long endDate) {
+    public LiveData<Long> getSpentAmount(String categoryId, long startDate, long endDate) {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
 
     public void syncTransactions() {
-        long lastSyncedTimestamp = sharedPreferences.getLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, 0);
+        try {
+            long lastSyncedTimestamp = sharedPreferences.getLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, 0);
 
-        syncLocalToRemote();
-        syncRemoteToLocal(lastSyncedTimestamp);
+            syncLocalToRemote();
+            syncRemoteToLocal(lastSyncedTimestamp);
 
-        sharedPreferences.edit().putLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+            sharedPreferences.edit().putLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+        } catch (Exception e) {
+            Log.e(TAG, "Error syncing transactions: " + e.getMessage(), e);
+        }
     }
 
     private void syncLocalToRemote() {

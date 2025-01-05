@@ -5,29 +5,11 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.Timestamp;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
-import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
-import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
-import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
-import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
-import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
-import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SyncHelper;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
             budgetRepository.insertBudget(
                     new BudgetEntity(
                             "test budget",
-                            550L,
+                            new BigDecimal(550),
                             Utils.stringToDate("10/12/2024"),
                             Utils.stringToDate("20/12/2024"),
-                            1,
+                            "8pNO8apiVhr80CZKyKvU",
                             FirebaseHelper.getInstance().getCurrentUser().getUid()
                     )
             );
@@ -61,10 +43,10 @@ public class MainActivity extends AppCompatActivity {
             goalRepository.insertGoal(
                     new GoalEntity(
                             "test goal",
-                            350L,
+                            new BigDecimal(350),
                             Utils.stringToDate("10/11/2024"),
-                            Utils.stringToDate("25/11/2024"),
-                            1,
+                            Utils.stringToDate("25/11/2025"),
+                            "8pNO8apiVhr80CZKyKvU",
                             FirebaseHelper.getInstance().getCurrentUser().getUid()
                     )
             );
@@ -74,14 +56,14 @@ public class MainActivity extends AppCompatActivity {
                     new RecurringTransactionEntity(
                             "test recurring transaction",
                             MovementTypeEnum.EXPENSE,
-                            BigDecimal.valueOf(150L),
+                            BigDecimal.valueOf(150),
                             "EUR",
                             Utils.stringToDate("10/11/2024"),
                             RecurrenceTypeEnum.MONTHLY,
                             1,
                             Utils.stringToDate("20/11/2024"),
                             Utils.stringToDate("10/11/2024"),
-                            1,
+                            "8pNO8apiVhr80CZKyKvU",
                             "test notes",
                             FirebaseHelper.getInstance().getCurrentUser().getUid()
                     )
@@ -92,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
                     new TransactionEntity(
                             "test transaction",
                             MovementTypeEnum.EXPENSE,
-                            BigDecimal.valueOf(100L),
+                            BigDecimal.valueOf(100),
                             "EUR",
-                            Utils.stringToDate("10/11/2024"),
-                            1,
+                            Utils.stringToDate("15/12/2024"),
+                            "8pNO8apiVhr80CZKyKvU",
                             "test notes",
                             FirebaseHelper.getInstance().getCurrentUser().getUid()
                     )
@@ -104,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            NavigationHelper.loadFragment(this, new LoginFragment(), false);
+            NavigationHelper.loadFragment(this, new LoginFragment());
         }
     }
 
