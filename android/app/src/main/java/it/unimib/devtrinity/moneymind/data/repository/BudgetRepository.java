@@ -13,8 +13,9 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
-import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -31,21 +32,33 @@ public class BudgetRepository extends GenericRepository {
         this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
-    public LiveData<List<BudgetEntity>> getAll() {
+    public LiveData<List<BudgetEntityWithCategory>> getAll() {
         return budgetDao.getAll();
     }
 
-    public void insertBudget(BudgetEntity budget) {
-        executorService.execute(() -> budgetDao.insertOrUpdate(budget));
+    public void insertBudget(BudgetEntity budget, GenericCallback<Boolean> callback) {
+        executorService.execute(() -> {
+            try {
+                budgetDao.insertOrUpdate(budget);
+                callback.onSuccess(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting budget: " + e.getMessage(), e);
+                callback.onFailure(e.getMessage());
+            }
+        });
     }
 
     public void syncBudgets() {
-        long lastSyncedTimestamp = sharedPreferences.getLong(Constants.BUDGETS_LAST_SYNC_KEY, 0);
+        try {
+            long lastSyncedTimestamp = sharedPreferences.getLong(Constants.BUDGETS_LAST_SYNC_KEY, 0);
 
-        syncLocalToRemote();
-        syncRemoteToLocal(lastSyncedTimestamp);
+            syncLocalToRemote();
+            syncRemoteToLocal(lastSyncedTimestamp);
 
-        sharedPreferences.edit().putLong(Constants.BUDGETS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+            sharedPreferences.edit().putLong(Constants.BUDGETS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
+        } catch (Exception e) {
+            Log.e(TAG, "Error syncing budgets: " + e.getMessage(), e);
+        }
     }
 
     private void syncLocalToRemote() {

@@ -6,7 +6,10 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
@@ -19,7 +22,6 @@ public class NavigationHelper {
         Intent intent = new Intent(context, targetActivity);
         context.startActivity(intent);
 
-        // Se il Context è un'Activity, chiudila
         if (context instanceof Activity) {
             ((Activity) context).finish();
         }
@@ -33,10 +35,36 @@ public class NavigationHelper {
         navigateToActivity(context, MainActivity.class);
     }
 
+    public static void addFragments(AppCompatActivity activity, List<Fragment> fragments) {
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        for (Fragment fragment : fragments) {
+            fragmentTransaction.add(R.id.fragment_container, fragment, fragment.getTag());
+            fragmentTransaction.hide(fragment);
+        }
+
+        fragmentTransaction.commitNow();
+    }
+
+    public static void showFragment(AppCompatActivity activity, Fragment fragmentToShow) {
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment == fragmentToShow) {
+                fragmentTransaction.show(fragment);
+            } else {
+                fragmentTransaction.hide(fragment);
+            }
+        }
+
+        fragmentTransaction.commit();
+    }
+
     public static void loadFragment(AppCompatActivity activity, Fragment fragment, boolean addToBackStack) {
         String fragmentTag = fragment.getClass().getSimpleName();
 
-        // Controlla se il Fragment è già nello stack
         if (activity.getSupportFragmentManager().findFragmentByTag(fragmentTag) != null) {
             return;
         }

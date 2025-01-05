@@ -21,6 +21,8 @@ import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class CategoryRepository extends GenericRepository {
+
+    private static final String TAG = CategoryRepository.class.getSimpleName();
     private static final String COLLECTION_NAME = "categories";
 
     private final CategoryDao categoryDao;
@@ -34,9 +36,13 @@ public class CategoryRepository extends GenericRepository {
     }
 
     public void syncCategories() {
-        Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
+        try {
+            Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
 
-        syncLocalToRemote(timestamp);
+            syncLocalToRemote(timestamp);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
     }
 
     public void syncLocalToRemote(Timestamp lastSyncedTimestamp) {

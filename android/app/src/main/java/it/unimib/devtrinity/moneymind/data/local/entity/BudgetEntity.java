@@ -5,8 +5,13 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.PropertyName;
 
+import java.math.BigDecimal;
 import java.util.Date;
+
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "budgets")
 public class BudgetEntity {
@@ -14,17 +19,18 @@ public class BudgetEntity {
     private int id;
     private String firestoreId;
     private String name;
-    private Long amount;
+    @Exclude
+    private BigDecimal amount;
     private Date startDate;
     private Date endDate;
-    private int categoryId;
+    private String categoryId;
     private boolean deleted;
     private boolean synced;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String userId;
 
-    public BudgetEntity(int id, String firestoreId, String name, Long amount, Date startDate, Date endDate, int categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+    public BudgetEntity(int id, String firestoreId, String name, BigDecimal amount, Date startDate, Date endDate, String categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         this.id = id;
         this.firestoreId = firestoreId;
         this.name = name;
@@ -40,7 +46,7 @@ public class BudgetEntity {
     }
 
     @Ignore
-    public BudgetEntity(String name, Long amount, Date startDate, Date endDate, int categoryId, String userId){
+    public BudgetEntity(String name, BigDecimal amount, Date startDate, Date endDate, String categoryId, String userId) {
         this.name = name;
         this.amount = amount;
         this.startDate = startDate;
@@ -77,11 +83,13 @@ public class BudgetEntity {
         this.name = name;
     }
 
-    public Long getAmount() {
+    @Exclude
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    @Exclude
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -101,11 +109,11 @@ public class BudgetEntity {
         this.endDate = endDate;
     }
 
-    public int getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -147,6 +155,18 @@ public class BudgetEntity {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Ignore
+    @PropertyName("amount")
+    public Long getAmountForFirestore() {
+        return Utils.bigDecimalToLong(this.amount);
+    }
+
+    @Ignore
+    @PropertyName("amount")
+    public void setAmountFromFirestore(long amountInCents) {
+        this.amount = Utils.longToBigDecimal(amountInCents);
     }
 
 }
