@@ -1,5 +1,8 @@
-package it.unimib.devtrinity.moneymind.domain.model;
+package it.unimib.devtrinity.moneymind.data.local.entity;
 
+/*
+*  This class is not linked to any Room entity.
+* */
 public class User {
     private final String id;
     private final String name;

@@ -2,7 +2,7 @@ package it.unimib.devtrinity.moneymind.data.repository;
 
 import com.google.firebase.auth.FirebaseUser;
 
-import it.unimib.devtrinity.moneymind.domain.model.User;
+import it.unimib.devtrinity.moneymind.data.local.entity.User;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
