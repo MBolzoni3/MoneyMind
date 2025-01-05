@@ -1,8 +1,10 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -10,21 +12,26 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
-public class MainNavigationActivity extends AppCompatActivity {
+public class MainNavigationActivity extends AppCompatActivity implements SelectionModeListener {
 
-    private HomeFragment homeFragment = new HomeFragment();
-    private BudgetFragment budgetFragment = new BudgetFragment();
+    private final HomeFragment homeFragment = new HomeFragment();
+    private final BudgetFragment budgetFragment = new BudgetFragment();
+
+    private MaterialToolbar topAppBar;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_navigation);
 
-        MaterialToolbar topAppBar = findViewById(R.id.top_app_bar);
+        topAppBar = findViewById(R.id.top_app_bar);
         setSupportActionBar(topAppBar);
 
         if (getSupportActionBar() != null) {
@@ -33,7 +40,7 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         NavigationHelper.addFragments(this, List.of(homeFragment, budgetFragment));
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
@@ -56,5 +63,32 @@ public class MainNavigationActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
+    }
+
+    @Override
+    public void onEnterSelectionMode() {
+        topAppBar.getMenu().clear();
+        topAppBar.inflateMenu(R.menu.selection_menu);
+        topAppBar.setNavigationIcon(R.drawable.ic_close);
+        topAppBar.setNavigationOnClickListener(v -> onExitSelectionMode());
+
+        bottomNavigationView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onExitSelectionMode() {
+        topAppBar.getMenu().clear();
+        topAppBar.setTitle(R.string.app_name);
+        topAppBar.setNavigationIcon(null);
+
+        bottomNavigationView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSelectionCountChanged(int count) {
+        String title = count + " elemento" + (count > 1 ? "i" : "") + " selezionato" + (count > 1 ? "i" : "");
+        topAppBar.setTitle(title);
+
+        topAppBar.setTitle(count + (count == 1 ? " elemento selezionato" : " elementi selezionati"));
     }
 }

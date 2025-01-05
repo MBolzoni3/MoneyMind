@@ -23,10 +23,6 @@ public class BudgetViewModel extends ViewModel {
         return budgetRepository.getAll();
     }
 
-    public void addBudget(BudgetEntity budget) {
-        budgetRepository.insertBudget(budget);
-    }
-
     public LiveData<Long> getSpentAmount(BudgetEntityWithCategory budget) {
         return transactionRepository.getSpentAmount(
                 budget.getBudget().getCategoryId(),

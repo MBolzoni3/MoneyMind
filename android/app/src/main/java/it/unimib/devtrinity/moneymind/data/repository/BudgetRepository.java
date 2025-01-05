@@ -15,6 +15,7 @@ import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -35,8 +36,16 @@ public class BudgetRepository extends GenericRepository {
         return budgetDao.getAll();
     }
 
-    public void insertBudget(BudgetEntity budget) {
-        executorService.execute(() -> budgetDao.insertOrUpdate(budget));
+    public void insertBudget(BudgetEntity budget, GenericCallback<Boolean> callback) {
+        executorService.execute(() -> {
+            try {
+                budgetDao.insertOrUpdate(budget);
+                callback.onSuccess(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting budget: " + e.getMessage(), e);
+                callback.onFailure(e.getMessage());
+            }
+        });
     }
 
     public void syncBudgets() {
