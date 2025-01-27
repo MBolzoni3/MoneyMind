@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -35,15 +37,21 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddBudgetFragment extends Fragment {
 
+    private BudgetEntity currentBudget;
     private BudgetRepository budgetRepository;
     private CategoryRepository categoryRepository;
 
+    private TextView dialogTitle;
     private TextInputEditText nameField;
     private TextInputEditText amountField;
     private AutoCompleteTextView categoryDropdown;
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    public void setBudget(BudgetEntity budget) {
+        this.currentBudget = budget;
+    }
 
     @Nullable
     @Override
@@ -54,6 +62,9 @@ public class AddBudgetFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        dialogTitle = view.findViewById(R.id.dialog_title);
+        dialogTitle.setText(currentBudget == null ? "Aggiungi Budget" : "Modifica Budget");
 
         budgetRepository = new BudgetRepository(requireContext());
         categoryRepository = new CategoryRepository(requireContext());
@@ -67,6 +78,18 @@ public class AddBudgetFragment extends Fragment {
         viewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
             CategoryAdapter adapter = new CategoryAdapter(requireContext(), categories);
             categoryDropdown.setAdapter(adapter);
+
+            if(currentBudget != null){
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    CategoryEntity category = adapter.getItem(i);
+                    if (category != null && category.getFirestoreId().equals(currentBudget.getCategoryId())) {
+                        selectedCategory = category;
+                        categoryDropdown.setText(category.getName(), false);
+                        categoryDropdown.setSelection(i);
+                        break;
+                    }
+                }
+            }
         });
 
         categoryDropdown.setOnItemClickListener((parent, view1, position, id) -> {
@@ -96,6 +119,17 @@ public class AddBudgetFragment extends Fragment {
         });
 
         cancelButton.setOnClickListener(v -> navigateBack());
+
+        compileFields();
+    }
+
+    private void compileFields(){
+        if(currentBudget == null) return;
+
+        nameField.setText(currentBudget.getName());
+        amountField.setText(currentBudget.getAmount().toString());
+        startDateField.setText(Utils.dateToString(currentBudget.getStartDate()));
+        endDateField.setText(Utils.dateToString(currentBudget.getEndDate()));
     }
 
     private void navigateBack() {
@@ -110,6 +144,18 @@ public class AddBudgetFragment extends Fragment {
                 Utils.stringToDate(endDateField.getText().toString()),
                 selectedCategory.getFirestoreId(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid());
+
+        if(currentBudget != null){
+            currentBudget.setName(nameField.getText().toString());
+            currentBudget.setAmount(new BigDecimal(amountField.getText().toString()));
+            currentBudget.setStartDate(Utils.stringToDate(startDateField.getText().toString()));
+            currentBudget.setEndDate(Utils.stringToDate(endDateField.getText().toString()));
+            currentBudget.setCategoryId(selectedCategory.getFirestoreId());
+            currentBudget.setUpdatedAt(Timestamp.now());
+            currentBudget.setSynced(false);
+
+            budget = currentBudget;
+        }
 
         budgetRepository.insertBudget(
                 budget,

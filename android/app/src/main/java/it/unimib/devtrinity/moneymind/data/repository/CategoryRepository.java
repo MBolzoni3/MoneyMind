@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
@@ -28,6 +29,7 @@ public class CategoryRepository extends GenericRepository {
     private final CategoryDao categoryDao;
 
     public CategoryRepository(Context context) {
+        super(context, null, TAG);
         this.categoryDao = DatabaseClient.getInstance(context).categoryDao();
     }
 
@@ -35,54 +37,60 @@ public class CategoryRepository extends GenericRepository {
         return categoryDao.selectAll();
     }
 
-    public void syncCategories() {
-        try {
-            Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
+    @Override
+    public void sync() {
+        CompletableFuture.runAsync(() -> {
+            try {
+                Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
 
-            syncLocalToRemote(timestamp);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
+                syncLocalToRemoteAsync(timestamp).join();
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }, executorService);
     }
 
-    public void syncLocalToRemote(Timestamp lastSyncedTimestamp) {
+    private CompletableFuture<Void> syncLocalToRemoteAsync(Timestamp lastSyncedTimestamp) {
         if (lastSyncedTimestamp == null) {
             lastSyncedTimestamp = new Timestamp(new Date(0));
         }
 
-        Query query = FirestoreHelper.getInstance().getGlobalCollection(COLLECTION_NAME)
-                .whereGreaterThan("updatedAt", lastSyncedTimestamp)
-                .orderBy("order", Query.Direction.ASCENDING);
+        Timestamp finalLastSyncedTimestamp = lastSyncedTimestamp;
+        return CompletableFuture.runAsync(() -> {
+            Query query = FirestoreHelper.getInstance().getGlobalCollection(COLLECTION_NAME)
+                    .whereGreaterThan("updatedAt", finalLastSyncedTimestamp)
+                    .orderBy("order", Query.Direction.ASCENDING);
 
-        FirestoreHelper.getInstance().getDocuments(query, new GenericCallback<>() {
-            @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
-                try {
-                    List<CategoryEntity> categories = new ArrayList<>();
-                    querySnapshot.forEach(document -> {
-                        categories.add(new CategoryEntity(
-                                document.getId(),
-                                document.getString("name"),
-                                Objects.requireNonNull(document.getLong("order")).intValue(),
-                                Boolean.TRUE.equals(document.getBoolean("deleted")),
-                                document.getTimestamp("createdAt"),
-                                document.getTimestamp("updatedAt")
-                        ));
-                    });
+            FirestoreHelper.getInstance().getDocuments(query, new GenericCallback<>() {
+                @Override
+                public void onSuccess(QuerySnapshot querySnapshot) {
+                    try {
+                        List<CategoryEntity> categories = new ArrayList<>();
+                        querySnapshot.forEach(document -> {
+                            categories.add(new CategoryEntity(
+                                    document.getId(),
+                                    document.getString("name"),
+                                    Objects.requireNonNull(document.getLong("order")).intValue(),
+                                    Boolean.TRUE.equals(document.getBoolean("deleted")),
+                                    document.getTimestamp("createdAt"),
+                                    document.getTimestamp("updatedAt")
+                            ));
+                        });
 
-                    executorService.execute(() -> categoryDao.insert(categories));
+                        executorService.execute(() -> categoryDao.insert(categories));
 
-                    Log.d(this.getClass().getSimpleName(), "Categories downloaded/updated (" + categories.size() + ")");
-                } catch (Exception e) {
-                    Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+                        Log.d(this.getClass().getSimpleName(), "Categories downloaded/updated (" + categories.size() + ")");
+                    } catch (Exception e) {
+                        Log.e(this.getClass().getSimpleName(), e.getMessage(), e);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e(this.getClass().getSimpleName(), "Error downloading categories.\n" + errorMessage);
-            }
-        });
+                @Override
+                public void onFailure(String errorMessage) {
+                    Log.e(this.getClass().getSimpleName(), "Error downloading categories.\n" + errorMessage);
+                }
+            });
+        }, executorService);
     }
 
 }

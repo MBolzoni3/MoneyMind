@@ -30,4 +30,8 @@ public class BudgetViewModel extends ViewModel {
                 budget.getBudget().getEndDate().getTime()
         );
     }
+
+    public void deleteBudgets(List<BudgetEntityWithCategory> budgets) {
+        budgetRepository.delete(budgets);
+    }
 }

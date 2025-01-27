@@ -33,6 +33,14 @@ public class Utils {
         }
     }
 
+    public static String dateToString(Date date) {
+        if (date == null) {
+            return null;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(date);
+    }
+
     public static int getThemeColor(Context context, int colorAttribute) {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(colorAttribute, typedValue, true);

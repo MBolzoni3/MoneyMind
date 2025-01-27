@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
         BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
         budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
 
-        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this);
+        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this, requireActivity().getSupportFragmentManager());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(budgetAdapter);
 
@@ -71,6 +72,22 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
 
     public List<BudgetEntityWithCategory> getSelectedItems() {
         return budgetAdapter.getSelectedItems();
+    }
+
+    public void deleteSelected() {
+        if(getSelectedItems().isEmpty()) return;
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.delete_confirmation_title)
+                .setMessage(R.string.delete_confirmation_message)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                    List<BudgetEntityWithCategory> selectedItems = getSelectedItems();
+                    budgetViewModel.deleteBudgets(selectedItems);
+                    budgetAdapter.clearSelection();
+                    onExitSelectionMode();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .show();
     }
 
     @Override

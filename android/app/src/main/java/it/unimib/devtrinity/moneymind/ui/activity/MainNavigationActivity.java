@@ -70,7 +70,16 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         topAppBar.getMenu().clear();
         topAppBar.inflateMenu(R.menu.selection_menu);
         topAppBar.setNavigationIcon(R.drawable.ic_close);
-        topAppBar.setNavigationOnClickListener(v -> onExitSelectionMode());
+        topAppBar.setNavigationOnClickListener(v -> budgetFragment.onExitSelectionMode()); //TODO change this to current fragment
+
+        topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_delete) {
+                budgetFragment.deleteSelected();
+                return true;
+            }
+
+            return false;
+        });
 
         bottomNavigationView.setVisibility(View.GONE);
     }
@@ -80,6 +89,7 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         topAppBar.getMenu().clear();
         topAppBar.setTitle(R.string.app_name);
         topAppBar.setNavigationIcon(null);
+        topAppBar.setNavigationOnClickListener(v -> {});
 
         bottomNavigationView.setVisibility(View.VISIBLE);
     }

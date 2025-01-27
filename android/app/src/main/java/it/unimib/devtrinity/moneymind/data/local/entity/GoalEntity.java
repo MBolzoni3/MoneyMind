@@ -14,10 +14,11 @@ import java.util.Date;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "goals")
-public class GoalEntity {
+public class GoalEntity extends FirestoreEntity {
+
+    @Exclude
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String firestoreId;
     private String name;
     @Exclude
     private BigDecimal targetAmount;
@@ -26,30 +27,21 @@ public class GoalEntity {
     private Date startDate;
     private Date endDate;
     private String categoryId;
-    private boolean deleted;
-    private boolean synced;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    private String userId;
 
-    public GoalEntity(int id, String firestoreId, String name, BigDecimal targetAmount, BigDecimal savedAmount, Date startDate, Date endDate, String categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+    public GoalEntity(boolean deleted, Timestamp createdAt, Timestamp updatedAt, String userId, String firestoreId, boolean synced, int id, String name, BigDecimal targetAmount, BigDecimal savedAmount, Date startDate, Date endDate, String categoryId) {
+        super(deleted, createdAt, updatedAt, userId, firestoreId, synced);
         this.id = id;
-        this.firestoreId = firestoreId;
         this.name = name;
         this.targetAmount = targetAmount;
         this.savedAmount = savedAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
-        this.deleted = deleted;
-        this.synced = synced;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.userId = userId;
     }
 
     @Ignore
     public GoalEntity(String name, BigDecimal targetAmount, Date startDate, Date endDate, String categoryId, String userId) {
+        super(false, Timestamp.now(), Timestamp.now(), userId, null, false);
         this.name = name;
         this.targetAmount = targetAmount;
         this.savedAmount = BigDecimal.ZERO;
@@ -69,14 +61,6 @@ public class GoalEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getFirestoreId() {
-        return firestoreId;
-    }
-
-    public void setFirestoreId(String firestoreId) {
-        this.firestoreId = firestoreId;
     }
 
     public String getName() {
@@ -129,46 +113,6 @@ public class GoalEntity {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isSynced() {
-        return synced;
-    }
-
-    public void setSynced(boolean synced) {
-        this.synced = synced;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     @Ignore

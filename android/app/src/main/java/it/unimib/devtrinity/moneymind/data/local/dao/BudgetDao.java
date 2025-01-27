@@ -14,7 +14,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory
 @Dao
 public interface BudgetDao {
 
-    @Query("SELECT * FROM budgets WHERE deleted = 0 AND synced = 0")
+    @Query("SELECT * FROM budgets WHERE synced = 0")
     List<BudgetEntity> getUnsyncedBudgets();
 
     @Query("SELECT budgets.*, " +
@@ -32,7 +32,13 @@ public interface BudgetDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(BudgetEntity goal);
 
+    @Query("UPDATE budgets SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
+    void setSynced(int id);
+
     @Query("SELECT * FROM budgets WHERE firestoreId = :firestoreId")
     BudgetEntity getByFirestoreId(String firestoreId);
+
+    @Query("UPDATE budgets SET deleted = 1, synced = 0, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
+    void deleteById(int id);
 
 }
