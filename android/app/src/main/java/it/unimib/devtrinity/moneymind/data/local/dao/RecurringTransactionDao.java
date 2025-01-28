@@ -12,11 +12,14 @@ import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEnti
 @Dao
 public interface RecurringTransactionDao {
 
-    @Query("SELECT * FROM recurring_transactions WHERE deleted = 0 AND synced = 0")
+    @Query("SELECT * FROM recurring_transactions WHERE synced = 0")
     List<RecurringTransactionEntity> getUnsyncedTransactions();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(RecurringTransactionEntity transaction);
+
+    @Query("UPDATE recurring_transactions SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
+    void setSynced(int id);
 
     @Query("SELECT * FROM recurring_transactions WHERE firestoreId = :firestoreId")
     RecurringTransactionEntity getByFirestoreId(String firestoreId);

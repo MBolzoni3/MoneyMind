@@ -7,11 +7,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.math.BigDecimal;
@@ -24,6 +27,7 @@ import java.util.Set;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.AddBudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
@@ -31,16 +35,18 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
 
     private final BudgetViewModel budgetViewModel;
     private final LifecycleOwner lifecycleOwner;
+    private final FragmentManager fragmentManager;
     private final List<BudgetEntityWithCategory> budgetList = new ArrayList<>();
     private final Set<Integer> selectedPositions = new HashSet<>();
     private final SelectionModeListener selectionListener;
 
     private boolean isSelectionModeActive = false;
 
-    public BudgetAdapter(BudgetViewModel viewModel, LifecycleOwner lifecycleOwner, SelectionModeListener listener) {
+    public BudgetAdapter(BudgetViewModel viewModel, LifecycleOwner lifecycleOwner, SelectionModeListener listener, FragmentManager fragmentManager) {
         this.budgetViewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
         this.selectionListener = listener;
+        this.fragmentManager = fragmentManager;
     }
 
     @NonNull
@@ -55,6 +61,9 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     public void onBindViewHolder(@NonNull BudgetViewHolder holder, int position) {
         BudgetEntityWithCategory budget = budgetList.get(position);
 
+        int iconResource = Utils.getCategoryIcon(budget.getCategory());
+        holder.categoryIcon.setImageResource(iconResource);
+
         holder.itemView.setOnLongClickListener(v -> {
             if (!isSelectionModeActive) {
                 isSelectionModeActive = true;
@@ -68,7 +77,13 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
             if (isSelectionModeActive) {
                 toggleSelection(position);
             } else {
-                // Normal click action
+                AddBudgetFragment addBudgetFragment = new AddBudgetFragment();
+                addBudgetFragment.setBudget(budget.getBudget());
+
+                fragmentManager.beginTransaction()
+                        .replace(android.R.id.content, addBudgetFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
@@ -147,11 +162,13 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     static class BudgetViewHolder extends RecyclerView.ViewHolder {
         TextView budgetName, categoryName, spentAmount, dateRange;
         LinearProgressIndicator budgetProgress;
+        ShapeableImageView categoryIcon;
         MaterialCardView cardView;
 
         public BudgetViewHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.budget_card_view);
+            categoryIcon = itemView.findViewById(R.id.category_icon);
             budgetName = itemView.findViewById(R.id.budget_name);
             categoryName = itemView.findViewById(R.id.budget_category);
             spentAmount = itemView.findViewById(R.id.spent_amount);

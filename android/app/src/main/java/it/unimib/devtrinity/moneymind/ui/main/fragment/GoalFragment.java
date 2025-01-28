@@ -20,70 +20,73 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
-import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.BudgetAdapter;
+import it.unimib.devtrinity.moneymind.ui.main.adapter.GoalAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModel;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModelFactory;
 
-public class BudgetFragment extends Fragment implements SelectionModeListener {
+public class GoalFragment extends Fragment implements SelectionModeListener {
 
-    private BudgetViewModel budgetViewModel;
-    private BudgetAdapter budgetAdapter;
-    private FloatingActionButton fabAddBudget;
+    private GoalViewModel goalViewModel;
+    private GoalAdapter goalAdapter;
+    private FloatingActionButton fabAddGoal;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_budget, container, false);
+        return inflater.inflate(R.layout.fragment_goal, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recyclerView = view.findViewById(R.id.budget_recycler_view);
-        fabAddBudget = view.findViewById(R.id.fab_add_budget);
+        RecyclerView recyclerView = view.findViewById(R.id.goal_recycler_view);
+        fabAddGoal = view.findViewById(R.id.fab_add_goal);
 
-        BudgetRepository budgetRepository = new BudgetRepository(requireContext());
-        TransactionRepository transactionRepository = new TransactionRepository(requireContext());
+        GoalRepository goalRepository = new GoalRepository(requireContext());
 
-        BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
-        budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
+        GoalViewModelFactory factory = new GoalViewModelFactory(goalRepository);
+        goalViewModel = new ViewModelProvider(this, factory).get(GoalViewModel.class);
 
-        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this, requireActivity().getSupportFragmentManager());
+        goalAdapter = new GoalAdapter(this, requireActivity().getSupportFragmentManager());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(budgetAdapter);
+        recyclerView.setAdapter(goalAdapter);
 
-        budgetViewModel.getBudgets().observe(getViewLifecycleOwner(), budgetList -> {
-            budgetAdapter.updateBudgets(budgetList);
+        goalViewModel.getGoals().observe(getViewLifecycleOwner(), goalList -> {
+            goalAdapter.updateGoals(goalList);
         });
 
-        fabAddBudget.setOnClickListener(v -> {
+        fabAddGoal.setOnClickListener(v -> {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddBudgetFragment())
+                    .replace(android.R.id.content, new AddGoalFragment())
                     .addToBackStack(null)
                     .commit();
         });
     }
 
-    public List<BudgetEntityWithCategory> getSelectedItems() {
-        return budgetAdapter.getSelectedItems();
+    public List<GoalEntityWithCategory> getSelectedItems() {
+        return goalAdapter.getSelectedItems();
     }
 
     public void deleteSelected() {
         if(getSelectedItems().isEmpty()) return;
 
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.delete_budget_confirmation_title)
-                .setMessage(R.string.delete_budget_confirmation_message)
+                .setTitle(R.string.delete_goal_confirmation_title)
+                .setMessage(R.string.delete_goal_confirmation_message)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                    List<BudgetEntityWithCategory> selectedItems = getSelectedItems();
-                    budgetViewModel.deleteBudgets(selectedItems);
-                    budgetAdapter.clearSelection();
+                    List<GoalEntityWithCategory> selectedItems = getSelectedItems();
+                    goalViewModel.deleteGoals(selectedItems);
+                    goalAdapter.clearSelection();
                     onExitSelectionMode();
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
@@ -92,15 +95,15 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
 
     @Override
     public void onEnterSelectionMode() {
-        fabAddBudget.hide();
+        fabAddGoal.hide();
 
         ((SelectionModeListener) requireActivity()).onEnterSelectionMode();
     }
 
     @Override
     public void onExitSelectionMode() {
-        fabAddBudget.show();
-        budgetAdapter.clearSelection();
+        fabAddGoal.show();
+        goalAdapter.clearSelection();
 
         ((SelectionModeListener) requireActivity()).onExitSelectionMode();
     }

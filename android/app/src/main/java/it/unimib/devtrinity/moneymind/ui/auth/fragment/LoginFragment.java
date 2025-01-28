@@ -17,6 +17,7 @@ import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
+import it.unimib.devtrinity.moneymind.utils.SyncHelper;
 
 public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;
@@ -38,6 +39,7 @@ public class LoginFragment extends Fragment {
                 // Mostra una progress bar
             } else if (state instanceof GenericState.Success) {
                 NavigationHelper.navigateToMain(getContext());
+                SyncHelper.triggerManualSync(getContext());
             } else if (state instanceof GenericState.Failure) {
                 String error = ((GenericState.Failure<String>) state).getErrorMessage();
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();

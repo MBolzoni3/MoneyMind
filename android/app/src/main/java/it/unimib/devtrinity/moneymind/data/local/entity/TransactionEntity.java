@@ -15,10 +15,11 @@ import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "transactions")
-public class TransactionEntity {
+public class TransactionEntity extends FirestoreEntity {
+
+    @Exclude
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String firestoreId;
     private String name;
     private MovementTypeEnum type;
     private BigDecimal amount;
@@ -26,15 +27,13 @@ public class TransactionEntity {
     private Date date;
     private String categoryId;
     private String notes;
-    private boolean deleted;
-    private boolean synced;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    private String userId;
+
+    public TransactionEntity() {
+    }
 
     public TransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, String categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+        super(deleted, createdAt, updatedAt, userId, firestoreId, synced);
         this.id = id;
-        this.firestoreId = firestoreId;
         this.name = name;
         this.type = type;
         this.amount = amount;
@@ -42,15 +41,11 @@ public class TransactionEntity {
         this.date = date;
         this.categoryId = categoryId;
         this.notes = notes;
-        this.deleted = deleted;
-        this.synced = synced;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.userId = userId;
     }
 
     @Ignore
     public TransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, String categoryId, String notes, String userId) {
+        super(false, Timestamp.now(), Timestamp.now(), userId, null, false);
         this.name = name;
         this.type = type;
         this.amount = amount;
@@ -58,11 +53,6 @@ public class TransactionEntity {
         this.date = date;
         this.categoryId = categoryId;
         this.notes = notes;
-        this.deleted = false;
-        this.synced = false;
-        this.createdAt = Timestamp.now();
-        this.updatedAt = Timestamp.now();
-        this.userId = userId;
     }
 
     public int getId() {
@@ -71,14 +61,6 @@ public class TransactionEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getFirestoreId() {
-        return firestoreId;
-    }
-
-    public void setFirestoreId(String firestoreId) {
-        this.firestoreId = firestoreId;
     }
 
     public String getName() {
@@ -137,46 +119,6 @@ public class TransactionEntity {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isSynced() {
-        return synced;
-    }
-
-    public void setSynced(boolean synced) {
-        this.synced = synced;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     @Ignore

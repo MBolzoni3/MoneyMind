@@ -16,10 +16,11 @@ import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "recurring_transactions")
-public class RecurringTransactionEntity {
+public class RecurringTransactionEntity extends FirestoreEntity {
+
+    @Exclude
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String firestoreId;
     private String name;
     private MovementTypeEnum type;
     @Exclude
@@ -32,15 +33,13 @@ public class RecurringTransactionEntity {
     private Date lastGeneratedDate;
     private String categoryId;
     private String notes;
-    private boolean deleted;
-    private boolean synced;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    private String userId;
+
+    public RecurringTransactionEntity() {
+    }
 
     public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, String categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+        super(deleted, createdAt, updatedAt, userId, firestoreId, synced);
         this.id = id;
-        this.firestoreId = firestoreId;
         this.name = name;
         this.type = type;
         this.amount = amount;
@@ -52,15 +51,11 @@ public class RecurringTransactionEntity {
         this.lastGeneratedDate = lastGeneratedDate;
         this.categoryId = categoryId;
         this.notes = notes;
-        this.deleted = deleted;
-        this.synced = synced;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.userId = userId;
     }
 
     @Ignore
     public RecurringTransactionEntity(String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, String categoryId, String notes, String userId) {
+        super(false, Timestamp.now(), Timestamp.now(), userId, null, false);
         this.name = name;
         this.type = type;
         this.amount = amount;
@@ -72,11 +67,6 @@ public class RecurringTransactionEntity {
         this.lastGeneratedDate = lastGeneratedDate;
         this.categoryId = categoryId;
         this.notes = notes;
-        this.deleted = false;
-        this.synced = false;
-        this.createdAt = Timestamp.now();
-        this.updatedAt = Timestamp.now();
-        this.userId = userId;
     }
 
     public int getId() {
@@ -85,14 +75,6 @@ public class RecurringTransactionEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getFirestoreId() {
-        return firestoreId;
-    }
-
-    public void setFirestoreId(String firestoreId) {
-        this.firestoreId = firestoreId;
     }
 
     public String getName() {
@@ -183,46 +165,6 @@ public class RecurringTransactionEntity {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isSynced() {
-        return synced;
-    }
-
-    public void setSynced(boolean synced) {
-        this.synced = synced;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     @Ignore

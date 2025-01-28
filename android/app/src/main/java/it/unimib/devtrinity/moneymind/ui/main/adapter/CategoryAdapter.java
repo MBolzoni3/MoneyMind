@@ -10,28 +10,36 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.imageview.ShapeableImageView;
+
 import java.util.List;
 
+import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class CategoryAdapter extends ArrayAdapter<CategoryEntity> {
 
     public CategoryAdapter(@NonNull Context context, @NonNull List<CategoryEntity> categories) {
-        super(context, android.R.layout.simple_dropdown_item_1line, categories);
+        super(context, R.layout.category_item_layout, categories);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.category_item_layout, parent, false);
         }
 
-        TextView textView = (TextView) convertView;
-        CategoryEntity category = getItem(position);
+        ShapeableImageView categoryIcon = convertView.findViewById(R.id.category_icon);
+        TextView categoryName = convertView.findViewById(R.id.category_name);
 
+        CategoryEntity category = getItem(position);
         if (category != null) {
-            textView.setText(category.getName());
+            categoryName.setText(category.getName());
+
+            int iconResource = Utils.getCategoryIcon(category);
+            categoryIcon.setImageResource(iconResource);
         }
 
         return convertView;

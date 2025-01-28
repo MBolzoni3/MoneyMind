@@ -14,49 +14,39 @@ import java.util.Date;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "budgets")
-public class BudgetEntity {
+public class BudgetEntity extends FirestoreEntity {
+
+    @Exclude
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String firestoreId;
     private String name;
     @Exclude
     private BigDecimal amount;
     private Date startDate;
     private Date endDate;
     private String categoryId;
-    private boolean deleted;
-    private boolean synced;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    private String userId;
+
+    public BudgetEntity() {
+    }
 
     public BudgetEntity(int id, String firestoreId, String name, BigDecimal amount, Date startDate, Date endDate, String categoryId, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
+        super(deleted, createdAt, updatedAt, userId, firestoreId, synced);
         this.id = id;
-        this.firestoreId = firestoreId;
         this.name = name;
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
-        this.deleted = deleted;
-        this.synced = synced;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.userId = userId;
     }
 
     @Ignore
     public BudgetEntity(String name, BigDecimal amount, Date startDate, Date endDate, String categoryId, String userId) {
+        super(false, Timestamp.now(), Timestamp.now(), userId, null, false);
         this.name = name;
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;
-        this.deleted = false;
-        this.synced = false;
-        this.createdAt = Timestamp.now();
-        this.updatedAt = Timestamp.now();
-        this.userId = userId;
     }
 
     public int getId() {
@@ -65,14 +55,6 @@ public class BudgetEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getFirestoreId() {
-        return firestoreId;
-    }
-
-    public void setFirestoreId(String firestoreId) {
-        this.firestoreId = firestoreId;
     }
 
     public String getName() {
@@ -115,46 +97,6 @@ public class BudgetEntity {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isSynced() {
-        return synced;
-    }
-
-    public void setSynced(boolean synced) {
-        this.synced = synced;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     @Ignore
