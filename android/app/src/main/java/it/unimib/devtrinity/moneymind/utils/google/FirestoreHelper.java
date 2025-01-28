@@ -44,30 +44,5 @@ public class FirestoreHelper {
     public CollectionReference getGlobalCollection(String collectionName) {
         return firestore.collection(collectionName);
     }
-
-    public void addDocument(String collectionName, Map<String, Object> data, GenericCallback<String> callback) {
-        getUserCollection(collectionName)
-                .add(data)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "Document added with ID: " + documentReference.getId());
-                    callback.onSuccess(documentReference.getId());
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error adding document", e);
-                    callback.onFailure(e.getMessage());
-                });
-    }
-
-    public void getDocuments(Query query, GenericCallback<QuerySnapshot> callback) {
-        query.get()
-                .addOnSuccessListener(querySnapshot -> {
-                    Log.d(TAG, "Documents fetched: " + querySnapshot.size());
-                    callback.onSuccess(querySnapshot);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error fetching documents", e);
-                    callback.onFailure(e.getMessage());
-                });
-    }
 }
 

@@ -28,6 +28,10 @@ public class GoalEntity extends FirestoreEntity {
     private Date endDate;
     private String categoryId;
 
+    public GoalEntity(){
+
+    }
+
     public GoalEntity(boolean deleted, Timestamp createdAt, Timestamp updatedAt, String userId, String firestoreId, boolean synced, int id, String name, BigDecimal targetAmount, BigDecimal savedAmount, Date startDate, Date endDate, String categoryId) {
         super(deleted, createdAt, updatedAt, userId, firestoreId, synced);
         this.id = id;
@@ -40,11 +44,11 @@ public class GoalEntity extends FirestoreEntity {
     }
 
     @Ignore
-    public GoalEntity(String name, BigDecimal targetAmount, Date startDate, Date endDate, String categoryId, String userId) {
+    public GoalEntity(String name, BigDecimal targetAmount, BigDecimal savedAmount, Date startDate, Date endDate, String categoryId, String userId) {
         super(false, Timestamp.now(), Timestamp.now(), userId, null, false);
         this.name = name;
         this.targetAmount = targetAmount;
-        this.savedAmount = BigDecimal.ZERO;
+        this.savedAmount = savedAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryId = categoryId;

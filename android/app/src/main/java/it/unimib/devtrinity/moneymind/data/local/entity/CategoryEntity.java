@@ -17,6 +17,9 @@ public class CategoryEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
+    public CategoryEntity() {
+    }
+
     public CategoryEntity(@NonNull String firestoreId, String name, int order, boolean deleted, Timestamp createdAt, Timestamp updatedAt) {
         this.firestoreId = firestoreId;
         this.name = name;

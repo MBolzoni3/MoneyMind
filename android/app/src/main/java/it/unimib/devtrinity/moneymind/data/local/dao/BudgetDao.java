@@ -32,13 +32,19 @@ public interface BudgetDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(BudgetEntity goal);
 
-    @Query("UPDATE budgets SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
-    void setSynced(int id);
+    @Query("UPDATE budgets SET synced = 1, updatedAt = :updatedAt WHERE id = :id")
+    void setSynced(int id, long updatedAt);
+    default void setSynced(int id){
+        setSynced(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT * FROM budgets WHERE firestoreId = :firestoreId")
     BudgetEntity getByFirestoreId(String firestoreId);
 
-    @Query("UPDATE budgets SET deleted = 1, synced = 0, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
-    void deleteById(int id);
+    @Query("UPDATE budgets SET deleted = 1, synced = 0, updatedAt = :updatedAt WHERE id = :id")
+    void deleteById(int id, long updatedAt);
+    default void deleteById(int id){
+        deleteById(id, System.currentTimeMillis());
+    }
 
 }

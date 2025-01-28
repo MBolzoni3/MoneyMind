@@ -24,10 +24,12 @@ public abstract class GenericRepository {
     }
 
     public void sync(){
+        sync(sharedPreferences.getLong(SYNC_KEY, 0));
+    }
+
+    public void sync(long lastSyncedTimestamp){
         CompletableFuture.runAsync(() -> {
             try {
-                long lastSyncedTimestamp = sharedPreferences.getLong(SYNC_KEY, 0);
-
                 syncLocalToRemoteAsync()
                         .thenCompose(v -> syncRemoteToLocalAsync(lastSyncedTimestamp))
                         .thenRun(() -> sharedPreferences.edit().putLong(SYNC_KEY, System.currentTimeMillis()).apply())

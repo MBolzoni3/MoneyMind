@@ -14,6 +14,7 @@ import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.math.BigDecimal;
@@ -59,6 +60,9 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     @Override
     public void onBindViewHolder(@NonNull BudgetViewHolder holder, int position) {
         BudgetEntityWithCategory budget = budgetList.get(position);
+
+        int iconResource = Utils.getCategoryIcon(budget.getCategory());
+        holder.categoryIcon.setImageResource(iconResource);
 
         holder.itemView.setOnLongClickListener(v -> {
             if (!isSelectionModeActive) {
@@ -158,11 +162,13 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     static class BudgetViewHolder extends RecyclerView.ViewHolder {
         TextView budgetName, categoryName, spentAmount, dateRange;
         LinearProgressIndicator budgetProgress;
+        ShapeableImageView categoryIcon;
         MaterialCardView cardView;
 
         public BudgetViewHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.budget_card_view);
+            categoryIcon = itemView.findViewById(R.id.category_icon);
             budgetName = itemView.findViewById(R.id.budget_name);
             categoryName = itemView.findViewById(R.id.budget_category);
             spentAmount = itemView.findViewById(R.id.spent_amount);

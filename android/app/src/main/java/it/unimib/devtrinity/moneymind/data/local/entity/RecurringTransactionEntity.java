@@ -34,6 +34,9 @@ public class RecurringTransactionEntity extends FirestoreEntity {
     private String categoryId;
     private String notes;
 
+    public RecurringTransactionEntity() {
+    }
+
     public RecurringTransactionEntity(int id, String firestoreId, String name, MovementTypeEnum type, BigDecimal amount, String currency, Date date, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate, Date lastGeneratedDate, String categoryId, String notes, boolean deleted, boolean synced, Timestamp createdAt, Timestamp updatedAt, String userId) {
         super(deleted, createdAt, updatedAt, userId, firestoreId, synced);
         this.id = id;

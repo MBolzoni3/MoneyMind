@@ -5,6 +5,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -14,6 +15,7 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.GoalFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
@@ -22,6 +24,9 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
     private final HomeFragment homeFragment = new HomeFragment();
     private final BudgetFragment budgetFragment = new BudgetFragment();
+    private final GoalFragment goalFragment = new GoalFragment();
+
+    private Fragment currentFragment;
 
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
@@ -38,7 +43,7 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
-        NavigationHelper.addFragments(this, List.of(homeFragment, budgetFragment));
+        NavigationHelper.addFragments(this, List.of(homeFragment, budgetFragment, goalFragment));
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -46,13 +51,16 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
             if (itemId == R.id.nav_home) {
                 NavigationHelper.showFragment(this, homeFragment);
+                currentFragment = homeFragment;
                 return true;
             } else if (itemId == R.id.nav_budget) {
                 NavigationHelper.showFragment(this, budgetFragment);
+                currentFragment = budgetFragment;
                 return true;
             } else if (itemId == R.id.nav_goals) {
-                // loadFragment(new ChartsFragment());
-                //return true;
+                NavigationHelper.showFragment(this, goalFragment);
+                currentFragment = goalFragment;
+                return true;
             } else if (itemId == R.id.nav_more) {
                 //return true;
             }
@@ -70,11 +78,22 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         topAppBar.getMenu().clear();
         topAppBar.inflateMenu(R.menu.selection_menu);
         topAppBar.setNavigationIcon(R.drawable.ic_close);
-        topAppBar.setNavigationOnClickListener(v -> budgetFragment.onExitSelectionMode()); //TODO change this to current fragment
+        topAppBar.setNavigationOnClickListener(v -> {
+            if(currentFragment instanceof BudgetFragment){
+                budgetFragment.onExitSelectionMode();
+            } else if(currentFragment instanceof GoalFragment){
+                goalFragment.onExitSelectionMode();
+            }
+        });
 
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_delete) {
-                budgetFragment.deleteSelected();
+                if(currentFragment instanceof BudgetFragment){
+                    budgetFragment.deleteSelected();
+                } else if(currentFragment instanceof GoalFragment){
+                    goalFragment.deleteSelected();
+                }
+
                 return true;
             }
 

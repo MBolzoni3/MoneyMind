@@ -3,6 +3,8 @@ package it.unimib.devtrinity.moneymind.data.repository;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.List;
@@ -11,7 +13,11 @@ import java.util.concurrent.CompletableFuture;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.GoalDao;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class GoalRepository extends GenericRepository {
@@ -23,6 +29,30 @@ public class GoalRepository extends GenericRepository {
     public GoalRepository(Context context) {
         super(context, Constants.GOALS_LAST_SYNC_KEY, TAG);
         this.goalDao = DatabaseClient.getInstance(context).goalDao();
+    }
+
+    public LiveData<List<GoalEntityWithCategory>> getAll() {
+        return goalDao.getAll();
+    }
+
+    public void delete(List<GoalEntityWithCategory> goals) {
+        executorService.execute(() -> {
+            for (GoalEntityWithCategory goal : goals) {
+                goalDao.deleteById(goal.getGoal().getId());
+            }
+        });
+    }
+
+    public void insertGoal(GoalEntity goal, GenericCallback<Boolean> callback) {
+        executorService.execute(() -> {
+            try {
+                goalDao.insertOrUpdate(goal);
+                callback.onSuccess(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting budget: " + e.getMessage(), e);
+                callback.onFailure(e.getMessage());
+            }
+        });
     }
 
     @Override

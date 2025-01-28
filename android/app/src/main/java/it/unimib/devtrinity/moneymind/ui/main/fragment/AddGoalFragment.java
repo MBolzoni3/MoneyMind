@@ -26,36 +26,41 @@ import java.util.Locale;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModelFactory;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModel;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
-public class AddBudgetFragment extends Fragment {
+public class AddGoalFragment extends Fragment {
 
-    private BudgetEntity currentBudget;
-    private BudgetRepository budgetRepository;
+    private GoalEntity currentGoal;
+    private GoalRepository goalRepository;
     private CategoryRepository categoryRepository;
 
     private TextInputEditText nameField;
-    private TextInputEditText amountField;
+    private TextInputEditText targetAmountField;
+    private TextInputEditText savedAmountField;
     private AutoCompleteTextView categoryDropdown;
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
-    public void setBudget(BudgetEntity budget) {
-        this.currentBudget = budget;
+    public void setGoal(GoalEntity goal) {
+        this.currentGoal = goal;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.add_budget_dialog, container, false);
+        return inflater.inflate(R.layout.add_goal_dialog, container, false);
     }
 
     @Override
@@ -63,26 +68,27 @@ public class AddBudgetFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(currentBudget == null ? "Aggiungi Budget" : "Modifica Budget");
+        dialogTitle.setText(currentGoal == null ? "Aggiungi Obiettivo" : "Modifica Obiettivo");
 
-        budgetRepository = new BudgetRepository(requireContext());
+        goalRepository = new GoalRepository(requireContext());
         categoryRepository = new CategoryRepository(requireContext());
-        AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(categoryRepository);
-        AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
+        AddGoalViewModelFactory factory = new AddGoalViewModelFactory(categoryRepository);
+        AddGoalViewModel viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
 
-        nameField = view.findViewById(R.id.edit_budget_name);
-        amountField = view.findViewById(R.id.edit_budget_amount);
+        nameField = view.findViewById(R.id.edit_goal_name);
+        targetAmountField = view.findViewById(R.id.edit_goal_target_amount);
+        savedAmountField = view.findViewById(R.id.edit_goal_saved_amount);
 
-        categoryDropdown = view.findViewById(R.id.edit_budget_category);
+        categoryDropdown = view.findViewById(R.id.edit_goal_category);
         viewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
             CategoryAdapter adapter = new CategoryAdapter(requireContext(), categories);
             categoryDropdown.setAdapter(adapter);
 
-            if (currentBudget != null) {
+            if (currentGoal != null) {
                 for (int i = 0; i < adapter.getCount(); i++) {
                     CategoryEntity category = adapter.getItem(i);
 
-                    if (category != null && category.getFirestoreId().equals(currentBudget.getCategoryId())) {
+                    if (category != null && category.getFirestoreId().equals(currentGoal.getCategoryId())) {
                         selectedCategory = category;
                         categoryDropdown.setText(category.getName(), false);
                         break;
@@ -109,11 +115,11 @@ public class AddBudgetFragment extends Fragment {
             showDatePicker(endDateField::setText);
         });
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save_budget);
+        MaterialButton saveButton = view.findViewById(R.id.button_save_goal);
         MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
 
         saveButton.setOnClickListener(v -> {
-            saveBudget();
+            saveGoal();
             navigateBack();
         });
 
@@ -123,41 +129,44 @@ public class AddBudgetFragment extends Fragment {
     }
 
     private void compileFields(){
-        if(currentBudget == null) return;
+        if(currentGoal == null) return;
 
-        nameField.setText(currentBudget.getName());
-        amountField.setText(currentBudget.getAmount().toString());
-        startDateField.setText(Utils.dateToString(currentBudget.getStartDate()));
-        endDateField.setText(Utils.dateToString(currentBudget.getEndDate()));
+        nameField.setText(currentGoal.getName());
+        targetAmountField.setText(currentGoal.getTargetAmount().toString());
+        savedAmountField.setText(currentGoal.getSavedAmount().toString());
+        startDateField.setText(Utils.dateToString(currentGoal.getStartDate()));
+        endDateField.setText(Utils.dateToString(currentGoal.getEndDate()));
     }
 
     private void navigateBack() {
         getParentFragmentManager().popBackStack();
     }
 
-    private void saveBudget() {
-        BudgetEntity budget = new BudgetEntity(
+    private void saveGoal() {
+        GoalEntity goal = new GoalEntity(
                 nameField.getText().toString(),
-                Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
+                Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO),
+                Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO),
                 Utils.stringToDate(startDateField.getText().toString()),
                 Utils.stringToDate(endDateField.getText().toString()),
                 selectedCategory.getFirestoreId(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid());
 
-        if(currentBudget != null){
-            currentBudget.setName(nameField.getText().toString());
-            currentBudget.setAmount(Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO));
-            currentBudget.setStartDate(Utils.stringToDate(startDateField.getText().toString()));
-            currentBudget.setEndDate(Utils.stringToDate(endDateField.getText().toString()));
-            currentBudget.setCategoryId(selectedCategory.getFirestoreId());
-            currentBudget.setUpdatedAt(Timestamp.now());
-            currentBudget.setSynced(false);
+        if(currentGoal != null){
+            currentGoal.setName(nameField.getText().toString());
+            currentGoal.setTargetAmount(Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO));
+            currentGoal.setSavedAmount(Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO));
+            currentGoal.setStartDate(Utils.stringToDate(startDateField.getText().toString()));
+            currentGoal.setEndDate(Utils.stringToDate(endDateField.getText().toString()));
+            currentGoal.setCategoryId(selectedCategory.getFirestoreId());
+            currentGoal.setUpdatedAt(Timestamp.now());
+            currentGoal.setSynced(false);
 
-            budget = currentBudget;
+            goal = currentGoal;
         }
 
-        budgetRepository.insertBudget(
-                budget,
+        goalRepository.insertGoal(
+                goal,
                 new GenericCallback<>() {
 
                     @Override
@@ -167,6 +176,7 @@ public class AddBudgetFragment extends Fragment {
 
                     @Override
                     public void onFailure(String errorMessage) {
+
                     }
                 }
         );
