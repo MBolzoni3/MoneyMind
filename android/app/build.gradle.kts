@@ -44,6 +44,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.material.v1110)
     implementation(libs.google.material.v190)
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.converter.simplexml)
 
     //android worker
     implementation(libs.work.runtime.v291)

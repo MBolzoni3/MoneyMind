@@ -4,62 +4,40 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import java.math.BigDecimal;
+import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModel;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.ExchangeViewModel;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ExchangeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ExchangeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ExchangeFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ExchangeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ExchangeFragment newInstance(String param1, String param2) {
-        ExchangeFragment fragment = new ExchangeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_exchange, container, false);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_exchange, container, false);
+        ExchangeViewModel exchangeViewModel = new ViewModelProvider(this).get(ExchangeViewModel.class);
+
+        TextView prova1 = rootView.findViewById(R.id.prova1);
+        TextView prova2 = rootView.findViewById(R.id.prova2);
+
+        exchangeViewModel.callAPI().observe(getViewLifecycleOwner(), exchanges -> {
+            for (Map.Entry<String, Double> entry : exchanges.entrySet()) {
+                prova1.setText(entry.getKey());
+                prova2.setText(entry.getValue().toString());
+            }
+        });
+
+        return rootView;
+
     }
 }

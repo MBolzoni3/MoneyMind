@@ -29,6 +29,10 @@ public class TransactionRepository extends GenericRepository {
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
     }
 
+    public LiveData<List<TransactionEntity>> getTransactions() {
+        return transactionDao.selectTransactions();
+    }
+
     public LiveData<Long> getSpentAmount(String categoryId, long startDate, long endDate) {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
