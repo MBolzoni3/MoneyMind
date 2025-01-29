@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -15,7 +16,7 @@ public class SyncHelper {
 
     private static final String TAG = SyncHelper.class.getSimpleName();
 
-    private static final long REPEAT_INTERVAL_MIN = 1;
+    private static final long REPEAT_INTERVAL_MIN = 30; //15 minutes is the minimun for WorkManager
 
     public static void scheduleSyncJob(Context context) {
         Constraints constraints = new Constraints.Builder()
@@ -26,6 +27,11 @@ public class SyncHelper {
                 .setConstraints(constraints)
                 .build();
 
+        WorkManager.getInstance(context).enqueue(syncRequest);
+    }
+
+    public static void triggerManualSync(Context context) {
+        OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
         WorkManager.getInstance(context).enqueue(syncRequest);
     }
 }

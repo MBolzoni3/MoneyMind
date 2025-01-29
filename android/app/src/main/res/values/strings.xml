@@ -1,20 +1,14 @@
 <resources>
     <string name="app_name">Money Mind</string>
+
     <string name="navigation_drawer_open">Apri menu</string>
     <string name="navigation_drawer_close">Chiudi menu</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="lista_budget">Lista budget\n</string>
-    <string name="data">Data</string>
-    <string name="valuta">Valuta</string>
-    <string name="tipologia">Tipologia</string>
-    <string name="note">Note</string>
-    <string name="movimento_ricorrente">Movimento ricorrente</string>
-    <string name="tipologia_ricorrenza">Tipologia ricorrenza</string>
-    <string name="intervallo_ricorrenza">Intervallo ricorrenza</string>
-    <string name="data_fine">Data fine</string>
-    <string name="aggiungi_movimento">Aggiungi movimento</string>
-    <string name="lista_movimenti">Lista movimenti</string>
-    <string name="nome">Nome</string>
-    <string name="importo">Importo</string>
+
+    <string name="delete_budget_confirmation_title">Elimina Budget</string>
+    <string name="delete_budget_confirmation_message">Sei sicuro di voler eliminare i budget selezionati?</string>
+    <string name="delete_goal_confirmation_title">Elimina Obiettivo</string>
+    <string name="delete_goal_confirmation_message">Sei sicuro di voler eliminare gli obiettivi selezionati?</string>
+
+    <string name="confirm">Conferma</string>
+    <string name="cancel">Annulla</string>
 </resources>

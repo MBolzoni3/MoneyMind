@@ -1,66 +1,112 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
+
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
+import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
+import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
+import it.unimib.devtrinity.moneymind.ui.main.adapter.BudgetAdapter;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
+import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BudgetFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class BudgetFragment extends Fragment {
+public class BudgetFragment extends Fragment implements SelectionModeListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private BudgetViewModel budgetViewModel;
+    private BudgetAdapter budgetAdapter;
+    private FloatingActionButton fabAddBudget;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public BudgetFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BudgetFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BudgetFragment newInstance(String param1, String param2) {
-        BudgetFragment fragment = new BudgetFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_budget, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        RecyclerView recyclerView = view.findViewById(R.id.budget_recycler_view);
+        fabAddBudget = view.findViewById(R.id.fab_add_budget);
+
+        BudgetRepository budgetRepository = new BudgetRepository(requireContext());
+        TransactionRepository transactionRepository = new TransactionRepository(requireContext());
+
+        BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
+        budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
+
+        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this, requireActivity().getSupportFragmentManager());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(budgetAdapter);
+
+        budgetViewModel.getBudgets().observe(getViewLifecycleOwner(), budgetList -> {
+            budgetAdapter.updateBudgets(budgetList);
+        });
+
+        fabAddBudget.setOnClickListener(v -> {
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(android.R.id.content, new AddBudgetFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+    }
+
+    public List<BudgetEntityWithCategory> getSelectedItems() {
+        return budgetAdapter.getSelectedItems();
+    }
+
+    public void deleteSelected() {
+        if(getSelectedItems().isEmpty()) return;
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.delete_budget_confirmation_title)
+                .setMessage(R.string.delete_budget_confirmation_message)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                    List<BudgetEntityWithCategory> selectedItems = getSelectedItems();
+                    budgetViewModel.deleteBudgets(selectedItems);
+                    budgetAdapter.clearSelection();
+                    onExitSelectionMode();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    @Override
+    public void onEnterSelectionMode() {
+        fabAddBudget.hide();
+
+        ((SelectionModeListener) requireActivity()).onEnterSelectionMode();
+    }
+
+    @Override
+    public void onExitSelectionMode() {
+        fabAddBudget.show();
+        budgetAdapter.clearSelection();
+
+        ((SelectionModeListener) requireActivity()).onExitSelectionMode();
+    }
+
+    @Override
+    public void onSelectionCountChanged(int count) {
+        ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
     }
 }

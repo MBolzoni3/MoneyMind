@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.local.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -12,13 +13,19 @@ import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 @Dao
 public interface TransactionDao {
 
-    @Query("SELECT * FROM transactions WHERE deleted = 0 AND synced = 0")
+    @Query("SELECT * FROM transactions WHERE synced = 0")
     List<TransactionEntity> getUnsyncedTransactions();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(TransactionEntity transaction);
 
+    @Query("UPDATE transactions SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
+    void setSynced(int id);
+
     @Query("SELECT * FROM transactions WHERE firestoreId = :firestoreId")
     TransactionEntity getByFirestoreId(String firestoreId);
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
+    LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
 }
