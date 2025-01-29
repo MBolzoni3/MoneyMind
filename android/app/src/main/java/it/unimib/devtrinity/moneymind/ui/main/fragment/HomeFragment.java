@@ -45,9 +45,9 @@ public class HomeFragment extends Fragment {
             BigDecimal outflowTotal = BigDecimal.ZERO;
 
             for (TransactionEntity transaction : positiveTransactions) {
-                if(transaction.getAmount() > 0)
-                    incomeTotal = incomeTotal.add(Utils.longToBigDecimal(transaction.getAmount()));
-                else outflowTotal = outflowTotal.add(Utils.longToBigDecimal(transaction.getAmount()));
+                if(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0)
+                    incomeTotal = incomeTotal.add(transaction.getAmount());
+                else outflowTotal = outflowTotal.add(transaction.getAmount());
             }
 
             incomeText.setText("€ "+incomeTotal);

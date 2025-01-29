@@ -28,6 +28,6 @@ public interface TransactionDao {
     @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
-    @Query("SELECT * FROM transactions")
+    @Query("SELECT * FROM transactions WHERE deleted=0")
     LiveData<List<TransactionEntity>> selectTransactions();
 }
