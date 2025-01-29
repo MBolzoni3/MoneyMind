@@ -1,91 +1,123 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.LiveData;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.Timestamp;
 
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
-import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.GoalFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
-import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
-import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
-public class MainNavigationActivity extends AppCompatActivity {
+public class MainNavigationActivity extends AppCompatActivity implements SelectionModeListener {
+
+    private final HomeFragment homeFragment = new HomeFragment();
+    private final BudgetFragment budgetFragment = new BudgetFragment();
+    private final GoalFragment goalFragment = new GoalFragment();
+
+    private Fragment currentFragment;
+
+    private MaterialToolbar topAppBar;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_navigation);
 
-        MaterialToolbar topAppBar = findViewById(R.id.top_app_bar);
+        topAppBar = findViewById(R.id.top_app_bar);
         setSupportActionBar(topAppBar);
 
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, topAppBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        NavigationHelper.addFragments(this, List.of(homeFragment, budgetFragment, goalFragment));
+
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
-                NavigationHelper.loadFragment(this, new HomeFragment());
+                NavigationHelper.showFragment(this, homeFragment);
+                currentFragment = homeFragment;
                 return true;
-            } else if (itemId == R.id.nav_movements) {
-                // loadFragment(new MovementsFragment());
-                //return true;
             } else if (itemId == R.id.nav_budget) {
-                NavigationHelper.loadFragment(this, new BudgetFragment());
+                NavigationHelper.showFragment(this, budgetFragment);
+                currentFragment = budgetFragment;
                 return true;
             } else if (itemId == R.id.nav_goals) {
-                // loadFragment(new ChartsFragment());
+                NavigationHelper.showFragment(this, goalFragment);
+                currentFragment = goalFragment;
+                return true;
+            } else if (itemId == R.id.nav_more) {
                 //return true;
             }
 
             return false;
         });
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.action_logout) {
-                FirebaseHelper.getInstance().logoutUser();
-                NavigationHelper.navigateToLogin(this);
-            }
-
-            return false;
-        });
-
-        View headerView = navigationView.getHeaderView(0);
-        TextView drawerUsername = headerView.findViewById(R.id.drawer_username);
-        drawerUsername.setText(FirebaseHelper.getInstance().getCurrentUser().getDisplayName());
 
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
+    }
+
+    @Override
+    public void onEnterSelectionMode() {
+        topAppBar.getMenu().clear();
+        topAppBar.inflateMenu(R.menu.selection_menu);
+        topAppBar.setNavigationIcon(R.drawable.ic_close);
+        topAppBar.setNavigationOnClickListener(v -> {
+            if(currentFragment instanceof BudgetFragment){
+                budgetFragment.onExitSelectionMode();
+            } else if(currentFragment instanceof GoalFragment){
+                goalFragment.onExitSelectionMode();
+            }
+        });
+
+        topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_delete) {
+                if(currentFragment instanceof BudgetFragment){
+                    budgetFragment.deleteSelected();
+                } else if(currentFragment instanceof GoalFragment){
+                    goalFragment.deleteSelected();
+                }
+
+                return true;
+            }
+
+            return false;
+        });
+
+        bottomNavigationView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onExitSelectionMode() {
+        topAppBar.getMenu().clear();
+        topAppBar.setTitle(R.string.app_name);
+        topAppBar.setNavigationIcon(null);
+        topAppBar.setNavigationOnClickListener(v -> {});
+
+        bottomNavigationView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSelectionCountChanged(int count) {
+        String title = count + " elemento" + (count > 1 ? "i" : "") + " selezionato" + (count > 1 ? "i" : "");
+        topAppBar.setTitle(title);
+
+        topAppBar.setTitle(count + (count == 1 ? " elemento selezionato" : " elementi selezionati"));
     }
 }

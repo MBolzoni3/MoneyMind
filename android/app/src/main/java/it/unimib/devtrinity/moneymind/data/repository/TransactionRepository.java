@@ -8,12 +8,10 @@ import androidx.lifecycle.LiveData;
 
 import com.google.firebase.firestore.DocumentReference;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
-import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -25,80 +23,67 @@ public class TransactionRepository extends GenericRepository {
     private static final String COLLECTION_NAME = "transactions";
 
     private final TransactionDao transactionDao;
-    private final SharedPreferences sharedPreferences;
 
     public TransactionRepository(Context context) {
+        super(context, Constants.TRANSACTIONS_LAST_SYNC_KEY, TAG);
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
-        this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
     }
 
-    public void insertTransaction(TransactionEntity transaction) {
-        executorService.execute(() -> transactionDao.insertOrUpdate(transaction));
-    }
-
-    public LiveData<Long> getSpentAmount(int categoryId, long startDate, long endDate) {
+    public LiveData<Long> getSpentAmount(String categoryId, long startDate, long endDate) {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
 
-    public LiveData<List<TransactionEntity>> getTransactions() {
-        return transactionDao.selectTransactions();
-    }
+    @Override
+    protected CompletableFuture<Void> syncLocalToRemoteAsync() {
+        return CompletableFuture.runAsync(() -> {
+            List<TransactionEntity> unsyncedTransactions = transactionDao.getUnsyncedTransactions();
 
-    public void syncTransactions() {
-        long lastSyncedTimestamp = sharedPreferences.getLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, 0);
+            for (TransactionEntity transaction : unsyncedTransactions) {
+                String documentId = transaction.getFirestoreId();
+                DocumentReference docRef;
 
-        syncLocalToRemote();
-        syncRemoteToLocal(lastSyncedTimestamp);
+                if (documentId == null || documentId.isEmpty()) {
+                    docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                    transaction.setFirestoreId(docRef.getId());
+                } else {
+                    docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                }
 
-        sharedPreferences.edit().putLong(Constants.TRANSACTIONS_LAST_SYNC_KEY, System.currentTimeMillis()).apply();
-    }
+                docRef.set(transaction)
+                        .addOnSuccessListener(executorService, aVoid -> {
+                            transactionDao.setSynced(transaction.getId());
 
-    private void syncLocalToRemote() {
-        List<TransactionEntity> unsyncedTransactions = transactionDao.getUnsyncedTransactions();
-
-        for (TransactionEntity transaction : unsyncedTransactions) {
-            String documentId = transaction.getFirestoreId();
-            DocumentReference docRef;
-
-            if (documentId == null || documentId.isEmpty()) {
-                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
-                transaction.setFirestoreId(docRef.getId());
-            } else {
-                docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                            Log.d(TAG, "Transaction synced to remote: " + transaction.getFirestoreId());
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "Error syncing Transaction to remote: " + e.getMessage(), e);
+                        });
             }
+        }, executorService);
+    }
 
-            docRef.set(transaction)
-                    .addOnSuccessListener(aVoid -> {
-                        transaction.setSynced(true);
-                        executorService.execute(() -> transactionDao.insertOrUpdate(transaction));
+    @Override
+    protected CompletableFuture<Void> syncRemoteToLocalAsync(long lastSyncedTimestamp) {
+        return CompletableFuture.runAsync(() -> {
+            FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
+                    .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
+                    .get()
+                    .addOnSuccessListener(executorService, querySnapshot -> {
+                        for (TransactionEntity remoteTransaction : querySnapshot.toObjects(TransactionEntity.class)) {
+                            TransactionEntity localTransaction = transactionDao.getByFirestoreId(remoteTransaction.getFirestoreId());
 
-                        Log.d(TAG, "Transaction synced to remote: " + transaction.getFirestoreId());
+                            if (localTransaction == null) {
+                                transactionDao.insertOrUpdate(remoteTransaction);
+                            } else {
+                                TransactionEntity resolvedTransaction = resolveConflict(localTransaction, remoteTransaction);
+                                transactionDao.insertOrUpdate(resolvedTransaction);
+                            }
+                        }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing Transaction to remote: " + e.getMessage(), e);
+                        Log.e(TAG, "Error syncing transactions from remote: " + e.getMessage(), e);
                     });
-        }
-    }
-
-    private void syncRemoteToLocal(long lastSyncedTimestamp) {
-        FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
-                .whereGreaterThan("updated_at", lastSyncedTimestamp)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    for (TransactionEntity remoteTransaction : querySnapshot.toObjects(TransactionEntity.class)) {
-                        TransactionEntity localTransaction = transactionDao.getByFirestoreId(remoteTransaction.getFirestoreId());
-
-                        if (localTransaction == null) {
-                            executorService.execute(() -> transactionDao.insertOrUpdate(remoteTransaction));
-                        } else {
-                            TransactionEntity resolvedTransaction = resolveConflict(localTransaction, remoteTransaction);
-                            executorService.execute(() -> transactionDao.insertOrUpdate(resolvedTransaction));
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error syncing transactions from remote: " + e.getMessage(), e);
-                });
+        }, executorService);
     }
 
     private TransactionEntity resolveConflict(TransactionEntity local, TransactionEntity remote) {

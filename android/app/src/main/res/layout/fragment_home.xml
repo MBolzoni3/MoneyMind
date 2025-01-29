@@ -1,6 +1,5 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -63,8 +62,7 @@
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="#127E00"
                         android:textSize="20sp"
-                        android:textStyle="bold"
-                    />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/incomeText"
@@ -110,16 +108,16 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/add_movement_button"
-            style="?attr/materialButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:text="Aggiungi movimento"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/outflow_card" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_movement_button"
+                style="?attr/materialButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:text="Aggiungi movimento"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/outflow_card" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

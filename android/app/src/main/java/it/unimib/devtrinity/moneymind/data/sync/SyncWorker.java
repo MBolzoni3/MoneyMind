@@ -4,15 +4,18 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import java.util.concurrent.Executors;
 
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
+import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class SyncWorker extends Worker {
 
@@ -36,16 +39,19 @@ public class SyncWorker extends Worker {
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         Log.d(TAG, "Starting sync work");
 
-        budgetRepository.syncBudgets();
-        categoryRepository.syncCategories();
-        goalRepository.syncGoals();
-        recurringTransactionRepository.syncRecurringTransactions();
-        transactionRepository.syncTransactions();
+        categoryRepository.sync();
+
+        if(FirebaseHelper.getInstance().isUserLoggedIn()) {
+            budgetRepository.sync();
+            goalRepository.sync();
+            recurringTransactionRepository.sync();
+            transactionRepository.sync();
+        }
 
         Log.d(TAG, "Finished sync work");
-        return ListenableWorker.Result.success();
+        return Result.success();
     }
 }
