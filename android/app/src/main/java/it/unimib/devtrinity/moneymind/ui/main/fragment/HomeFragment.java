@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+
 import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
@@ -37,10 +39,12 @@ public class HomeFragment extends Fragment {
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
         HomeViewModel homeViewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
-        TextView incomeText = rootView.findViewById(R.id.incomeText);
-        TextView outflowText = rootView.findViewById(R.id.outflowText);
+        TextView incomeText = rootView.findViewById(R.id.income_amount);
+        TextView outflowText = rootView.findViewById(R.id.outflow_amount);
+        LinearProgressIndicator incomeProgressBar = rootView.findViewById((R.id.income_progress_bar));
+        LinearProgressIndicator outflowProgressBar = rootView.findViewById((R.id.outflow_progress_bar));
 
-        homeViewModel.getPositiveTransactions().observe(getViewLifecycleOwner(), positiveTransactions -> {
+        homeViewModel.getTransactions().observe(getViewLifecycleOwner(), positiveTransactions -> {
             BigDecimal incomeTotal = BigDecimal.ZERO;
             BigDecimal outflowTotal = BigDecimal.ZERO;
 
@@ -52,6 +56,8 @@ public class HomeFragment extends Fragment {
 
             incomeText.setText("€ "+incomeTotal);
             outflowText.setText("€ " + outflowTotal);
+            incomeProgressBar.setProgress(homeViewModel.setProgressBar(incomeTotal), true);
+            outflowProgressBar.setProgress(homeViewModel.setProgressBar(outflowTotal), true);
         });
 
         return rootView;

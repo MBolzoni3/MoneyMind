@@ -140,4 +140,6 @@
     <color name="md_theme_surfaceContainer_highContrast">#EBEFE7</color>
     <color name="md_theme_surfaceContainerHigh_highContrast">#E5E9E1</color>
     <color name="md_theme_surfaceContainerHighest_highContrast">#E0E4DB</color>
+    <color name="owtflow_red">#D01313</color>
+    <color name="income_green">#129502</color>
 </resources>
