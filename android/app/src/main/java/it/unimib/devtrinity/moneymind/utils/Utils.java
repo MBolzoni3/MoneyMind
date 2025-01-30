@@ -16,9 +16,13 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
+import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 
 public class Utils {
 
@@ -123,6 +127,54 @@ public class Utils {
             default:
                 return R.drawable.ic_money_bag;
         }
+    }
+
+    public static int getTypeIcon(MovementTypeEnum movementTypeEnum) {
+        return movementTypeEnum == MovementTypeEnum.INCOME ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down;
+    }
+
+    public static String getRecurringTransactionDescription(RecurringTransactionEntity recurringTransaction) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        StringBuilder description = new StringBuilder();
+
+        Date startDate = recurringTransaction.getDate();
+        RecurrenceTypeEnum recurrenceType = recurringTransaction.getRecurrenceType();
+        int recurrenceInterval = recurringTransaction.getRecurrenceInterval();
+        Date recurrenceEndDate = recurringTransaction.getRecurrenceEndDate();
+
+        String recurrenceUnit;
+        switch (recurrenceType) {
+            case DAILY:
+                recurrenceUnit = recurrenceInterval == 1 ? "giorno" : "giorni";
+                break;
+            case WEEKLY:
+                recurrenceUnit = recurrenceInterval == 1 ? "settimana" : "settimane";
+                break;
+            case MONTHLY:
+                recurrenceUnit = recurrenceInterval == 1 ? "mese" : "mesi";
+                break;
+            case YEARLY:
+                recurrenceUnit = recurrenceInterval == 1 ? "anno" : "anni";
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo di ricorrenza non valido: " + recurrenceType);
+        }
+
+        description.append("Ogni ");
+        if (recurrenceInterval > 1) {
+            description.append(recurrenceInterval).append(" ");
+        }
+        description.append(recurrenceUnit);
+
+        if (startDate != null) {
+            description.append(" a partire dal ").append(dateFormat.format(startDate));
+        }
+
+        if (recurrenceEndDate != null) {
+            description.append(" fino al ").append(dateFormat.format(recurrenceEndDate));
+        }
+
+        return description.toString();
     }
 
 }

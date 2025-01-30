@@ -5,13 +5,13 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorOutline"
     android:checkable="true"
     app:checkedIcon="@drawable/ic_check_circle"
-    app:checkedIconTint="@android:color/transparent"
-    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:strokeColor="?attr/colorOutline"
-    app:strokeWidth="1dp">
+    app:checkedIconTint="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nome Transazione"
-                android:textAppearance="?attr/textAppearanceTitleMedium" />
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface" />
 
             <TextView
                 android:id="@+id/transaction_date"
@@ -68,8 +69,8 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/transaction_type_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_arrow_drop_up"
                 android:contentDescription="type_icon"

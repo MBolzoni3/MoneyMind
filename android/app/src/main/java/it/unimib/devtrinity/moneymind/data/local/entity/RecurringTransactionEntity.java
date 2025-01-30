@@ -9,7 +9,9 @@ import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
@@ -178,5 +180,46 @@ public class RecurringTransactionEntity extends FirestoreEntity {
     @PropertyName("amount")
     public void setAmountFromFirestore(long amountInCents) {
         this.amount = Utils.longToBigDecimal(amountInCents);
+    }
+
+    @Ignore
+    @Exclude
+    public String getFormattedRecurrence(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        StringBuilder description = new StringBuilder();
+
+        String recurrenceUnit;
+        switch (recurrenceType) {
+            case DAILY:
+                recurrenceUnit = recurrenceInterval == 1 ? "giorno" : "giorni";
+                break;
+            case WEEKLY:
+                recurrenceUnit = recurrenceInterval == 1 ? "settimana" : "settimane";
+                break;
+            case MONTHLY:
+                recurrenceUnit = recurrenceInterval == 1 ? "mese" : "mesi";
+                break;
+            case YEARLY:
+                recurrenceUnit = recurrenceInterval == 1 ? "anno" : "anni";
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo di ricorrenza non valido: " + recurrenceType);
+        }
+
+        description.append("Ogni ");
+        if (recurrenceInterval > 1) {
+            description.append(recurrenceInterval).append(" ");
+        }
+        description.append(recurrenceUnit);
+
+        if (date != null) {
+            description.append(" a partire dal ").append(dateFormat.format(date));
+        }
+
+        if (recurrenceEndDate != null) {
+            description.append(" fino al ").append(dateFormat.format(recurrenceEndDate));
+        }
+
+        return description.toString();
     }
 }

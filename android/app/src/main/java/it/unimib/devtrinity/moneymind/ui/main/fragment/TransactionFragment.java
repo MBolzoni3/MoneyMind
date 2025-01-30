@@ -58,8 +58,8 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionAdapter);
 
-        transactionViewModel.getTransactions().observe(getViewLifecycleOwner(), budgetList -> {
-            transactionAdapter.updateTransactions(budgetList);
+        transactionViewModel.getTransactions().observe(getViewLifecycleOwner(), transactionList -> {
+            transactionAdapter.updateList(transactionList);
         });
 
         /*fabAddTransaction.setOnClickListener(v -> {
