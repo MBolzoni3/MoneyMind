@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.w3c.dom.Text;
 
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModel;
@@ -32,6 +35,13 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        MaterialButton moreMovementsButton = rootView.findViewById(R.id.more_movements_button);
+        moreMovementsButton.setOnClickListener(v -> {
+            if (getActivity() instanceof MainNavigationActivity) {
+                ((MainNavigationActivity) getActivity()).showTransactionFragment();
+            }
+        });
 
         TransactionRepository transactionRepository = new TransactionRepository(requireContext());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);

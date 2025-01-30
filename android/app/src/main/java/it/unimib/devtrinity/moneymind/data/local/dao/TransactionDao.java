@@ -8,7 +8,9 @@ import androidx.room.Query;
 
 import java.util.List;
 
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 
 @Dao
 public interface TransactionDao {
@@ -28,6 +30,18 @@ public interface TransactionDao {
     @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
-    @Query("SELECT * FROM transactions WHERE deleted=0")
+    @Query("SELECT * FROM transactions WHERE deleted = 0")
     LiveData<List<TransactionEntity>> selectTransactions();
+
+    @Query("SELECT transactions.*, " +
+            "categories.firestoreId AS category_firestoreId, " +
+            "categories.name AS category_name, " +
+            "categories.`order` AS category_order, " +
+            "categories.deleted AS category_deleted, " +
+            "categories.createdAt AS category_createdAt, " +
+            "categories.updatedAt AS category_updatedAt " +
+            "FROM transactions " +
+            "LEFT JOIN categories ON transactions.categoryId = categories.firestoreId " +
+            "WHERE transactions.deleted = 0")
+    LiveData<List<TransactionEntityWithCategory>> getAll();
 }

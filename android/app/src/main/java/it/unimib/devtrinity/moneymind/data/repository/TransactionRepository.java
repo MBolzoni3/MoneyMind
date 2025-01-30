@@ -15,6 +15,7 @@ import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -31,6 +32,10 @@ public class TransactionRepository extends GenericRepository {
 
     public LiveData<List<TransactionEntity>> getTransactions() {
         return transactionDao.selectTransactions();
+    }
+
+    public LiveData<List<TransactionEntityWithCategory>> getTransactionsWithCategory() {
+        return transactionDao.getAll();
     }
 
     public LiveData<Long> getSpentAmount(String categoryId, long startDate, long endDate) {

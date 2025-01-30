@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -25,6 +28,10 @@ public class RecurringTransactionRepository extends GenericRepository {
     public RecurringTransactionRepository(Context context) {
         super(context, Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, TAG);
         this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
+    }
+
+    public LiveData<List<RecurringTransactionEntityWithCategory>> getRecurringTransactions() {
+        return recurringTransactionDao.getAll();
     }
 
     @Override
