@@ -54,11 +54,19 @@ public class HomeFragment extends Fragment {
                 else outflowTotal = outflowTotal.add(transaction.getAmount());
             }
 
-            incomeText.setText("€ "+incomeTotal);
+            incomeText.setText("€ "+ incomeTotal);
             outflowText.setText("€ " + outflowTotal);
             incomeProgressBar.setProgress(homeViewModel.setProgressBar(incomeTotal), true);
             outflowProgressBar.setProgress(homeViewModel.setProgressBar(outflowTotal), true);
         });
+
+        TextView view;
+
+        view = rootView.findViewById(R.id.home_title);
+        view.setText(homeViewModel.getMessage());
+
+        view = rootView.findViewById(R.id.Carousel_month);
+        view.setText(homeViewModel.getDate());
 
         return rootView;
     }
