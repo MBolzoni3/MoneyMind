@@ -26,6 +26,7 @@ public class BudgetEntity extends FirestoreEntity {
     private Date endDate;
     private String categoryId;
 
+    @Ignore
     public BudgetEntity() {
     }
 

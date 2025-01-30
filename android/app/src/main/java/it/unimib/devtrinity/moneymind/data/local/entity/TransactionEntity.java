@@ -28,6 +28,7 @@ public class TransactionEntity extends FirestoreEntity {
     private String categoryId;
     private String notes;
 
+    @Ignore
     public TransactionEntity() {
     }
 

@@ -34,6 +34,7 @@ public class RecurringTransactionEntity extends FirestoreEntity {
     private String categoryId;
     private String notes;
 
+    @Ignore
     public RecurringTransactionEntity() {
     }
 
