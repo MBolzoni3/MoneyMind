@@ -2,6 +2,7 @@ package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
@@ -17,6 +18,7 @@ public class CategoryEntity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
+    @Ignore
     public CategoryEntity() {
     }
 

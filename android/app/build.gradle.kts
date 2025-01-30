@@ -61,4 +61,7 @@ dependencies {
     //room
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+
+    //Retrofit
+    implementation(libs.retrofit2.retrofit)
 }

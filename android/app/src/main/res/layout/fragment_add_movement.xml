@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textSize="32dp"
-        android:text="@string/aggiungi_movimento" />
+        android:text="aggiungi_movimento" />
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:id="@+id/et_nome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/nome"
+            android:hint="nome"
             android:inputType="text"
             android:minHeight="48dp" />
 
@@ -38,7 +38,7 @@
             android:id="@+id/et_importo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/importo"
+            android:hint="importo"
             android:inputType="numberDecimal"
             android:minHeight="48dp" />
 
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:hint="@string/data"
+            android:hint="data"
             android:inputType="date"
             android:minHeight="48dp" />
 
@@ -58,7 +58,7 @@
             android:id="@+id/sp_valuta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/valuta"
+            android:hint="valuta"
             android:minHeight="48dp" />
 
         <!-- Tipologia -->
@@ -66,7 +66,7 @@
             android:id="@+id/sp_tipologia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tipologia"
+            android:hint="tipologia"
             android:minHeight="48dp" />
 
         <!-- Note -->
@@ -74,7 +74,7 @@
             android:id="@+id/et_note"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/note"
+            android:hint="note"
             android:inputType="textMultiLine"
             android:focusable="true"
             android:minHeight="48dp" />
@@ -84,14 +84,14 @@
             android:id="@+id/cb_ricorrente"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/movimento_ricorrente" />
+            android:text="movimento_ricorrente" />
 
         <!-- Tipologia Ricorrenza -->
         <Spinner
             android:id="@+id/sp_tipologia_ricorrenza"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tipologia_ricorrenza"
+            android:hint="tipologia_ricorrenza"
             android:visibility="gone" />
 
         <!-- Intervallo Ricorrenza -->
@@ -99,7 +99,7 @@
             android:id="@+id/et_intervallo_ricorrenza"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/intervallo_ricorrenza"
+            android:hint="intervallo_ricorrenza"
             android:inputType="number"
             android:visibility="gone" />
 
@@ -109,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="true"
-            android:hint="@string/data_fine"
+            android:hint="data_fine"
             android:inputType="date"
             android:clickable="true"
             android:visibility="gone" />
