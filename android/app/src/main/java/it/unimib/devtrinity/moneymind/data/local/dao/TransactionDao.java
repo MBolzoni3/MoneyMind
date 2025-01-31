@@ -6,6 +6,9 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.google.firebase.Timestamp;
+
+import java.util.Date;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -28,6 +31,6 @@ public interface TransactionDao {
     @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
-    @Query("SELECT * FROM transactions WHERE deleted=0 AND strftime('%Y-%m', date) = strftime('%Y-%m', 'now')")
+    @Query("SELECT * FROM transactions WHERE deleted=0")
     LiveData<List<TransactionEntity>> selectTransactions();
 }

@@ -80,10 +80,18 @@ public class HomeViewModel extends ViewModel {
         }
     }
 
-    public int setProgressBar(BigDecimal incomeTotal) {
-        double doubleIncome = incomeTotal.doubleValue();
-        double roundedIncome = Math.ceil((doubleIncome + 99.0) / 100) * 100;
+    public int setFirstProgressBar(BigDecimal total) {
+        double doubleTotal = total.doubleValue();
+        double roundedTotal = Math.ceil((doubleTotal + 199.0) / 200) * 200;
 
-        return (int) ((doubleIncome*100)/roundedIncome);
+        return (int) ((doubleTotal * 100)/ roundedTotal);
+    }
+
+    public int setSecondProgressBar(BigDecimal minTotal, BigDecimal maxTotal) {
+        double doubleMax = maxTotal.doubleValue();
+        doubleMax = Math.ceil((doubleMax + 199.0) / 200) * 200;
+        double doubleMin = minTotal.doubleValue();
+
+        return (int) ((doubleMin*100)/ doubleMax);
     }
 }

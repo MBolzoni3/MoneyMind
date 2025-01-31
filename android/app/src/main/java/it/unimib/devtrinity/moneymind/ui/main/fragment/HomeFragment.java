@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +13,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
-import org.w3c.dom.Text;
-
 import java.math.BigDecimal;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModelFactory;
-import it.unimib.devtrinity.moneymind.utils.GenericState;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class HomeFragment extends Fragment {
 
@@ -49,15 +43,25 @@ public class HomeFragment extends Fragment {
             BigDecimal outflowTotal = BigDecimal.ZERO;
 
             for (TransactionEntity transaction : positiveTransactions) {
-                if(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0)
+                if (transaction.getType().equals(MovementTypeEnum.INCOME)) {
                     incomeTotal = incomeTotal.add(transaction.getAmount());
-                else outflowTotal = outflowTotal.add(transaction.getAmount());
+                } else {
+                    outflowTotal = outflowTotal.add(transaction.getAmount());
+                }
             }
 
             incomeText.setText("€ "+ incomeTotal);
             outflowText.setText("€ " + outflowTotal);
-            incomeProgressBar.setProgress(homeViewModel.setProgressBar(incomeTotal), true);
-            outflowProgressBar.setProgress(homeViewModel.setProgressBar(outflowTotal), true);
+
+            //Assign progress bar relative length
+            if(incomeTotal.compareTo(outflowTotal) > 0){
+                incomeProgressBar.setProgress(homeViewModel.setFirstProgressBar(incomeTotal), true);
+                outflowProgressBar.setProgress(homeViewModel.setSecondProgressBar(outflowTotal, incomeTotal), true);
+            } else{
+                outflowProgressBar.setProgress(homeViewModel.setFirstProgressBar(outflowTotal), true);
+                incomeProgressBar.setProgress(homeViewModel.setSecondProgressBar(incomeTotal, outflowTotal), true);
+            }
+
         });
 
         TextView view;
