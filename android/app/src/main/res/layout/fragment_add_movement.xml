@@ -3,125 +3,127 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/scroll_view_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="32dp"
-        android:text="aggiungi_movimento" />
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:text="Aggiungi movimento"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"/>
 
-        <!-- Nome -->
-        <EditText
-            android:id="@+id/et_nome"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="nome"
-            android:inputType="text"
-            android:minHeight="48dp" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <!-- Importo -->
-        <EditText
-            android:id="@+id/et_importo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="importo"
-            android:inputType="numberDecimal"
-            android:minHeight="48dp" />
+            <!-- Nome -->
+            <EditText
+                android:id="@+id/et_nome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nome"
+                android:inputType="text"
+                android:minHeight="48dp" />
 
-        <!-- Data -->
-        <EditText
-            android:id="@+id/et_data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:hint="data"
-            android:inputType="date"
-            android:minHeight="48dp" />
+            <!-- Importo -->
+            <EditText
+                android:id="@+id/et_importo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Importo"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp" />
 
-        <!-- Valuta -->
-        <Spinner
-            android:id="@+id/sp_valuta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="valuta"
-            android:minHeight="48dp" />
+            <!-- Importo valuta predefinita (solo visualizzazione) -->
+            <EditText
+                android:id="@+id/et_importo_valuta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:hint="Importo valuta predefinita"
+                android:minHeight="48dp" />
 
-        <!-- Tipologia -->
-        <Spinner
-            android:id="@+id/sp_tipologia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="tipologia"
-            android:minHeight="48dp" />
+            <!-- Data -->
+            <EditText
+                android:id="@+id/et_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Data"
+                android:inputType="date"
+                android:minHeight="48dp" />
 
-        <!-- Note -->
-        <EditText
-            android:id="@+id/et_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="note"
-            android:inputType="textMultiLine"
-            android:focusable="true"
-            android:minHeight="48dp" />
+            <!-- Valuta -->
+            <Spinner
+                android:id="@+id/sp_valuta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-        <!-- Movimento ricorrente -->
-        <CheckBox
-            android:id="@+id/cb_ricorrente"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="movimento_ricorrente" />
+            <!-- Tipologia -->
+            <Spinner
+                android:id="@+id/sp_tipologia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-        <!-- Tipologia Ricorrenza -->
-        <Spinner
-            android:id="@+id/sp_tipologia_ricorrenza"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="tipologia_ricorrenza"
-            android:visibility="gone" />
+            <!-- Note -->
+            <EditText
+                android:id="@+id/et_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Note"
+                android:inputType="textMultiLine"
+                android:minHeight="48dp" />
 
-        <!-- Intervallo Ricorrenza -->
-        <EditText
-            android:id="@+id/et_intervallo_ricorrenza"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="intervallo_ricorrenza"
-            android:inputType="number"
-            android:visibility="gone" />
+            <!-- Movimento ricorrente -->
+            <CheckBox
+                android:id="@+id/cb_ricorrente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Movimento ricorrente" />
 
-        <!-- Data Fine -->
-        <EditText
-            android:id="@+id/et_data_fine"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:hint="data_fine"
-            android:inputType="date"
-            android:clickable="true"
-            android:visibility="gone" />
+            <!-- Tipologia Ricorrenza -->
+            <Spinner
+                android:id="@+id/sp_tipologia_ricorrenza"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-        <!-- Pulsante -->
-        <Button
-            android:id="@+id/btn_aggiungi_movimento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aggiungi" />
-    </LinearLayout>
+            <!-- Intervallo Ricorrenza -->
+            <EditText
+                android:id="@+id/et_intervallo_ricorrenza"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Intervallo ricorrenza"
+                android:inputType="number"
+                android:minHeight="48dp" />
 
-</ScrollView>
+            <!-- Data Fine -->
+            <EditText
+                android:id="@+id/et_data_fine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Data fine"
+                android:inputType="date"
+                android:minHeight="48dp" />
 
+            <!-- Pulsante -->
+            <Button
+                android:id="@+id/btn_aggiungi_movimento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Aggiungi movimento"
+                android:backgroundTint="@color/cardview_dark_background"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
