@@ -1,10 +1,14 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,25 +16,32 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.AddBudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.ExchangeFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.GoalFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.SettingsFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.TransactionFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class MainNavigationActivity extends AppCompatActivity implements SelectionModeListener {
 
-    private final HomeFragment homeFragment = new HomeFragment();
-    private final BudgetFragment budgetFragment = new BudgetFragment();
-    private final GoalFragment goalFragment = new GoalFragment();
-    private final TransactionFragment transactionFragment = new TransactionFragment();
+    private HomeFragment homeFragment;
+    private BudgetFragment budgetFragment;
+    private GoalFragment goalFragment;
+    private TransactionFragment transactionFragment;
+    private SettingsFragment settingsFragment;
+    private ExchangeFragment exchangeFragment;
 
     private Fragment currentFragment;
+    private Fragment previousFragment;
 
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
@@ -40,148 +51,244 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_navigation);
 
-        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
-
         topAppBar = findViewById(R.id.top_app_bar);
-        setSupportActionBar(topAppBar);
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
-
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
 
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_home) {
-                selectedFragment = homeFragment;
-            } else if (itemId == R.id.nav_budget) {
-                selectedFragment = budgetFragment;
-            } else if (itemId == R.id.nav_goals) {
-                selectedFragment = goalFragment;
-            } else if (itemId == R.id.nav_more) {
+        setupBottomNavigation();
+        setTopAppBarMainMenu();
+
+        if (savedInstanceState == null) {
+            initializeFragments();
+        } else {
+            homeFragment = (HomeFragment) getSupportFragmentManager().getFragment(savedInstanceState, "homeFragment");
+            transactionFragment = (TransactionFragment) getSupportFragmentManager().getFragment(savedInstanceState, "transactionFragment");
+            budgetFragment = (BudgetFragment) getSupportFragmentManager().getFragment(savedInstanceState, "budgetFragment");
+            goalFragment = (GoalFragment) getSupportFragmentManager().getFragment(savedInstanceState, "goalFragment");
+            settingsFragment = (SettingsFragment) getSupportFragmentManager().getFragment(savedInstanceState, "settingsFragment");
+            exchangeFragment = (ExchangeFragment) getSupportFragmentManager().getFragment(savedInstanceState, "exchangeFragment");
+
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "currentFragment");
+            previousFragment = getSupportFragmentManager().getFragment(savedInstanceState, "previousFragment");
+
+            String currentFragmentTag = savedInstanceState.getString("currentFragmentTag");
+            if (currentFragmentTag != null) {
+                currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
             }
 
+            if (currentFragment == null) {
+                currentFragment = homeFragment;
+            }
+        }
+
+        if (currentFragment != null) {
+            NavigationHelper.showFragment(this, currentFragment);
+        }
+
+        if (currentFragment instanceof SettingsFragment) {
+            setNavigationBackButton();
+            setBottomNavigationVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, "homeFragment", homeFragment);
+        getSupportFragmentManager().putFragment(outState, "transactionFragment", transactionFragment);
+        getSupportFragmentManager().putFragment(outState, "budgetFragment", budgetFragment);
+        getSupportFragmentManager().putFragment(outState, "goalFragment", goalFragment);
+        getSupportFragmentManager().putFragment(outState, "settingsFragment", settingsFragment);
+        getSupportFragmentManager().putFragment(outState, "exchangeFragment", exchangeFragment);
+
+        if (currentFragment != null) {
+            getSupportFragmentManager().putFragment(outState, "currentFragment", currentFragment);
+            outState.putString("currentFragmentTag", currentFragment.getClass().getName());
+        }
+
+        if (previousFragment != null) {
+            getSupportFragmentManager().putFragment(outState, "previousFragment", previousFragment);
+        }
+    }
+
+    private void setupBottomNavigation() {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = getFragmentFromMenuId(item.getItemId());
             if (selectedFragment != null) {
                 switchFragment(selectedFragment);
                 return true;
             }
             return false;
         });
+    }
 
-        if(savedInstanceState == null) {
-            NavigationHelper.addFragments(this, List.of(
-                    homeFragment,
-                    transactionFragment,
-                    budgetFragment,
-                    goalFragment
-            ));
+    private void initializeFragments() {
+        homeFragment = new HomeFragment();
+        transactionFragment = new TransactionFragment();
+        budgetFragment = new BudgetFragment();
+        goalFragment = new GoalFragment();
+        settingsFragment = new SettingsFragment();
+        exchangeFragment = new ExchangeFragment();
 
-            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        NavigationHelper.addFragments(this, List.of(
+                homeFragment,
+                transactionFragment,
+                budgetFragment,
+                goalFragment,
+                settingsFragment,
+                exchangeFragment
+        ));
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
+    private Fragment getFragmentFromMenuId(int itemId) {
+        if (itemId == R.id.nav_home) {
+            return homeFragment;
+        } else if (itemId == R.id.nav_movements) {
+            return transactionFragment;
+        } else if (itemId == R.id.nav_budget) {
+            return budgetFragment;
+        } else if (itemId == R.id.nav_goals) {
+            return goalFragment;
         } else {
-            currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            return null;
         }
     }
 
     private void switchFragment(Fragment fragment) {
         if (fragment != currentFragment) {
-            NavigationHelper.showFragment(this, fragment);
+            if (getSupportFragmentManager().findFragmentByTag(fragment.getClass().getName()) != null) {
+                NavigationHelper.showFragment(this, fragment);
+            } else {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
+                        .commit();
+            }
+
             currentFragment = fragment;
             updateBottomNavigation(fragment);
         }
     }
 
-    public void showTransactionFragment() {
-        switchFragment(transactionFragment);
-    }
-
-    public void showHomeFragment() {
-        switchFragment(homeFragment);
-    }
-
-    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            if (fragmentManager.getBackStackEntryCount() > 0) {
-                fragmentManager.popBackStack();
-                Fragment activeFragment = fragmentManager.findFragmentById(R.id.fragment_container);
-                if (activeFragment != null) {
-                    updateBottomNavigation(activeFragment);
-                    currentFragment = activeFragment;
-                }
-            } else {
-                setEnabled(false);
-                getOnBackPressedDispatcher().onBackPressed();
-                setEnabled(true);
-            }
-        }
-    };
-
     private void updateBottomNavigation(Fragment fragment) {
-        if (fragment instanceof HomeFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_home);
-        } else if (fragment instanceof BudgetFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_budget);
-        } else if (fragment instanceof GoalFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_goals);
-        } /*else if (fragment instanceof GoalFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_more);
-        }*/ else {
-            bottomNavigationView.getMenu().setGroupCheckable(0, true, false);
-            for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
-                bottomNavigationView.getMenu().getItem(i).setChecked(false);
-            }
+        int itemId = getMenuIdFromFragment(fragment);
+        if (itemId != -1) {
+            bottomNavigationView.setSelectedItemId(itemId);
             bottomNavigationView.getMenu().setGroupCheckable(0, true, true);
+        } else {
+            deselectAllBottomNavigationItems();
         }
     }
+
+
+    private int getMenuIdFromFragment(Fragment fragment) {
+        if (fragment instanceof HomeFragment) return R.id.nav_home;
+        if (fragment instanceof TransactionFragment) return R.id.nav_movements;
+        if (fragment instanceof BudgetFragment) return R.id.nav_budget;
+        if (fragment instanceof GoalFragment) return R.id.nav_goals;
+
+        return -1;
+    }
+
+    private void deselectAllBottomNavigationItems() {
+        bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
+    }
+
+    public void restorePreviousFragment() {
+        if (previousFragment != null && getSupportFragmentManager().findFragmentByTag(previousFragment.getClass().getName()) != null) {
+            switchFragment(previousFragment);
+        } else {
+            previousFragment = homeFragment;
+            switchFragment(homeFragment);
+        }
+
+        previousFragment = null;
+        setTopAppBarMainMenu();
+        setBottomNavigationVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onEnterSelectionMode() {
-        topAppBar.getMenu().clear();
-        topAppBar.inflateMenu(R.menu.selection_menu);
-        topAppBar.setNavigationIcon(R.drawable.ic_close);
-        topAppBar.setNavigationOnClickListener(v -> {
-            if(currentFragment instanceof BudgetFragment){
-                budgetFragment.onExitSelectionMode();
-            } else if(currentFragment instanceof GoalFragment){
-                goalFragment.onExitSelectionMode();
-            }
-        });
-
-        topAppBar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_delete) {
-                if(currentFragment instanceof BudgetFragment){
-                    budgetFragment.deleteSelected();
-                } else if(currentFragment instanceof GoalFragment){
-                    goalFragment.deleteSelected();
-                }
-
-                return true;
-            }
-
-            return false;
-        });
-
-        bottomNavigationView.setVisibility(View.GONE);
+        setTopAppBarSelectionMenu();
+        setBottomNavigationVisibility(View.GONE);
     }
 
     @Override
     public void onExitSelectionMode() {
-        topAppBar.getMenu().clear();
-        topAppBar.setTitle(R.string.app_name);
-        topAppBar.setNavigationIcon(null);
-        topAppBar.setNavigationOnClickListener(v -> {});
+        setTopAppBarMainMenu();
+        setBottomNavigationVisibility(View.VISIBLE);
+    }
 
-        bottomNavigationView.setVisibility(View.VISIBLE);
+    public void setBottomNavigationVisibility(int visibility) {
+        bottomNavigationView.setVisibility(visibility);
+    }
+
+    private void setTopAppBarMainMenu() {
+        setupAppBarMenu(R.menu.menu_overflow, R.string.app_name, null, null);
+    }
+
+    private void setTopAppBarSelectionMenu() {
+        setupAppBarMenu(R.menu.selection_menu, -1, R.drawable.ic_close, v -> onSelectionExit());
+    }
+
+    private void setupAppBarMenu(int menuRes, int titleRes, Integer navIconRes, View.OnClickListener navClickListener) {
+        topAppBar.getMenu().clear();
+        topAppBar.inflateMenu(menuRes);
+        if (titleRes != -1) topAppBar.setTitle(titleRes);
+        if(navIconRes != null) topAppBar.setNavigationIcon(navIconRes);
+        else topAppBar.setNavigationIcon(null);
+        topAppBar.setNavigationOnClickListener(navClickListener);
+
+        topAppBar.setOnMenuItemClickListener(item -> handleMenuClick(item.getItemId()));
+    }
+
+    private void onSelectionExit() {
+        if (currentFragment instanceof BudgetFragment) budgetFragment.onExitSelectionMode();
+        if (currentFragment instanceof GoalFragment) goalFragment.onExitSelectionMode();
+        if (currentFragment instanceof TransactionFragment) transactionFragment.onExitSelectionMode();
+    }
+
+    private boolean handleMenuClick(int itemId) {
+        if (itemId == R.id.menu_currency_converter && currentFragment != exchangeFragment) {
+            navigateToFragment(exchangeFragment);
+            return true;
+        } else if (itemId == R.id.menu_settings && currentFragment != settingsFragment) {
+            navigateToFragment(settingsFragment);
+            return true;
+        }
+        return false;
+    }
+
+    private void navigateToFragment(Fragment fragment) {
+        if (currentFragment != fragment) {
+            if(currentFragment != settingsFragment && currentFragment != exchangeFragment){
+                previousFragment = currentFragment;
+            }
+
+            setNavigationBackButton();
+            switchFragment(fragment);
+            setBottomNavigationVisibility(View.GONE);
+        }
+    }
+
+    private void setNavigationBackButton() {
+        topAppBar.setNavigationIcon(R.drawable.ic_arrow_back);
+        topAppBar.setNavigationOnClickListener(v -> restorePreviousFragment());
     }
 
     @Override
     public void onSelectionCountChanged(int count) {
-        String title = count + " elemento" + (count > 1 ? "i" : "") + " selezionato" + (count > 1 ? "i" : "");
-        topAppBar.setTitle(title);
+        topAppBar.setTitle(getResources().getQuantityString(R.plurals.selection_count, count, count));
+    }
 
-        topAppBar.setTitle(count + (count == 1 ? " elemento selezionato" : " elementi selezionati"));
+    public void changeTheme(String theme) {
+        if ("light".equals(theme)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else if ("dark".equals(theme)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
     }
 }

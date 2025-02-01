@@ -110,17 +110,4 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
     public void onSelectionCountChanged(int count) {
         ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (getActivity() instanceof MainNavigationActivity) {
-                    ((MainNavigationActivity) getActivity()).showHomeFragment();
-                }
-            }
-        });
-    }
 }

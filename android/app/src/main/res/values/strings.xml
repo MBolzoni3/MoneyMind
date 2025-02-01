@@ -11,4 +11,18 @@
 
     <string name="confirm">Conferma</string>
     <string name="cancel">Annulla</string>
+
+    <plurals name="selection_count">
+        <item quantity="one">%d elemento selezionato</item>
+        <item quantity="other">%d elementi selezionati</item>
+    </plurals>
+
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_light">Tema Chiaro</string>
+    <string name="settings_theme_dark">Tema Scuro</string>
+    <string name="settings_theme_auto">Tema Automatico</string>
+
+    <string name="settings_notifications">Notifiche</string>
+    <string name="settings_logout">Esci</string>
+    <string name="settings_version">Versione 1.0</string>
 </resources>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group_theme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:paddingVertical="12dp"
+        app:chipSpacing="8dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_light_mode"
+            android:text="@string/settings_theme_light"
+            android:checkable="true"
+            app:checkedIcon="@drawable/ic_check_circle"
+            app:chipBackgroundColor="?attr/colorSurface"
+            app:chipIconTint="?attr/colorOnSurface"
+            app:chipIconVisible="true"
+            app:chipStrokeColor="?attr/colorOutline"
+            app:chipStrokeWidth="1dp"
+            app:closeIconVisible="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_dark_mode"
+            android:text="@string/settings_theme_dark"
+            android:checkable="true"
+            app:checkedIcon="@drawable/ic_check_circle"
+            app:chipBackgroundColor="?attr/colorSurface"
+            app:chipIconTint="?attr/colorOnSurface"
+            app:chipIconVisible="true"
+            app:chipStrokeColor="?attr/colorOutline"
+            app:chipStrokeWidth="1dp"
+            app:closeIconVisible="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_auto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_auto_mode"
+            android:text="@string/settings_theme_auto"
+            android:checkable="true"
+            app:checkedIcon="@drawable/ic_check_circle"
+            app:chipBackgroundColor="?attr/colorSurface"
+            app:chipIconTint="?attr/colorOnSurface"
+            app:chipIconVisible="true"
+            app:chipStrokeColor="?attr/colorOutline"
+            app:chipStrokeWidth="1dp"
+            app:closeIconVisible="false" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:text="@string/settings_notifications"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chip_group_theme" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/settings_logout"
+        app:backgroundTint="?attr/colorError"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switch_notifications" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="@string/settings_version"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

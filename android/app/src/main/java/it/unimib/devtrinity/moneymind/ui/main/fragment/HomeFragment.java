@@ -36,13 +36,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        MaterialButton moreMovementsButton = rootView.findViewById(R.id.more_movements_button);
-        moreMovementsButton.setOnClickListener(v -> {
-            if (getActivity() instanceof MainNavigationActivity) {
-                ((MainNavigationActivity) getActivity()).showTransactionFragment();
-            }
-        });
-
         TransactionRepository transactionRepository = new TransactionRepository(requireContext());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
         HomeViewModel homeViewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
