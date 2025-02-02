@@ -16,7 +16,7 @@ public class AddMovementViewModel extends ViewModel {
         if (nome == null || importo <= 0 || data == null) {
             errorMessage.setValue("Compila tutti i campi obbligatori");
         } else {
-            movementAdded.setValue(true);
+            movementAdded.setValue(true); // aggiunto con successo
         }
     }
 

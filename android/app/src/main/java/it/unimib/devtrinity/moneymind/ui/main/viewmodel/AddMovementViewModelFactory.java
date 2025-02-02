@@ -10,8 +10,6 @@ public class AddMovementViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(AddMovementViewModel.class)) {
-            // If you had parameters, you would pass them to the constructor here:
-            // return (T) new AddMovementViewModel(repository);
             return (T) new AddMovementViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");

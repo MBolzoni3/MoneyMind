@@ -22,7 +22,8 @@ import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddMovementViewModelFact
 
 public class AddMovementFragment extends Fragment {
 
-    private EditText etNome, etImporto, etImportoValuta, etData, etNote, etIntervalloRicorrenza, etDataFine;
+    private EditText etNome, etImporto, etData, etNote, etIntervalloRicorrenza, etDataFine;
+    private EditText etImportoValuta; // campo per la valuta convertita
     private Spinner spValuta, spTipologia, spTipologiaRicorrenza;
     private CheckBox cbRicorrente;
     private Button btnAggiungiMovimento;
