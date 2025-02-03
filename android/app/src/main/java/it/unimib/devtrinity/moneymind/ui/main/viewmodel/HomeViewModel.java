@@ -22,7 +22,15 @@ public class HomeViewModel extends ViewModel {
     }
 
     public LiveData<List<TransactionEntity>> getTransactions() {
-        return transactionRepository.getTransactions();
+        LocalDate today = null;
+        int month=0;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            today = LocalDate.now();
+            month = today.getMonthValue();
+        }
+
+        return transactionRepository.getTransactions(month);
     }
 
     public String getuserName() {
