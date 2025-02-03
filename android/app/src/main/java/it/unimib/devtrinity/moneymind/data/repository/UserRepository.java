@@ -1,7 +1,12 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.User;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;

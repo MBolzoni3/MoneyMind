@@ -1,4 +1,4 @@
-package it.unimib.devtrinity.moneymind.domain.model;
+package it.unimib.devtrinity.moneymind.data.remote;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;

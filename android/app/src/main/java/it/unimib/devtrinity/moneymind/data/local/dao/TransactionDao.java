@@ -6,6 +6,9 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.google.firebase.Timestamp;
+
+import java.util.Date;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
