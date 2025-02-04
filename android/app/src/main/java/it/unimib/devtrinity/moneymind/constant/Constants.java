@@ -14,4 +14,6 @@ public class Constants {
     public static final String GOALS_LAST_SYNC_KEY = "goals_last_sync";
     public static final String BUDGETS_LAST_SYNC_KEY = "budgets_last_sync";
 
+    public static final String THEME_KEY = "theme";
+
 }

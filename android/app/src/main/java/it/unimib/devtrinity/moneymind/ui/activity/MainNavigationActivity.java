@@ -282,13 +282,4 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         topAppBar.setTitle(getResources().getQuantityString(R.plurals.selection_count, count, count));
     }
 
-    public void changeTheme(String theme) {
-        if ("light".equals(theme)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else if ("dark".equals(theme)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
-    }
 }

@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
+import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
+import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
+import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class SettingsFragment extends Fragment {
-
 
     @Nullable
     @Override
@@ -37,35 +42,49 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        ChipGroup chipGroupTheme = view.findViewById(R.id.chip_group_theme);
-        Chip chipLight = view.findViewById(R.id.chip_light);
-        Chip chipDark = view.findViewById(R.id.chip_dark);
-        Chip chipAuto = view.findViewById(R.id.chip_auto);
+        MaterialButtonToggleGroup toggleGroup = view.findViewById(R.id.theme_toggle_group);
+        MaterialButton buttonLight = view.findViewById(R.id.button_light);
+        MaterialButton buttonDark = view.findViewById(R.id.button_dark);
+        MaterialButton buttonAuto = view.findViewById(R.id.button_auto);
 
-        String currentTheme = getCurrentTheme();
-
-        if ("light".equals(currentTheme)) {
-            chipLight.setChecked(true);
-        } else if ("dark".equals(currentTheme)) {
-            chipDark.setChecked(true);
-        } else {
-            chipAuto.setChecked(true);
+        int currentTheme = SharedPreferencesHelper.getTheme(getContext());
+        switch (currentTheme) {
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                buttonLight.setChecked(true);
+                break;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                buttonDark.setChecked(true);
+                break;
+            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
+            default:
+                buttonAuto.setChecked(true);
+                break;
         }
 
-        chipGroupTheme.setOnCheckedStateChangeListener((group, checkedChipIds) -> {
-            if (checkedChipIds.contains(R.id.chip_light)) {
-                ((MainNavigationActivity) requireActivity()).changeTheme("light");
-            } else if (checkedChipIds.contains(R.id.chip_dark)) {
-                ((MainNavigationActivity) requireActivity()).changeTheme("dark");
-            } else if (checkedChipIds.contains(R.id.chip_auto)) {
-                ((MainNavigationActivity) requireActivity()).changeTheme("auto");
+        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if(!isChecked) return;
+
+            if (checkedId == R.id.button_light) {
+                changeTheme(AppCompatDelegate.MODE_NIGHT_NO);
+            } else if (checkedId == R.id.button_dark) {
+                changeTheme(AppCompatDelegate.MODE_NIGHT_YES);
+            } else if (checkedId == R.id.button_auto) {
+                changeTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             }
+        });
+
+        MaterialButton btnLogout = view.findViewById(R.id.btn_logout);
+        btnLogout.setOnClickListener(v -> {
+            FirebaseHelper.getInstance().logoutUser();
+            SharedPreferencesHelper.clearSharedPrefs(getContext());
+            NavigationHelper.navigateToLogin(getContext());
         });
 
     }
 
-    private String getCurrentTheme() {
-        return "auto";
+    private void changeTheme(int theme) {
+        AppCompatDelegate.setDefaultNightMode(theme);
+        SharedPreferencesHelper.setTheme(getContext(), theme);
     }
 
 }

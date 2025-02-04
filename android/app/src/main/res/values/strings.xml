@@ -17,10 +17,10 @@
         <item quantity="other">%d elementi selezionati</item>
     </plurals>
 
-    <string name="settings_theme">Tema</string>
-    <string name="settings_theme_light">Tema Chiaro</string>
-    <string name="settings_theme_dark">Tema Scuro</string>
-    <string name="settings_theme_auto">Tema Automatico</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_light">Chiaro</string>
+    <string name="settings_theme_dark">Scuro</string>
+    <string name="settings_theme_auto">Auto</string>
 
     <string name="settings_notifications">Notifiche</string>
     <string name="settings_logout">Esci</string>
