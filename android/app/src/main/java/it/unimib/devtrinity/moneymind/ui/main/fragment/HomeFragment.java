@@ -50,8 +50,8 @@ public class HomeFragment extends Fragment {
                 }
             }
 
-            incomeText.setText("€ "+ incomeTotal);
-            outflowText.setText("€ " + outflowTotal);
+            incomeText.setText(incomeTotal + " €");
+            outflowText.setText(outflowTotal + " €");
 
             //Assign progress bar relative length
             if(incomeTotal.compareTo(outflowTotal) > 0){

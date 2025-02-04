@@ -199,7 +199,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             categoryIcon.setImageResource(Utils.getCategoryIcon(transaction.getCategory()));
             name.setText(transaction.getTransaction().getName());
-            amount.setText(String.format(Locale.getDefault(), "€%.2f", transaction.getTransaction().getAmount()));
+            amount.setText(Utils.formatTransactionAmount(transaction.getTransaction().getAmount(), transaction.getTransaction().getType()));
             date.setText(Utils.dateToString(transaction.getTransaction().getDate()));
             typeIcon.setImageResource(Utils.getTypeIcon(transaction.getTransaction().getType()));
 
@@ -215,7 +215,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             categoryIcon.setImageResource(Utils.getCategoryIcon(recurringTransaction.getCategory()));
             name.setText(recurringTransaction.getRecurringTransaction().getName());
-            amount.setText(String.format(Locale.getDefault(), "€%.2f", recurringTransaction.getRecurringTransaction().getAmount()));
+            amount.setText(Utils.formatTransactionAmount(recurringTransaction.getRecurringTransaction().getAmount(), recurringTransaction.getRecurringTransaction().getType()));
             date.setText(recurringTransaction.getRecurringTransaction().getFormattedRecurrence());
             typeIcon.setImageResource(Utils.getTypeIcon(recurringTransaction.getRecurringTransaction().getType()));
 

@@ -9,20 +9,29 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
+import it.unimib.devtrinity.moneymind.ui.main.OnDateSelectedListener;
 
 public class Utils {
 
@@ -57,33 +66,6 @@ public class Utils {
         return typedValue.data;
     }
 
-    public static void setTopAppBarColor(Activity activity, MaterialToolbar topAppBar, int backgroundColorAttr, int textColorAttr) {
-        Context context = topAppBar.getContext();
-        int backgroundColor = getThemeColor(context, backgroundColorAttr);
-        int textColor = getThemeColor(context, textColorAttr);
-
-        topAppBar.setBackgroundColor(backgroundColor);
-        topAppBar.setTitleTextColor(textColor);
-        topAppBar.setNavigationIconTint(textColor);
-
-        for (int i = 0; i < topAppBar.getMenu().size(); i++) {
-            Drawable icon = topAppBar.getMenu().getItem(i).getIcon();
-            if (icon != null) {
-                icon.setTint(textColor);
-            }
-        }
-
-        syncStatusBarWithTopAppBar(activity, topAppBar);
-    }
-
-    public static void syncStatusBarWithTopAppBar(Activity activity, MaterialToolbar topAppBar) {
-        Drawable background = topAppBar.getBackground();
-        if (background instanceof ColorDrawable) {
-            int color = ((ColorDrawable) background).getColor();
-            activity.getWindow().setStatusBarColor(color);
-        }
-    }
-
     public static BigDecimal safeParseBigDecimal(String input, BigDecimal defaultValue) {
         if (TextUtils.isEmpty(input)) {
             return defaultValue;
@@ -107,7 +89,7 @@ public class Utils {
             case "lavoro":
                 return R.drawable.ic_work;
             case "investimenti":
-                return R.drawable.ic_trending_up;
+                return R.drawable.ic_finance_mode;
             case "casa":
                 return R.drawable.ic_home;
             case "utilità":
@@ -130,7 +112,39 @@ public class Utils {
     }
 
     public static int getTypeIcon(MovementTypeEnum movementTypeEnum) {
-        return movementTypeEnum == MovementTypeEnum.INCOME ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down;
+        return movementTypeEnum == MovementTypeEnum.INCOME ? R.drawable.ic_trending_up : R.drawable.ic_trending_down;
+    }
+
+    public static void showDatePicker(OnDateSelectedListener listener, Fragment fragment) {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Seleziona una data")
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    .format(new Date(selection));
+            listener.onDateSelected(formattedDate);
+        });
+
+        datePicker.show(fragment.getParentFragmentManager(), "DATE_PICKER");
+    }
+
+    public static List<String> getCurrencyDropdownItems(List<String> currencyCodes){
+        List<String> items = new ArrayList<>();
+
+        for(String currencyCode : currencyCodes){
+            items.add(CurrencyHelper.getCurrencyDescription(currencyCode));
+        }
+
+        return items;
+    }
+
+    public static String formatTransactionAmount(BigDecimal amount) {
+        return String.format(Locale.getDefault(), "%.2f €", amount);
+    }
+
+    public static String formatTransactionAmount(BigDecimal amount, MovementTypeEnum movementTypeEnum) {
+        return String.format(Locale.getDefault(), "%s %.2f €", movementTypeEnum == MovementTypeEnum.INCOME ? "+" : "-", amount);
     }
 
 }

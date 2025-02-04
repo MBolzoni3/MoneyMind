@@ -54,8 +54,6 @@ public class NavigationHelper {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Log.i(TAG, "Current fragments: " + fragmentManager.getFragments());
-
         for (Fragment fragment : fragmentManager.getFragments()) {
             if (fragment == fragmentToShow) {
                 fragmentTransaction.show(fragment);

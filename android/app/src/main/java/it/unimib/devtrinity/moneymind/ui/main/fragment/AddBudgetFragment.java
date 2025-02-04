@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -55,12 +56,22 @@ public class AddBudgetFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.add_budget_dialog, container, false);
+        return inflater.inflate(R.layout.fragment_add_budget, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        navigateBack();
+                    }
+                }
+        );
 
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
         dialogTitle.setText(currentBudget == null ? "Aggiungi Budget" : "Modifica Budget");
@@ -102,11 +113,11 @@ public class AddBudgetFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
 
         startDateField.setOnClickListener(v -> {
-            showDatePicker(startDateField::setText);
+            Utils.showDatePicker(startDateField::setText, this);
         });
 
         endDateField.setOnClickListener(v -> {
-            showDatePicker(endDateField::setText);
+            Utils.showDatePicker(endDateField::setText, this);
         });
 
         MaterialButton saveButton = view.findViewById(R.id.button_save_budget);
@@ -172,23 +183,6 @@ public class AddBudgetFragment extends Fragment {
         );
     }
 
-    private void showDatePicker(OnDateSelectedListener listener) {
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Seleziona una data")
-                .build();
 
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                    .format(new Date(selection));
-            listener.onDateSelected(formattedDate);
-        });
-
-        datePicker.show(getParentFragmentManager(), "DATE_PICKER");
-    }
-
-    @FunctionalInterface
-    interface OnDateSelectedListener {
-        void onDateSelected(String date);
-    }
 }
 

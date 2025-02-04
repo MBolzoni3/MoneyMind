@@ -62,13 +62,13 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
             transactionAdapter.updateList(transactionList);
         });
 
-        /*fabAddTransaction.setOnClickListener(v -> {
+        fabAddTransaction.setOnClickListener(v -> {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddBudgetFragment())
+                    .replace(android.R.id.content, new AddTransactionFragment())
                     .addToBackStack(null)
                     .commit();
-        });*/
+        });
     }
 
     public List<Object> getSelectedItems() {

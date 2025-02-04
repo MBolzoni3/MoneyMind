@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,15 +25,12 @@ import java.util.Date;
 import java.util.Locale;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
-import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
+import it.unimib.devtrinity.moneymind.ui.main.OnDateSelectedListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModel;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
@@ -60,12 +58,22 @@ public class AddGoalFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.add_goal_dialog, container, false);
+        return inflater.inflate(R.layout.fragment_add_goal, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        navigateBack();
+                    }
+                }
+        );
 
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
         dialogTitle.setText(currentGoal == null ? "Aggiungi Obiettivo" : "Modifica Obiettivo");
@@ -108,11 +116,11 @@ public class AddGoalFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
 
         startDateField.setOnClickListener(v -> {
-            showDatePicker(startDateField::setText);
+            Utils.showDatePicker(startDateField::setText, this);
         });
 
         endDateField.setOnClickListener(v -> {
-            showDatePicker(endDateField::setText);
+            Utils.showDatePicker(endDateField::setText, this);
         });
 
         MaterialButton saveButton = view.findViewById(R.id.button_save_goal);
@@ -180,25 +188,6 @@ public class AddGoalFragment extends Fragment {
                     }
                 }
         );
-    }
-
-    private void showDatePicker(OnDateSelectedListener listener) {
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Seleziona una data")
-                .build();
-
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                    .format(new Date(selection));
-            listener.onDateSelected(formattedDate);
-        });
-
-        datePicker.show(getParentFragmentManager(), "DATE_PICKER");
-    }
-
-    @FunctionalInterface
-    interface OnDateSelectedListener {
-        void onDateSelected(String date);
     }
 }
 
