@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -30,8 +29,9 @@ public class TransactionRepository extends GenericRepository {
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
     }
 
-    public LiveData<List<TransactionEntity>> getTransactions() {
-        return transactionDao.selectTransactions();
+    public LiveData<List<TransactionEntity>> getTransactions(int month) {
+
+        return transactionDao.selectTransactions(month);
     }
 
     public LiveData<List<TransactionEntityWithCategory>> getTransactionsWithCategory() {

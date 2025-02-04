@@ -6,6 +6,9 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.google.firebase.Timestamp;
+
+import java.util.Date;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
@@ -44,4 +47,7 @@ public interface TransactionDao {
             "LEFT JOIN categories ON transactions.categoryId = categories.firestoreId " +
             "WHERE transactions.deleted = 0")
     LiveData<List<TransactionEntityWithCategory>> getAll();
+    
+    @Query("SELECT * FROM transactions WHERE strftime('%m',date) = :month AND deleted=0")
+    LiveData<List<TransactionEntity>> selectTransactions(int month);
 }
