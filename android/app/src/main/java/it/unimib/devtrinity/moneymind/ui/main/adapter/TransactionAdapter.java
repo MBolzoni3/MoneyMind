@@ -1,9 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.main.adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +16,16 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
-import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.AddGoalFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.AddTransactionFragment;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -57,9 +55,16 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         Object item = transactionsList.get(position);
-        if (item instanceof RecurringTransactionEntityWithCategory) return VIEW_TYPE_RECURRING;
-        if (item instanceof TransactionEntityWithCategory) return VIEW_TYPE_TRANSACTION;
-        if ("divider".equals(item)) return VIEW_TYPE_DIVIDER;
+        if(item instanceof TransactionEntityWithCategory){
+            TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) item;
+            if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+                return VIEW_TYPE_RECURRING;
+            } else if(transaction.getTransaction() != null) {
+                return VIEW_TYPE_TRANSACTION;
+            }
+        } else if("divider".equals(item)){
+            return VIEW_TYPE_DIVIDER;
+        }
 
         throw new IllegalArgumentException("Unknown item type at position " + position);
     }
@@ -82,12 +87,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if (holder instanceof TransactionViewHolder) {
             TransactionViewHolder transactionViewHolder = (TransactionViewHolder) holder;
-
-            if (item instanceof RecurringTransactionEntityWithCategory) {
-                transactionViewHolder.bind((RecurringTransactionEntityWithCategory) item);
-            } else if (item instanceof TransactionEntityWithCategory) {
-                transactionViewHolder.bind((TransactionEntityWithCategory) item);
-            }
+            transactionViewHolder.bind((TransactionEntityWithCategory) item);
 
             setupItemClickListener(transactionViewHolder, position);
             updateSelectionState(transactionViewHolder, position);
@@ -115,13 +115,15 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (isSelectionModeActive) {
                 toggleSelection(position);
             } else {
-                /*AddGoalFragment addGoalFragment = new AddGoalFragment();
-                addGoalFragment.setGoal(goal.getGoal());
+                TransactionEntityWithCategory transactionEntityWithCategory = (TransactionEntityWithCategory) transactionsList.get(position);
+
+                AddTransactionFragment addTransactionFragment = new AddTransactionFragment();
+                addTransactionFragment.setTransaction(transactionEntityWithCategory.getTransaction());
 
                 fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, addGoalFragment)
+                        .replace(android.R.id.content, addTransactionFragment)
                         .addToBackStack(null)
-                        .commit();*/
+                        .commit();
             }
         });
     }
@@ -200,26 +202,16 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             categoryIcon.setImageResource(Utils.getCategoryIcon(transaction.getCategory()));
             name.setText(transaction.getTransaction().getName());
             amount.setText(Utils.formatTransactionAmount(transaction.getTransaction().getAmount(), transaction.getTransaction().getType()));
-            date.setText(Utils.dateToString(transaction.getTransaction().getDate()));
             typeIcon.setImageResource(Utils.getTypeIcon(transaction.getTransaction().getType()));
 
+            if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+                RecurringTransactionEntity recurringTransaction = (RecurringTransactionEntity) transaction.getTransaction();
+                date.setText(recurringTransaction.getFormattedRecurrence());
+            } else {
+                date.setText(Utils.dateToString(transaction.getTransaction().getDate()));
+            }
+
             int typeColor = transaction.getTransaction().getType().equals(MovementTypeEnum.INCOME)
-                    ? Utils.getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
-                    : Utils.getThemeColor(context, com.google.android.material.R.attr.colorError);
-
-            typeIcon.setColorFilter(typeColor);
-        }
-
-        void bind(RecurringTransactionEntityWithCategory recurringTransaction) {
-            Context context = itemView.getContext();
-
-            categoryIcon.setImageResource(Utils.getCategoryIcon(recurringTransaction.getCategory()));
-            name.setText(recurringTransaction.getRecurringTransaction().getName());
-            amount.setText(Utils.formatTransactionAmount(recurringTransaction.getRecurringTransaction().getAmount(), recurringTransaction.getRecurringTransaction().getType()));
-            date.setText(recurringTransaction.getRecurringTransaction().getFormattedRecurrence());
-            typeIcon.setImageResource(Utils.getTypeIcon(recurringTransaction.getRecurringTransaction().getType()));
-
-            int typeColor = recurringTransaction.getRecurringTransaction().getType().equals(MovementTypeEnum.INCOME)
                     ? Utils.getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
                     : Utils.getThemeColor(context, com.google.android.material.R.attr.colorError);
 

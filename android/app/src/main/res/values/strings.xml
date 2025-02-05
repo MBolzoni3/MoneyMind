@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Money Mind</string>
 
+    <string name="delete_transaction_confirmation_title">Elimina Movimento</string>
+    <string name="delete_transaction_confirmation_message">Sei sicuro di voler eliminare i movimenti selezionati?</string>
     <string name="delete_budget_confirmation_title">Elimina Budget</string>
     <string name="delete_budget_confirmation_message">Sei sicuro di voler eliminare i budget selezionati?</string>
     <string name="delete_goal_confirmation_title">Elimina Obiettivo</string>

@@ -5,17 +5,17 @@ import androidx.room.Embedded;
 public class RecurringTransactionEntityWithCategory {
 
     @Embedded
-    private RecurringTransactionEntity recurringTransaction;
+    protected RecurringTransactionEntity transaction;
 
     @Embedded(prefix = "category_")
     private CategoryEntity category;
 
-    public RecurringTransactionEntity getRecurringTransaction() {
-        return recurringTransaction;
+    public RecurringTransactionEntity getTransaction() {
+        return transaction;
     }
 
-    public void setRecurringTransaction(RecurringTransactionEntity recurringTransaction) {
-        this.recurringTransaction = recurringTransaction;
+    public void setTransaction(RecurringTransactionEntity transaction) {
+        this.transaction = transaction;
     }
 
     public CategoryEntity getCategory() {

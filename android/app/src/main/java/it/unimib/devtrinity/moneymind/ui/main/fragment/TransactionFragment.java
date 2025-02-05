@@ -79,8 +79,8 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
         if(getSelectedItems().isEmpty()) return;
 
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.delete_budget_confirmation_title)
-                .setMessage(R.string.delete_budget_confirmation_message)
+                .setTitle(R.string.delete_transaction_confirmation_title)
+                .setMessage(R.string.delete_transaction_confirmation_message)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {
                     List<Object> selectedItems = getSelectedItems();
                     transactionViewModel.deleteTransactions(selectedItems);

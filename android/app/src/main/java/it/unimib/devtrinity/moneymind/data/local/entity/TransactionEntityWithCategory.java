@@ -5,7 +5,7 @@ import androidx.room.Embedded;
 public class TransactionEntityWithCategory {
 
     @Embedded
-    private TransactionEntity transaction;
+    protected TransactionEntity transaction;
 
     @Embedded(prefix = "category_")
     private CategoryEntity category;

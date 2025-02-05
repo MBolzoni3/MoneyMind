@@ -13,8 +13,10 @@ import java.util.concurrent.CompletableFuture;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -30,7 +32,6 @@ public class TransactionRepository extends GenericRepository {
     }
 
     public LiveData<List<TransactionEntity>> getTransactions(int month) {
-
         return transactionDao.selectTransactions(month);
     }
 
@@ -40,6 +41,18 @@ public class TransactionRepository extends GenericRepository {
 
     public LiveData<Long> getSpentAmount(String categoryId, long startDate, long endDate) {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
+    }
+
+    public void insertTransaction(TransactionEntity transaction, GenericCallback<Boolean> callback) {
+        executorService.execute(() -> {
+            try {
+                transactionDao.insertOrUpdate(transaction);
+                callback.onSuccess(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting transaction: " + e.getMessage(), e);
+                callback.onFailure(e.getMessage());
+            }
+        });
     }
 
     @Override

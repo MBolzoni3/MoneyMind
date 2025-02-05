@@ -10,7 +10,6 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 
 @Dao

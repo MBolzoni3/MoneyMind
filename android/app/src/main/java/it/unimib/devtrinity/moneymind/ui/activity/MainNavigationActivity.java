@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -225,28 +226,42 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     }
 
     private void setTopAppBarMainMenu() {
-        setupAppBarMenu(R.menu.menu_overflow, R.string.app_name, null, null);
+        setupAppBarMenu(R.menu.menu_overflow, R.string.app_name, null, null, item -> handleMenuClick(item.getItemId()));
     }
 
     private void setTopAppBarSelectionMenu() {
-        setupAppBarMenu(R.menu.selection_menu, -1, R.drawable.ic_close, v -> onSelectionExit());
+        setupAppBarMenu(R.menu.selection_menu, -1, R.drawable.ic_close, v -> onSelectionExit(), item -> onDeleteClick(item.getItemId()));
     }
 
-    private void setupAppBarMenu(int menuRes, int titleRes, Integer navIconRes, View.OnClickListener navClickListener) {
+    private void setupAppBarMenu(int menuRes, int titleRes, Integer navIconRes, View.OnClickListener navClickListener, Toolbar.OnMenuItemClickListener menuClickListener) {
         topAppBar.getMenu().clear();
         topAppBar.inflateMenu(menuRes);
+
         if (titleRes != -1) topAppBar.setTitle(titleRes);
+
         if(navIconRes != null) topAppBar.setNavigationIcon(navIconRes);
         else topAppBar.setNavigationIcon(null);
-        topAppBar.setNavigationOnClickListener(navClickListener);
 
-        topAppBar.setOnMenuItemClickListener(item -> handleMenuClick(item.getItemId()));
+        topAppBar.setNavigationOnClickListener(navClickListener);
+        topAppBar.setOnMenuItemClickListener(menuClickListener);
     }
 
     private void onSelectionExit() {
         if (currentFragment instanceof BudgetFragment) budgetFragment.onExitSelectionMode();
         if (currentFragment instanceof GoalFragment) goalFragment.onExitSelectionMode();
         if (currentFragment instanceof TransactionFragment) transactionFragment.onExitSelectionMode();
+    }
+
+    private boolean onDeleteClick(int itemId){
+        if (itemId == R.id.action_delete) {
+            if (currentFragment instanceof BudgetFragment) budgetFragment.deleteSelected();
+            if (currentFragment instanceof GoalFragment) goalFragment.deleteSelected();
+            if (currentFragment instanceof TransactionFragment) transactionFragment.deleteSelected();
+
+            return true;
+        }
+
+        return false;
     }
 
     private boolean handleMenuClick(int itemId) {
