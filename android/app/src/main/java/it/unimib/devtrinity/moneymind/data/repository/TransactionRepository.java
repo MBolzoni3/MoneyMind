@@ -14,6 +14,7 @@ import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
@@ -54,6 +55,14 @@ public class TransactionRepository extends GenericRepository {
             }
         });
     }
+
+    /*public void delete(List<TransactionEntityWithCategory> transactions) {
+        executorService.execute(() -> {
+            for (GoalEntityWithCategory goal : goals) {
+                goalDao.deleteById(goal.getGoal().getId());
+            }
+        });
+    }*/
 
     @Override
     protected CompletableFuture<Void> syncLocalToRemoteAsync() {

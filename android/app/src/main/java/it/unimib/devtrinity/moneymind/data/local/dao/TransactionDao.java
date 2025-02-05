@@ -45,9 +45,10 @@ public interface TransactionDao {
             "categories.updatedAt AS category_updatedAt " +
             "FROM transactions " +
             "LEFT JOIN categories ON transactions.categoryId = categories.firestoreId " +
-            "WHERE transactions.deleted = 0")
+            "WHERE transactions.deleted = 0 " +
+            "ORDER BY transactions.date DESC ")
     LiveData<List<TransactionEntityWithCategory>> getAll();
-    
-    @Query("SELECT * FROM transactions WHERE strftime('%m',date) = :month AND deleted=0")
+
+    @Query("SELECT * FROM transactions WHERE CAST(strftime('%m', date / 1000, 'unixepoch') AS INTEGER) = :month AND deleted = 0")
     LiveData<List<TransactionEntity>> selectTransactions(int month);
 }

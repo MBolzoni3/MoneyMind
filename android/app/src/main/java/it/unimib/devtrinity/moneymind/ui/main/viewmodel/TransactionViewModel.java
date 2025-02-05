@@ -54,6 +54,12 @@ public class TransactionViewModel extends ViewModel {
     }
 
     public void deleteTransactions(List<Object> selectedItems) {
-
+        /*for(Object item : selectedItems) {
+            if(item instanceof TransactionEntityWithCategory) {
+                transactionRepository.delete((TransactionEntityWithCategory) item);
+            } else if(item instanceof RecurringTransactionEntityWithCategory) {
+                recurringTransactionRepository.delete((RecurringTransactionEntityWithCategory) item);
+            }
+        }*/
     }
 }

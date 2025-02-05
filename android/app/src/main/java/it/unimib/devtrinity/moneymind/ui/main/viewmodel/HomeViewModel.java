@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -22,13 +23,8 @@ public class HomeViewModel extends ViewModel {
     }
 
     public LiveData<List<TransactionEntity>> getTransactions() {
-        LocalDate today = null;
-        int month=0;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            today = LocalDate.now();
-            month = today.getMonthValue();
-        }
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH) + 1;
 
         return transactionRepository.getTransactions(month);
     }

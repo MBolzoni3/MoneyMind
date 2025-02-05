@@ -36,7 +36,9 @@ public interface RecurringTransactionDao {
             "categories.updatedAt AS category_updatedAt " +
             "FROM recurring_transactions " +
             "LEFT JOIN categories ON recurring_transactions.categoryId = categories.firestoreId " +
-            "WHERE recurring_transactions.deleted = 0")
+            "WHERE recurring_transactions.deleted = 0 " +
+            "AND (recurring_transactions.recurrenceEndDate IS NULL OR recurring_transactions.recurrenceEndDate >= strftime('%s', 'now') * 1000) " +
+            "ORDER BY recurring_transactions.date DESC ")
     LiveData<List<RecurringTransactionEntityWithCategory>> getAll();
 
 }
