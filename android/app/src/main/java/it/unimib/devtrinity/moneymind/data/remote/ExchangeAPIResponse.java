@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.remote;
 
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -10,23 +11,38 @@ import java.util.List;
 public class ExchangeAPIResponse {
 
     @Element(name = "Cube")
-    private Cube cube;
+    private CubeContainer cubeContainer;
 
-    public Cube getCube() {
-        return cube;
+    public CubeContainer getCubeContainer() {
+        return cubeContainer;
     }
 
-    public void setCube(Cube cube) {
-        this.cube = cube;
+    public void setCubeContainer(CubeContainer cubeContainer) {
+        this.cubeContainer = cubeContainer;
+    }
+
+    @Root(name = "Cube", strict = false)
+    public static class CubeContainer {
+
+        @Element(name = "Cube")
+        private Cube cube;
+
+        public Cube getCube() {
+            return cube;
+        }
+
+        public void setCube(Cube cube) {
+            this.cube = cube;
+        }
     }
 
     @Root(name = "Cube", strict = false)
     public static class Cube {
 
-        @Element(name = "Cube", required = false)
+        @Attribute(name = "time", required = false)
         private String time;
 
-        @ElementList(name = "Cube", entry = "Cube", inline = true)
+        @ElementList(entry = "Cube", inline = true, required = false)
         private List<CurrencyRate> currencyRates;
 
         public String getTime() {
@@ -49,10 +65,10 @@ public class ExchangeAPIResponse {
     @Root(name = "Cube", strict = false)
     public static class CurrencyRate {
 
-        @Element(name = "currency")
+        @Attribute(name = "currency")
         private String currency;
 
-        @Element(name = "rate")
+        @Attribute(name = "rate")
         private double rate;
 
         public String getCurrency() {

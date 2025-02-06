@@ -7,16 +7,20 @@ import androidx.lifecycle.ViewModel;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ExchangeRepository;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class AddTransactionViewModel extends ViewModel {
     private final LiveData<List<CategoryEntity>> categories;
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
+    private final ExchangeRepository exchangeRepository = new ExchangeRepository();
 
     public AddTransactionViewModel(CategoryRepository repository) {
         this.categories = repository.getAllCategories();
@@ -61,8 +65,20 @@ public class AddTransactionViewModel extends ViewModel {
             return;
         }
 
-        //TODO get converted amount from API
-        convertedAmount.setValue(amount);
+        exchangeRepository.callAPI(new GenericCallback<HashMap<String, Double>>() {
+            @Override
+            public void onSuccess(HashMap<String, Double> result) {
+                convertedAmount.postValue(amount.multiply(BigDecimal.valueOf(result.get(currency))));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+
+            }
+        });
+
+
+
     }
 
 }
