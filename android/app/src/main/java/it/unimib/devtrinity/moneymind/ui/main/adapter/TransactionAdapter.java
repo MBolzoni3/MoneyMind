@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +31,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final int VIEW_TYPE_RECURRING = 0;
     private static final int VIEW_TYPE_DIVIDER = 1;
-    private static final int VIEW_TYPE_TRANSACTION = 2;
+    private static final int VIEW_TYPE_DIVIDER_NO_TEXT = 2;
+    private static final int VIEW_TYPE_TRANSACTION = 3;
 
     private final List<Object> transactionsList = new ArrayList<>();
     private final FragmentManager fragmentManager;
@@ -62,6 +64,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         } else if ("divider".equals(item)) {
             return VIEW_TYPE_DIVIDER;
+        } else if ("divider-no-text".equals(item)) {
+            return VIEW_TYPE_DIVIDER_NO_TEXT;
         }
 
         throw new IllegalArgumentException("Unknown item type at position " + position);
@@ -75,7 +79,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return new TransactionViewHolder(inflater.inflate(R.layout.transaction_item_layout, parent, false));
         } else if (viewType == VIEW_TYPE_DIVIDER) {
             return new DividerViewHolder(inflater.inflate(R.layout.transaction_item_divider_layout, parent, false));
+        } else if (viewType == VIEW_TYPE_DIVIDER_NO_TEXT) {
+            return new DividerNoTextViewHolder(inflater.inflate(R.layout.transaction_item_divider_layout, parent, false));
         }
+
         throw new IllegalArgumentException("Unknown view type");
     }
 
@@ -90,7 +97,16 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             setupItemClickListener(transactionViewHolder, position);
             updateSelectionState(transactionViewHolder, position);
         } else if (holder instanceof DividerViewHolder) {
-            ((DividerViewHolder) holder).bind("Movimenti Normali");
+            if (position == 0 && transactionsList.size() > 1) {
+                TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) transactionsList.get(position + 1);
+                if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
+                    ((DividerViewHolder) holder).bind("Movimenti Ricorrenti");
+                } else {
+                    ((DividerViewHolder) holder).bind("Movimenti");
+                }
+            } else {
+                ((DividerViewHolder) holder).bind("Movimenti");
+            }
         }
     }
 
@@ -167,16 +183,26 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class DividerViewHolder extends RecyclerView.ViewHolder {
-        //private final TextView dividerTitle;
+
+        private final MaterialTextView dividerTextView;
 
         DividerViewHolder(@NonNull View itemView) {
             super(itemView);
-            //dividerTitle = itemView.findViewById(R.id.divider_title);
+            dividerTextView = itemView.findViewById(R.id.divider);
         }
 
         void bind(String title) {
-            //dividerTitle.setText(title);
+            dividerTextView.setText(title);
         }
+
+    }
+
+    static class DividerNoTextViewHolder extends RecyclerView.ViewHolder {
+
+        DividerNoTextViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
     }
 
     static class TransactionViewHolder extends RecyclerView.ViewHolder {

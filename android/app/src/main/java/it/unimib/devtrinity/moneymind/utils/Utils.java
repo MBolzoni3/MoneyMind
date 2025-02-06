@@ -11,9 +11,11 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +23,7 @@ import java.util.Locale;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
-import it.unimib.devtrinity.moneymind.ui.main.OnDateSelectedListener;
+import it.unimib.devtrinity.moneymind.ui.OnDateSelectedListener;
 
 public class Utils {
 
@@ -136,5 +138,47 @@ public class Utils {
     public static String formatTransactionAmount(BigDecimal amount, MovementTypeEnum movementTypeEnum) {
         return String.format(Locale.getDefault(), "%s %.2f €", movementTypeEnum == MovementTypeEnum.INCOME ? "+" : "-", amount);
     }
+
+    public static String getMonthFromDate(Date date){
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(date);
+
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+
+        return String.format("%02d%d", month, year);
+    }
+
+    public static String formatMonthYear(String monthYear) {
+        int month = Integer.parseInt(monthYear.substring(0, 2)) - 1;
+        int year = Integer.parseInt(monthYear.substring(2, 6));
+
+        String monthName = new DateFormatSymbols(Locale.getDefault()).getMonths()[month];
+
+        return monthName + " " + year;
+    }
+
+    public static long getStartDateFromMonthsBack(int monthsBack) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -monthsBack);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTimeInMillis();
+    }
+
+    public static int getMonthsDifference(long oldestDate) {
+        Calendar current = Calendar.getInstance();
+        current.set(Calendar.DAY_OF_MONTH, 1);
+
+        Calendar oldest = Calendar.getInstance();
+        oldest.setTimeInMillis(oldestDate);
+        oldest.set(Calendar.DAY_OF_MONTH, 1);
+
+        int diffYear = current.get(Calendar.YEAR) - oldest.get(Calendar.YEAR);
+        int diffMonth = current.get(Calendar.MONTH) - oldest.get(Calendar.MONTH);
+
+        return diffYear * 12 + diffMonth;
+    }
+
 
 }

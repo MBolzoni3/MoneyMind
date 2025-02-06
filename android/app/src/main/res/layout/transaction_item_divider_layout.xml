@@ -1,6 +1,9 @@
-<com.google.android.material.divider.MaterialDivider xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.textview.MaterialTextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/divider"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="24dp"
-    android:layout_marginVertical="16dp" />
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    android:gravity="start"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    android:textColor="?attr/colorOnSurfaceVariant" />

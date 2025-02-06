@@ -4,10 +4,15 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
@@ -16,6 +21,7 @@ import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class TransactionRepository extends GenericRepository {
@@ -29,8 +35,45 @@ public class TransactionRepository extends GenericRepository {
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
     }
 
-    public LiveData<List<TransactionEntity>> getTransactions(int month) {
-        return transactionDao.selectTransactions(month);
+    public LiveData<List<TransactionEntity>> getTransactions(long startDate, long endDate) {
+        return transactionDao.selectTransactions(startDate, endDate);
+    }
+
+    public LiveData<Long> getOldestTransactionDate() {
+        return transactionDao.getOldestTransactionDate();
+    }
+
+    public LiveData<Map<String, List<TransactionEntity>>> getTransactionsByMonth(int monthsBack) {
+        long startDate = Utils.getStartDateFromMonthsBack(monthsBack);
+
+        return Transformations.map(transactionDao.selectTransactionsFromDate(startDate), transactions -> {
+            Map<String, List<TransactionEntity>> transactionsByMonth = new LinkedHashMap<>();
+
+            Calendar currentCal = Calendar.getInstance();
+            currentCal.set(Calendar.DAY_OF_MONTH, 1);
+
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTimeInMillis(startDate);
+            startCal.set(Calendar.DAY_OF_MONTH, 1);
+
+            Calendar cal = (Calendar) currentCal.clone();
+            while (!cal.before(startCal)) {
+                String monthKey = Utils.getMonthFromDate(cal.getTime());
+                transactionsByMonth.put(monthKey, new ArrayList<>());
+                cal.add(Calendar.MONTH, -1);
+            }
+
+            for (TransactionEntity transaction : transactions) {
+                String monthKey = Utils.getMonthFromDate(transaction.getDate());
+                transactionsByMonth.computeIfAbsent(monthKey, key -> new ArrayList<>()).add(transaction);
+            }
+
+            return transactionsByMonth;
+        });
+    }
+
+    public LiveData<List<TransactionEntityWithCategory>> getLastTransactions() {
+        return transactionDao.getLastTransactions();
     }
 
     public LiveData<List<TransactionEntityWithCategory>> getTransactionsWithCategory() {

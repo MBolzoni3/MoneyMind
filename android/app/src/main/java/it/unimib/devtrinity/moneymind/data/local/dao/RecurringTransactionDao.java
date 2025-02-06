@@ -20,8 +20,12 @@ public interface RecurringTransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(RecurringTransactionEntity transaction);
 
-    @Query("UPDATE recurring_transactions SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
-    void setSynced(int id);
+    @Query("UPDATE recurring_transactions SET synced = 1, updatedAt = :updatedAt WHERE id = :id")
+    void setSynced(int id, long updatedAt);
+
+    default void setSynced(int id) {
+        setSynced(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT * FROM recurring_transactions WHERE firestoreId = :firestoreId")
     RecurringTransactionEntity getByFirestoreId(String firestoreId);

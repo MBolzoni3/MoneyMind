@@ -337,7 +337,7 @@ public class AddTransactionFragment extends Fragment {
                 selectedCurrency,
                 Utils.stringToDate(dateField.getText().toString()),
                 selectedCategory.getFirestoreId(),
-                notesField.getText().toString(),
+                notesField.getText().toString().isEmpty() ? null : notesField.getText().toString(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid()
         );
 

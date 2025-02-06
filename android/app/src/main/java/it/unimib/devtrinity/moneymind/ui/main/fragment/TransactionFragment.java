@@ -79,8 +79,7 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
                 .setTitle(R.string.delete_transaction_confirmation_title)
                 .setMessage(R.string.delete_transaction_confirmation_message)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                    List<Object> selectedItems = getSelectedItems();
-                    transactionViewModel.deleteTransactions(selectedItems);
+                    transactionViewModel.deleteTransactions(getSelectedItems());
                     transactionAdapter.clearSelection();
                     onExitSelectionMode();
                 })

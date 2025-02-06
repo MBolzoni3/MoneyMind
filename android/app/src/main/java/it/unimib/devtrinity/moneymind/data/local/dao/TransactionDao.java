@@ -20,8 +20,12 @@ public interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(TransactionEntity transaction);
 
-    @Query("UPDATE transactions SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
-    void setSynced(int id);
+    @Query("UPDATE transactions SET synced = 1, updatedAt = :updateAt WHERE id = :id")
+    void setSynced(int id, long updateAt);
+
+    default void setSynced(int id) {
+        setSynced(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT * FROM transactions WHERE firestoreId = :firestoreId")
     TransactionEntity getByFirestoreId(String firestoreId);
@@ -36,7 +40,7 @@ public interface TransactionDao {
     @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
-    @Query("SELECT * FROM transactions WHERE deleted = 0")
+    @Query("SELECT * FROM transactions WHERE deleted = 0 ORDER BY date ASC")
     LiveData<List<TransactionEntity>> selectTransactions();
 
     @Query("SELECT transactions.*, " +
@@ -49,9 +53,32 @@ public interface TransactionDao {
             "FROM transactions " +
             "LEFT JOIN categories ON transactions.categoryId = categories.firestoreId " +
             "WHERE transactions.deleted = 0 " +
-            "ORDER BY transactions.date DESC ")
+            "ORDER BY transactions.date DESC, transactions.createdAt DESC ")
     LiveData<List<TransactionEntityWithCategory>> getAll();
 
-    @Query("SELECT * FROM transactions WHERE CAST(strftime('%m', date / 1000, 'unixepoch') AS INTEGER) = :month AND deleted = 0")
-    LiveData<List<TransactionEntity>> selectTransactions(int month);
+    @Query("SELECT * FROM transactions " +
+            "WHERE date BETWEEN :startDate AND :endDate " +
+            "AND deleted = 0")
+    LiveData<List<TransactionEntity>> selectTransactions(long startDate, long endDate);
+
+    @Query("SELECT * FROM transactions WHERE date >= :startDate ORDER BY date DESC")
+    LiveData<List<TransactionEntity>> selectTransactionsFromDate(long startDate);
+
+    @Query("SELECT MIN(date) FROM transactions")
+    LiveData<Long> getOldestTransactionDate();
+
+    @Query("SELECT transactions.*, " +
+            "categories.firestoreId AS category_firestoreId, " +
+            "categories.name AS category_name, " +
+            "categories.`order` AS category_order, " +
+            "categories.deleted AS category_deleted, " +
+            "categories.createdAt AS category_createdAt, " +
+            "categories.updatedAt AS category_updatedAt " +
+            "FROM transactions " +
+            "LEFT JOIN categories ON transactions.categoryId = categories.firestoreId " +
+            "WHERE transactions.deleted = 0 " +
+            "ORDER BY transactions.date DESC, transactions.createdAt DESC " +
+            "LIMIT 3")
+    LiveData<List<TransactionEntityWithCategory>> getLastTransactions();
+
 }

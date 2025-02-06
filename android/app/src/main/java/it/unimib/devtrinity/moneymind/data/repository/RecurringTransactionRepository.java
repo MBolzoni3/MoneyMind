@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,6 +17,7 @@ import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -29,8 +32,19 @@ public class RecurringTransactionRepository extends GenericRepository {
         this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
     }
 
-    public LiveData<List<RecurringTransactionEntityWithCategory>> getRecurringTransactions() {
-        return recurringTransactionDao.getAll();
+    public LiveData<List<TransactionEntityWithCategory>> getRecurringTransactions() {
+        return Transformations.map(recurringTransactionDao.getAll(), recurringTransactions -> {
+            List<TransactionEntityWithCategory> recurringTransactionsAsTransactions = new ArrayList<>();
+            for (RecurringTransactionEntityWithCategory recurringTransaction : recurringTransactions) {
+                TransactionEntityWithCategory transaction = new TransactionEntityWithCategory();
+                transaction.setTransaction(recurringTransaction.getTransaction());
+                transaction.setCategory(recurringTransaction.getCategory());
+
+                recurringTransactionsAsTransactions.add(transaction);
+            }
+
+            return recurringTransactionsAsTransactions;
+        });
     }
 
     public void delete(List<RecurringTransactionEntity> transactions) {
