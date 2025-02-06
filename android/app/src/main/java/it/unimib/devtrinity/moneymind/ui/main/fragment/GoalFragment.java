@@ -19,16 +19,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
-import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
-import it.unimib.devtrinity.moneymind.ui.main.adapter.BudgetAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.GoalAdapter;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModelFactory;
 
@@ -78,7 +72,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
     }
 
     public void deleteSelected() {
-        if(getSelectedItems().isEmpty()) return;
+        if (getSelectedItems().isEmpty()) return;
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.delete_goal_confirmation_title)

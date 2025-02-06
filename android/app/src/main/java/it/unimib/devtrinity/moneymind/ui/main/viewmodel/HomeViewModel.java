@@ -33,14 +33,14 @@ public class HomeViewModel extends ViewModel {
         return FirebaseHelper.getInstance().getCurrentUser().getDisplayName();
     }
 
-    public String getDate(){
+    public String getDate() {
         LocalDate today = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             today = LocalDate.now();
             int month = today.getMonthValue();
             int year = today.getYear();
 
-            switch (month){
+            switch (month) {
                 case 1:
                     return "Gennaio " + year;
                 case 2:
@@ -71,10 +71,10 @@ public class HomeViewModel extends ViewModel {
         return "Non disponibile";
     }
 
-    public String getMessage(){
+    public String getMessage() {
         int choice = (int) (Math.random() * 3);
 
-        switch (choice){
+        switch (choice) {
             case 0:
                 return "Ehila, " + getuserName() + "!";
             case 1:
@@ -88,7 +88,7 @@ public class HomeViewModel extends ViewModel {
         double doubleTotal = total.doubleValue();
         double roundedTotal = Math.ceil((doubleTotal + 199.0) / 200) * 200;
 
-        return (int) ((doubleTotal * 100)/ roundedTotal);
+        return (int) ((doubleTotal * 100) / roundedTotal);
     }
 
     public int setSecondProgressBar(BigDecimal minTotal, BigDecimal maxTotal) {
@@ -96,6 +96,6 @@ public class HomeViewModel extends ViewModel {
         doubleMax = Math.ceil((doubleMax + 199.0) / 200) * 200;
         double doubleMin = minTotal.doubleValue();
 
-        return (int) ((doubleMin*100)/ doubleMax);
+        return (int) ((doubleMin * 100) / doubleMax);
     }
 }

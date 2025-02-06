@@ -1,28 +1,20 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
-import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
-import it.unimib.devtrinity.moneymind.ui.main.fragment.AddBudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.ExchangeFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.GoalFragment;
@@ -30,7 +22,6 @@ import it.unimib.devtrinity.moneymind.ui.main.fragment.HomeFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.SettingsFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.TransactionFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class MainNavigationActivity extends AppCompatActivity implements SelectionModeListener {
 
@@ -239,7 +230,7 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
         if (titleRes != -1) topAppBar.setTitle(titleRes);
 
-        if(navIconRes != null) topAppBar.setNavigationIcon(navIconRes);
+        if (navIconRes != null) topAppBar.setNavigationIcon(navIconRes);
         else topAppBar.setNavigationIcon(null);
 
         topAppBar.setNavigationOnClickListener(navClickListener);
@@ -249,14 +240,16 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     private void onSelectionExit() {
         if (currentFragment instanceof BudgetFragment) budgetFragment.onExitSelectionMode();
         if (currentFragment instanceof GoalFragment) goalFragment.onExitSelectionMode();
-        if (currentFragment instanceof TransactionFragment) transactionFragment.onExitSelectionMode();
+        if (currentFragment instanceof TransactionFragment)
+            transactionFragment.onExitSelectionMode();
     }
 
-    private boolean onDeleteClick(int itemId){
+    private boolean onDeleteClick(int itemId) {
         if (itemId == R.id.action_delete) {
             if (currentFragment instanceof BudgetFragment) budgetFragment.deleteSelected();
             if (currentFragment instanceof GoalFragment) goalFragment.deleteSelected();
-            if (currentFragment instanceof TransactionFragment) transactionFragment.deleteSelected();
+            if (currentFragment instanceof TransactionFragment)
+                transactionFragment.deleteSelected();
 
             return true;
         }
@@ -277,7 +270,7 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
     private void navigateToFragment(Fragment fragment) {
         if (currentFragment != fragment) {
-            if(currentFragment != settingsFragment && currentFragment != exchangeFragment){
+            if (currentFragment != settingsFragment && currentFragment != exchangeFragment) {
                 previousFragment = currentFragment;
             }
 

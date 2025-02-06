@@ -21,10 +21,8 @@ import java.util.Set;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
-import it.unimib.devtrinity.moneymind.ui.main.fragment.AddGoalFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.AddTransactionFragment;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
@@ -55,14 +53,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         Object item = transactionsList.get(position);
-        if(item instanceof TransactionEntityWithCategory){
+        if (item instanceof TransactionEntityWithCategory) {
             TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) item;
-            if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+            if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                 return VIEW_TYPE_RECURRING;
-            } else if(transaction.getTransaction() != null) {
+            } else if (transaction.getTransaction() != null) {
                 return VIEW_TYPE_TRANSACTION;
             }
-        } else if("divider".equals(item)){
+        } else if ("divider".equals(item)) {
             return VIEW_TYPE_DIVIDER;
         }
 
@@ -204,7 +202,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             amount.setText(Utils.formatTransactionAmount(transaction.getTransaction().getAmount(), transaction.getTransaction().getType()));
             typeIcon.setImageResource(Utils.getTypeIcon(transaction.getTransaction().getType()));
 
-            if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+            if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                 RecurringTransactionEntity recurringTransaction = (RecurringTransactionEntity) transaction.getTransaction();
                 date.setText(recurringTransaction.getFormattedRecurrence());
             } else {

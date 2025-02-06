@@ -54,10 +54,10 @@ public class HomeFragment extends Fragment {
             outflowText.setText(outflowTotal + " €");
 
             //Assign progress bar relative length
-            if(incomeTotal.compareTo(outflowTotal) > 0){
+            if (incomeTotal.compareTo(outflowTotal) > 0) {
                 incomeProgressBar.setProgress(homeViewModel.setFirstProgressBar(incomeTotal), true);
                 outflowProgressBar.setProgress(homeViewModel.setSecondProgressBar(outflowTotal, incomeTotal), true);
-            } else{
+            } else {
                 outflowProgressBar.setProgress(homeViewModel.setFirstProgressBar(outflowTotal), true);
                 incomeProgressBar.setProgress(homeViewModel.setSecondProgressBar(incomeTotal, outflowTotal), true);
             }

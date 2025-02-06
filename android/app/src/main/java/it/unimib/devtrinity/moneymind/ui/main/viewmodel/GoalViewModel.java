@@ -5,11 +5,8 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
-import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class GoalViewModel extends ViewModel {
     private final GoalRepository goalRepository;

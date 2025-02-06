@@ -47,11 +47,11 @@ public class AddTransactionViewModel extends ViewModel {
     }
 
     public void fetchConvertedAmount(BigDecimal amount, Date date, String currency) {
-        if(date == null || currency == null) {
+        if (date == null || currency == null) {
             return;
         }
 
-        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             convertedAmount.setValue(amount);
             return;
         }

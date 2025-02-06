@@ -1,6 +1,5 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +13,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
@@ -62,7 +59,7 @@ public class SettingsFragment extends Fragment {
         }
 
         toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if(!isChecked) return;
+            if (!isChecked) return;
 
             if (checkedId == R.id.button_light) {
                 changeTheme(AppCompatDelegate.MODE_NIGHT_NO);

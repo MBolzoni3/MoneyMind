@@ -6,12 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.google.firebase.Timestamp;
-
-import java.util.Date;
 import java.util.List;
 
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 
@@ -29,6 +25,13 @@ public interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE firestoreId = :firestoreId")
     TransactionEntity getByFirestoreId(String firestoreId);
+
+    @Query("UPDATE transactions SET deleted = 1, synced = 0, updatedAt = :updatedAt WHERE id = :id")
+    void deleteById(int id, long updatedAt);
+
+    default void deleteById(int id) {
+        deleteById(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);

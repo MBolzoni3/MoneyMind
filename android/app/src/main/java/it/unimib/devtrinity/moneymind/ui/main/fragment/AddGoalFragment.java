@@ -15,21 +15,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
-import it.unimib.devtrinity.moneymind.ui.main.OnDateSelectedListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModelFactory;
@@ -136,8 +131,8 @@ public class AddGoalFragment extends Fragment {
         compileFields();
     }
 
-    private void compileFields(){
-        if(currentGoal == null) return;
+    private void compileFields() {
+        if (currentGoal == null) return;
 
         nameField.setText(currentGoal.getName());
         targetAmountField.setText(currentGoal.getTargetAmount().toString());
@@ -160,7 +155,7 @@ public class AddGoalFragment extends Fragment {
                 selectedCategory.getFirestoreId(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid());
 
-        if(currentGoal != null){
+        if (currentGoal != null) {
             currentGoal.setName(nameField.getText().toString());
             currentGoal.setTargetAmount(Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO));
             currentGoal.setSavedAmount(Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO));

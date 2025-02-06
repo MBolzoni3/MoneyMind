@@ -10,7 +10,6 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 
 @Dao
 public interface RecurringTransactionDao {
@@ -26,6 +25,13 @@ public interface RecurringTransactionDao {
 
     @Query("SELECT * FROM recurring_transactions WHERE firestoreId = :firestoreId")
     RecurringTransactionEntity getByFirestoreId(String firestoreId);
+
+    @Query("UPDATE recurring_transactions SET deleted = 1, synced = 0, updatedAt = :updatedAt WHERE id = :id")
+    void deleteById(int id, long updatedAt);
+
+    default void deleteById(int id) {
+        deleteById(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT recurring_transactions.*, " +
             "categories.firestoreId AS category_firestoreId, " +

@@ -7,15 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import java.util.concurrent.Executors;
-
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
-import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class SyncWorker extends Worker {
 
@@ -44,7 +41,7 @@ public class SyncWorker extends Worker {
 
         categoryRepository.sync();
 
-        if(FirebaseHelper.getInstance().isUserLoggedIn()) {
+        if (FirebaseHelper.getInstance().isUserLoggedIn()) {
             budgetRepository.sync();
             goalRepository.sync();
             recurringTransactionRepository.sync();

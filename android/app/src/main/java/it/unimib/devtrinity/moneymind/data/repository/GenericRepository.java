@@ -23,11 +23,11 @@ public abstract class GenericRepository {
         this.TAG = TAG;
     }
 
-    public void sync(){
+    public void sync() {
         sync(sharedPreferences.getLong(SYNC_KEY, 0));
     }
 
-    public void sync(long lastSyncedTimestamp){
+    public void sync(long lastSyncedTimestamp) {
         CompletableFuture.runAsync(() -> {
             try {
                 syncLocalToRemoteAsync()
@@ -43,11 +43,13 @@ public abstract class GenericRepository {
         }, executorService);
     }
 
-    protected CompletableFuture<Void> syncLocalToRemoteAsync(){
-        return CompletableFuture.runAsync(() -> {}, executorService);
+    protected CompletableFuture<Void> syncLocalToRemoteAsync() {
+        return CompletableFuture.runAsync(() -> {
+        }, executorService);
     }
 
     protected CompletableFuture<Void> syncRemoteToLocalAsync(long lastSyncedTimestamp) {
-        return CompletableFuture.runAsync(() -> {}, executorService);
+        return CompletableFuture.runAsync(() -> {
+        }, executorService);
     }
 }

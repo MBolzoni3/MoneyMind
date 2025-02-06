@@ -2,11 +2,9 @@ package it.unimib.devtrinity.moneymind.data.local.entity;
 
 import androidx.room.Entity;
 import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
-import com.google.firebase.firestore.PropertyName;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -15,7 +13,6 @@ import java.util.Locale;
 
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 @Entity(tableName = "recurring_transactions")
 public class RecurringTransactionEntity extends TransactionEntity {
@@ -47,7 +44,7 @@ public class RecurringTransactionEntity extends TransactionEntity {
     }
 
     @Ignore
-    public RecurringTransactionEntity(TransactionEntity transaction, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate){
+    public RecurringTransactionEntity(TransactionEntity transaction, RecurrenceTypeEnum recurrenceType, int recurrenceInterval, Date recurrenceEndDate) {
         super(transaction.getName(), transaction.getType(), transaction.getAmount(), transaction.getCurrency(), transaction.getDate(), transaction.getCategoryId(), transaction.getNotes(), transaction.getUserId());
         this.recurrenceType = recurrenceType;
         this.recurrenceInterval = recurrenceInterval;
@@ -89,7 +86,7 @@ public class RecurringTransactionEntity extends TransactionEntity {
 
     @Ignore
     @Exclude
-    public String getFormattedRecurrence(){
+    public String getFormattedRecurrence() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         StringBuilder description = new StringBuilder();
 

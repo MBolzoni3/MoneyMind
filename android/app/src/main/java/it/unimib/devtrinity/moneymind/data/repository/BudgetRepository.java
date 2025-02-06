@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -17,7 +16,6 @@ import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
-import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class BudgetRepository extends GenericRepository {

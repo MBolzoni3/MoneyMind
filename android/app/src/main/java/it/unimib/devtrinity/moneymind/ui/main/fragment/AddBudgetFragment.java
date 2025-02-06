@@ -15,14 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
@@ -133,8 +129,8 @@ public class AddBudgetFragment extends Fragment {
         compileFields();
     }
 
-    private void compileFields(){
-        if(currentBudget == null) return;
+    private void compileFields() {
+        if (currentBudget == null) return;
 
         nameField.setText(currentBudget.getName());
         amountField.setText(currentBudget.getAmount().toString());
@@ -155,7 +151,7 @@ public class AddBudgetFragment extends Fragment {
                 selectedCategory.getFirestoreId(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid());
 
-        if(currentBudget != null){
+        if (currentBudget != null) {
             currentBudget.setName(nameField.getText().toString());
             currentBudget.setAmount(Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO));
             currentBudget.setStartDate(Utils.stringToDate(startDateField.getText().toString()));

@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModelProvider;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 
 public class AddTransactionViewModelFactory implements ViewModelProvider.Factory {
-   private final CategoryRepository repository;
+    private final CategoryRepository repository;
 
-   public AddTransactionViewModelFactory(CategoryRepository repository) {
-      this.repository = repository;
-   }
+    public AddTransactionViewModelFactory(CategoryRepository repository) {
+        this.repository = repository;
+    }
 
-   @NonNull
-   @Override
-   public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-      return (T) new AddTransactionViewModel(repository);
-   }
+    @NonNull
+    @Override
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        return (T) new AddTransactionViewModel(repository);
+    }
 }

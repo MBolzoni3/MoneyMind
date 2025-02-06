@@ -1,7 +1,5 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +8,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.google.firebase.FirebaseApp;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;

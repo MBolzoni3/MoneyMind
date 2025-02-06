@@ -1,15 +1,7 @@
 package it.unimib.devtrinity.moneymind.utils.google;
 
-import android.util.Log;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.Map;
-
-import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 
 public class FirestoreHelper {
     private static final String TAG = FirestoreHelper.class.getSimpleName();

@@ -15,8 +15,6 @@ import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -33,6 +31,14 @@ public class RecurringTransactionRepository extends GenericRepository {
 
     public LiveData<List<RecurringTransactionEntityWithCategory>> getRecurringTransactions() {
         return recurringTransactionDao.getAll();
+    }
+
+    public void delete(List<RecurringTransactionEntity> transactions) {
+        executorService.execute(() -> {
+            for (RecurringTransactionEntity transaction : transactions) {
+                recurringTransactionDao.deleteById(transaction.getId());
+            }
+        });
     }
 
     public void insertTransaction(RecurringTransactionEntity transaction, GenericCallback<Boolean> callback) {

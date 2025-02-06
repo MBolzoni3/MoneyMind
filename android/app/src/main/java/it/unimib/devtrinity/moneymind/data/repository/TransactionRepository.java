@@ -13,12 +13,9 @@ import java.util.concurrent.CompletableFuture;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
-import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
-import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class TransactionRepository extends GenericRepository {
@@ -56,13 +53,13 @@ public class TransactionRepository extends GenericRepository {
         });
     }
 
-    /*public void delete(List<TransactionEntityWithCategory> transactions) {
+    public void delete(List<TransactionEntity> transactions) {
         executorService.execute(() -> {
-            for (GoalEntityWithCategory goal : goals) {
-                goalDao.deleteById(goal.getGoal().getId());
+            for (TransactionEntity transaction : transactions) {
+                transactionDao.deleteById(transaction.getId());
             }
         });
-    }*/
+    }
 
     @Override
     protected CompletableFuture<Void> syncLocalToRemoteAsync() {

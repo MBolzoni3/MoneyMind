@@ -34,7 +34,7 @@ public class TransactionTypeAdapter extends ArrayAdapter<MovementTypeEnum> {
         TextView name = convertView.findViewById(R.id.category_name);
 
         MovementTypeEnum type = getItem(position);
-        if(type != null) {
+        if (type != null) {
             switch (type) {
                 case INCOME:
                     name.setText(getContext().getString(R.string.income));

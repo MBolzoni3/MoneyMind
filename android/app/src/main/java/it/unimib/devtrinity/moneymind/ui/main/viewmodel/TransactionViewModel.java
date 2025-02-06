@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
@@ -54,12 +56,18 @@ public class TransactionViewModel extends ViewModel {
     }
 
     public void deleteTransactions(List<Object> selectedItems) {
-        /*for(Object item : selectedItems) {
-            if(item instanceof TransactionEntityWithCategory) {
-                transactionRepository.delete((TransactionEntityWithCategory) item);
-            } else if(item instanceof RecurringTransactionEntityWithCategory) {
-                recurringTransactionRepository.delete((RecurringTransactionEntityWithCategory) item);
+        List<TransactionEntity> transactionsToDelete = new ArrayList<>();
+        List<RecurringTransactionEntity> recurringTransactionsToDelete = new ArrayList<>();
+
+        for (Object item : selectedItems) {
+            if (item instanceof TransactionEntityWithCategory) {
+                transactionsToDelete.add(((TransactionEntityWithCategory) item).getTransaction());
+            } else if (item instanceof RecurringTransactionEntityWithCategory) {
+                recurringTransactionsToDelete.add(((RecurringTransactionEntityWithCategory) item).getTransaction());
             }
-        }*/
+        }
+
+        transactionRepository.delete(transactionsToDelete);
+        recurringTransactionRepository.delete(recurringTransactionsToDelete);
     }
 }

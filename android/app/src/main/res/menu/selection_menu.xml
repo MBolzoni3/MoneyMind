@@ -5,5 +5,5 @@
         android:title="Elimina"
         android:icon="@drawable/ic_delete"
         app:showAsAction="ifRoom"
-        android:tint="?attr/colorOnSecondaryContainer"/>
+        android:tint="?attr/colorOnSecondaryContainer" />
 </menu>
