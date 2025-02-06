@@ -275,7 +275,7 @@ public class AddTransactionFragment extends Fragment {
         viewModel.fetchConvertedAmount(
                 Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
                 Utils.stringToDate(dateField.getText() != null ? dateField.getText().toString() : null),
-                currencyDropdown.getText().toString().substring(0, 3)
+                selectedCurrency
         );
     }
 

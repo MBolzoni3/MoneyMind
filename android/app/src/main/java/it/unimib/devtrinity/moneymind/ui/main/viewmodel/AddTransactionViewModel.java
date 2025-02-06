@@ -1,14 +1,18 @@
 package it.unimib.devtrinity.moneymind.ui.main.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
@@ -21,6 +25,7 @@ public class AddTransactionViewModel extends ViewModel {
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
     private final ExchangeRepository exchangeRepository = new ExchangeRepository();
+    private Map<String, Double> convertedValues = new HashMap<>();
 
     public AddTransactionViewModel(CategoryRepository repository) {
         this.categories = repository.getAllCategories();
@@ -39,6 +44,7 @@ public class AddTransactionViewModel extends ViewModel {
     }
 
     public void fetchCurrencies() {
+
         //TODO get currencies list from API
         final List<String> CURRENCIES = Arrays.asList(
                 "EUR", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK",
@@ -50,34 +56,29 @@ public class AddTransactionViewModel extends ViewModel {
         currencies.setValue(Utils.getCurrencyDropdownItems(CURRENCIES));
     }
 
+
+
     public void fetchConvertedAmount(BigDecimal amount, Date date, String currency) {
+
         if(date == null || currency == null) {
             return;
-        }
-
-        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+        } else if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             convertedAmount.setValue(amount);
-            return;
-        }
-
-        if (currency.equals("EUR")) {
+        } else if (currency.equals("EUR")) {
             convertedAmount.setValue(amount);
-            return;
+        } else {
+            exchangeRepository.callAPI(date, new GenericCallback<Map<String, Double>>() {
+                @Override
+                public void onSuccess(Map<String, Double> result) {
+                    convertedAmount.postValue(amount.multiply(BigDecimal.valueOf(result.get(currency))));
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    //Gestire fail
+                }
+            });
         }
-
-        exchangeRepository.callAPI(new GenericCallback<HashMap<String, Double>>() {
-            @Override
-            public void onSuccess(HashMap<String, Double> result) {
-                convertedAmount.postValue(amount.multiply(BigDecimal.valueOf(result.get(currency))));
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-
-            }
-        });
-
-
 
     }
 

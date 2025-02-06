@@ -60,6 +60,14 @@ public class Utils {
         return dateFormat.format(date);
     }
 
+    public static String dateToString2(Date date) {
+        if (date == null) {
+            return null;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(date);
+    }
+
     public static int getThemeColor(Context context, int colorAttribute) {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(colorAttribute, typedValue, true);
