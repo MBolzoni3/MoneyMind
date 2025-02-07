@@ -25,7 +25,6 @@ public class AddTransactionViewModel extends ViewModel {
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
     private final ExchangeRepository exchangeRepository = new ExchangeRepository();
-    private Map<String, Double> convertedValues = new HashMap<>();
 
     public AddTransactionViewModel(CategoryRepository repository) {
         this.categories = repository.getAllCategories();
@@ -60,9 +59,7 @@ public class AddTransactionViewModel extends ViewModel {
 
     public void fetchConvertedAmount(BigDecimal amount, Date date, String currency) {
 
-        if(date == null || currency == null) {
-            return;
-        } else if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             convertedAmount.setValue(amount);
         } else if (currency.equals("EUR")) {
             convertedAmount.setValue(amount);
@@ -70,12 +67,14 @@ public class AddTransactionViewModel extends ViewModel {
             exchangeRepository.callAPI(date, new GenericCallback<Map<String, Double>>() {
                 @Override
                 public void onSuccess(Map<String, Double> result) {
-                    convertedAmount.postValue(amount.multiply(BigDecimal.valueOf(result.get(currency))));
+                    if(result != null) {
+                        convertedAmount.postValue(amount.multiply(BigDecimal.valueOf(result.get(currency))));
+                    }
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
-                    //Gestire fail
+                    convertedAmount.postValue(null);
                 }
             });
         }

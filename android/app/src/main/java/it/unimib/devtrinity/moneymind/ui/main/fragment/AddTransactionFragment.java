@@ -110,9 +110,13 @@ public class AddTransactionFragment extends Fragment {
 
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
-            convertedAmountField.setEnabled(true);
-            convertedAmountField.setText(convertedAmount.toString());
-            convertedAmountField.setEnabled(false);
+            if(convertedAmount == null)
+                convertedAmountField.setText("Errore nella conversione");
+            else {
+                convertedAmountField.setEnabled(true);
+                convertedAmountField.setText(convertedAmount.toString());
+                convertedAmountField.setEnabled(false);
+            }
         });
 
         dateField = view.findViewById(R.id.edit_date);

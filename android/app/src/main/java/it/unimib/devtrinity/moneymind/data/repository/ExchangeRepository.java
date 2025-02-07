@@ -48,7 +48,7 @@ public class ExchangeRepository {
 
                     Map<String, Double> exchangeRatesHashMap = exchangeRateResponse.getCubeContainer().toHashMap().get(Utils.dateToString2(date));
 
-                    callback.onSuccess(exchangeRatesHashMap);
+                    callback.onFailure("");
                 } else {
                     callback.onFailure("Error on API call");
                 }
