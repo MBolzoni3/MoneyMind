@@ -15,6 +15,9 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.AddBudgetFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.AddGoalFragment;
+import it.unimib.devtrinity.moneymind.ui.main.fragment.AddTransactionFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.BudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.ExchangeFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.GoalFragment;
@@ -34,6 +37,7 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
     private Fragment currentFragment;
     private Fragment previousFragment;
+    private Fragment editFragment;
 
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNavigationView;
@@ -172,7 +176,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         }
     }
 
-
     private int getMenuIdFromFragment(Fragment fragment) {
         if (fragment instanceof HomeFragment) return R.id.nav_home;
         if (fragment instanceof TransactionFragment) return R.id.nav_movements;
@@ -199,7 +202,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         setBottomNavigationVisibility(View.VISIBLE);
     }
 
-
     @Override
     public void onEnterSelectionMode() {
         setTopAppBarSelectionMenu();
@@ -212,6 +214,29 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         setBottomNavigationVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        editFragment = fragment;
+
+        setTopAppBarEditMenu();
+        setBottomNavigationVisibility(View.GONE);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onExitEditMode() {
+        getSupportFragmentManager().popBackStack();
+        setTopAppBarMainMenu();
+        setBottomNavigationVisibility(View.VISIBLE);
+
+        editFragment = null;
+    }
+
     public void setBottomNavigationVisibility(int visibility) {
         bottomNavigationView.setVisibility(visibility);
     }
@@ -222,6 +247,10 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
     private void setTopAppBarSelectionMenu() {
         setupAppBarMenu(R.menu.selection_menu, -1, R.drawable.ic_close, v -> onSelectionExit(), item -> onDeleteClick(item.getItemId()));
+    }
+
+    private void setTopAppBarEditMenu() {
+        setupAppBarMenu(R.menu.edit_menu, getEditTitleRes(), R.drawable.ic_arrow_back, v -> onExitEditMode(), item -> onSaveClick(item.getItemId()));
     }
 
     private void setupAppBarMenu(int menuRes, int titleRes, Integer navIconRes, View.OnClickListener navClickListener, Toolbar.OnMenuItemClickListener menuClickListener) {
@@ -240,16 +269,14 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     private void onSelectionExit() {
         if (currentFragment instanceof BudgetFragment) budgetFragment.onExitSelectionMode();
         if (currentFragment instanceof GoalFragment) goalFragment.onExitSelectionMode();
-        if (currentFragment instanceof TransactionFragment)
-            transactionFragment.onExitSelectionMode();
+        if (currentFragment instanceof TransactionFragment) transactionFragment.onExitSelectionMode();
     }
 
     private boolean onDeleteClick(int itemId) {
         if (itemId == R.id.action_delete) {
             if (currentFragment instanceof BudgetFragment) budgetFragment.deleteSelected();
             if (currentFragment instanceof GoalFragment) goalFragment.deleteSelected();
-            if (currentFragment instanceof TransactionFragment)
-                transactionFragment.deleteSelected();
+            if (currentFragment instanceof TransactionFragment) transactionFragment.deleteSelected();
 
             return true;
         }
@@ -266,6 +293,40 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
             return true;
         }
         return false;
+    }
+
+    private boolean onSaveClick(int itemId) {
+        if (itemId == R.id.action_save) {
+            if(editFragment instanceof AddTransactionFragment){
+                AddTransactionFragment addTransactionFragment = (AddTransactionFragment) editFragment;
+                addTransactionFragment.onSaveButtonClick();
+            } else if(editFragment instanceof AddBudgetFragment){
+                AddBudgetFragment addBudgetFragment = (AddBudgetFragment) editFragment;
+                addBudgetFragment.onSaveButtonClick();
+            } else if(editFragment instanceof AddGoalFragment){
+                AddGoalFragment addGoalFragment = (AddGoalFragment) editFragment;
+                addGoalFragment.onSaveButtonClick();
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private int getEditTitleRes(){
+        if(editFragment instanceof AddTransactionFragment){
+            AddTransactionFragment addTransactionFragment = (AddTransactionFragment) editFragment;
+            return addTransactionFragment.getTransaction() == null ? R.string.add_transaction_title : R.string.edit_transaction_title;
+        } else if(editFragment instanceof AddBudgetFragment){
+            AddBudgetFragment addBudgetFragment = (AddBudgetFragment) editFragment;
+            return addBudgetFragment.getBudget() == null ? R.string.add_budget_title : R.string.edit_budget_title;
+        } else if(editFragment instanceof AddGoalFragment){
+            AddGoalFragment addGoalFragment = (AddGoalFragment) editFragment;
+            return addGoalFragment.getGoal() == null ? R.string.add_goal_title : R.string.edit_goal_title;
+        }
+
+        return -1;
     }
 
     private void navigateToFragment(Fragment fragment) {

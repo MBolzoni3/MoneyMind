@@ -25,6 +25,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModelFactory;
@@ -33,6 +34,8 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddGoalFragment extends Fragment {
+
+    private final SelectionModeListener selectionModeListener;
 
     private GoalEntity currentGoal;
     private GoalRepository goalRepository;
@@ -46,8 +49,16 @@ public class AddGoalFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
+    public AddGoalFragment(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
     public void setGoal(GoalEntity goal) {
         this.currentGoal = goal;
+    }
+
+    public GoalEntity getGoal() {
+        return this.currentGoal;
     }
 
     @Nullable
@@ -69,9 +80,6 @@ public class AddGoalFragment extends Fragment {
                     }
                 }
         );
-
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(currentGoal == null ? "Aggiungi Obiettivo" : "Modifica Obiettivo");
 
         goalRepository = new GoalRepository(requireContext());
         categoryRepository = new CategoryRepository(requireContext());
@@ -118,17 +126,12 @@ public class AddGoalFragment extends Fragment {
             Utils.showDatePicker(endDateField::setText, this);
         });
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save_goal);
-        MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-
-        saveButton.setOnClickListener(v -> {
-            saveGoal();
-            navigateBack();
-        });
-
-        cancelButton.setOnClickListener(v -> navigateBack());
-
         compileFields();
+    }
+
+    public void onSaveButtonClick() {
+        saveGoal();
+        navigateBack();
     }
 
     private void compileFields() {
@@ -142,7 +145,7 @@ public class AddGoalFragment extends Fragment {
     }
 
     private void navigateBack() {
-        getParentFragmentManager().popBackStack();
+        selectionModeListener.onExitEditMode();
     }
 
     private void saveGoal() {

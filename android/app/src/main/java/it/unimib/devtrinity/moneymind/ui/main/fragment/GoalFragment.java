@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +49,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
         GoalViewModelFactory factory = new GoalViewModelFactory(goalRepository);
         goalViewModel = new ViewModelProvider(this, factory).get(GoalViewModel.class);
 
-        goalAdapter = new GoalAdapter(this, requireActivity().getSupportFragmentManager());
+        goalAdapter = new GoalAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(goalAdapter);
 
@@ -58,13 +57,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
             goalAdapter.updateGoals(goalList);
         });
 
-        fabAddGoal.setOnClickListener(v -> {
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddGoalFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        fabAddGoal.setOnClickListener(v -> onEnterEditMode(new AddGoalFragment(this)));
     }
 
     public List<GoalEntityWithCategory> getSelectedItems() {
@@ -106,4 +99,15 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
     public void onSelectionCountChanged(int count) {
         ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
     }
+
+    @Override
+    public void onExitEditMode() {
+        ((SelectionModeListener) requireActivity()).onExitEditMode();
+    }
+
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
+    }
+
 }

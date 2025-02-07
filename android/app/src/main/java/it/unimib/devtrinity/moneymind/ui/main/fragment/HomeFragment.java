@@ -4,38 +4,34 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.google.android.material.textview.MaterialTextView;
-
-import java.math.BigDecimal;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
+import it.unimib.devtrinity.moneymind.ui.main.adapter.InfiniteDotsAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.MonthCarouselAdapter;
-import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionHomeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements SelectionModeListener {
 
-    ViewPager2 monthsViewPager;
-    MonthCarouselAdapter monthCarouselAdapter;
-    boolean isFirstLoad = true;
+    private HomeViewModel viewModel;
+    private ViewPager2 monthsViewPager;
+    private MonthCarouselAdapter monthCarouselAdapter;
+    private boolean isFirstLoad;
+
 
     @Nullable
     @Override
@@ -47,14 +43,21 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        isFirstLoad = true;
+
         TransactionRepository transactionRepository = new TransactionRepository(requireContext());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
-        HomeViewModel viewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
-
-        //MaterialTextView welcomeTextView = view.findViewById(R.id.home_title);
-        //welcomeTextView.setText(getWelcomeMessage());
+        viewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
         monthsViewPager = view.findViewById(R.id.months_view_pager);
+        RecyclerView dotsRecycler = view.findViewById(R.id.dots_recycler);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        dotsRecycler.setLayoutManager(layoutManager);
+
+        InfiniteDotsAdapter dotsAdapter = new InfiniteDotsAdapter(getContext());
+        dotsRecycler.setAdapter(dotsAdapter);
+
         monthCarouselAdapter = new MonthCarouselAdapter();
         monthsViewPager.setAdapter(monthCarouselAdapter);
 
@@ -65,14 +68,16 @@ public class HomeFragment extends Fragment {
             monthCarouselAdapter.updateMap(transactionsByMonth);
 
             int newSize = monthCarouselAdapter.getItemCount();
-
             if (oldSize > 0 && oldPosition == 0 && newSize > oldSize) {
                 int insertedCount = newSize - oldSize;
                 monthsViewPager.setCurrentItem(oldPosition + insertedCount, false);
             }
 
             if (isFirstLoad) {
-                monthsViewPager.setCurrentItem(newSize - 1, false);
+                viewModel.getCurrentPage().observe(getViewLifecycleOwner(), savedPage -> {
+                    int pageToLoad = (savedPage != null && savedPage >= 0 && savedPage < newSize) ? savedPage : newSize - 1;
+                    monthsViewPager.setCurrentItem(pageToLoad, false);
+                });
                 isFirstLoad = false;
             }
         });
@@ -106,6 +111,12 @@ public class HomeFragment extends Fragment {
 
         monthsViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                dotsRecycler.smoothScrollToPosition(position);
+                dotsAdapter.setSelectedPosition(position);
+            }
+
+            @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (position == 0) {
@@ -115,14 +126,48 @@ public class HomeFragment extends Fragment {
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.last_transactions_recycler);
-        TransactionHomeAdapter transactionAdapter = new TransactionHomeAdapter();
+        TransactionHomeAdapter transactionAdapter = new TransactionHomeAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionAdapter);
 
         viewModel.getLastTransactions().observe(getViewLifecycleOwner(), transactionAdapter::updateList);
+
+        ExtendedFloatingActionButton addTransactionButton = view.findViewById(R.id.fab_add_transaction);
+        addTransactionButton.setOnClickListener(v -> onEnterEditMode(new AddTransactionFragment(this)));
     }
 
-    private String getWelcomeMessage(){
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.setCurrentPage(monthsViewPager.getCurrentItem());
+    }
+
+    @Override
+    public void onExitEditMode() {
+        ((SelectionModeListener) requireActivity()).onExitEditMode();
+    }
+
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
+    }
+
+    @Override
+    public void onSelectionCountChanged(int count) {
+
+    }
+
+    @Override
+    public void onExitSelectionMode() {
+
+    }
+
+    @Override
+    public void onEnterSelectionMode() {
+
+    }
+
+    private String getWelcomeMessage() {
         String displayName = FirebaseHelper.getInstance().getCurrentUser().getDisplayName();
         int choice = (int) (Math.random() * 3);
 

@@ -139,7 +139,7 @@ public class Utils {
         return String.format(Locale.getDefault(), "%s %.2f €", movementTypeEnum == MovementTypeEnum.INCOME ? "+" : "-", amount);
     }
 
-    public static String getMonthFromDate(Date date){
+    public static String getMonthFromDate(Date date) {
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(date);

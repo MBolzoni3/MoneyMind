@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +50,7 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
         TransactionViewModelFactory factory = new TransactionViewModelFactory(transactionRepository, recurringTransactionRepository);
         transactionViewModel = new ViewModelProvider(this, factory).get(TransactionViewModel.class);
 
-        transactionAdapter = new TransactionAdapter(this, requireActivity().getSupportFragmentManager());
+        transactionAdapter = new TransactionAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionAdapter);
 
@@ -59,13 +58,7 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
             transactionAdapter.updateList(transactionList);
         });
 
-        fabAddTransaction.setOnClickListener(v -> {
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddTransactionFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        fabAddTransaction.setOnClickListener(v -> onEnterEditMode(new AddTransactionFragment(this)));
     }
 
     public List<Object> getSelectedItems() {
@@ -106,4 +99,15 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
     public void onSelectionCountChanged(int count) {
         ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
     }
+
+    @Override
+    public void onExitEditMode() {
+        ((SelectionModeListener) requireActivity()).onExitEditMode();
+    }
+
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
+    }
+
 }

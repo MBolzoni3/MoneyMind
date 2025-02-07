@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -28,16 +27,14 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder> {
 
-    private final FragmentManager fragmentManager;
     private final List<GoalEntityWithCategory> goalList = new ArrayList<>();
     private final Set<Integer> selectedPositions = new HashSet<>();
     private final SelectionModeListener selectionListener;
 
     private boolean isSelectionModeActive = false;
 
-    public GoalAdapter(SelectionModeListener listener, FragmentManager fragmentManager) {
+    public GoalAdapter(SelectionModeListener listener) {
         this.selectionListener = listener;
-        this.fragmentManager = fragmentManager;
     }
 
     @NonNull
@@ -68,13 +65,10 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder
             if (isSelectionModeActive) {
                 toggleSelection(position);
             } else {
-                AddGoalFragment addGoalFragment = new AddGoalFragment();
+                AddGoalFragment addGoalFragment = new AddGoalFragment(selectionListener);
                 addGoalFragment.setGoal(goal.getGoal());
 
-                fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, addGoalFragment)
-                        .addToBackStack(null)
-                        .commit();
+                selectionListener.onEnterEditMode(addGoalFragment);
             }
         });
 

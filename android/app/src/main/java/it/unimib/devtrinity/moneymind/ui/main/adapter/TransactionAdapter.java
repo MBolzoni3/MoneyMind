@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -34,16 +33,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int VIEW_TYPE_DIVIDER_NO_TEXT = 2;
     private static final int VIEW_TYPE_TRANSACTION = 3;
 
-    private final List<Object> transactionsList = new ArrayList<>();
-    private final FragmentManager fragmentManager;
     private final SelectionModeListener selectionListener;
+    private final List<Object> transactionsList = new ArrayList<>();
     private final Set<Integer> selectedPositions = new HashSet<>();
 
     private boolean isSelectionModeActive = false;
 
-    public TransactionAdapter(SelectionModeListener listener, FragmentManager fragmentManager) {
+    public TransactionAdapter(SelectionModeListener listener) {
         this.selectionListener = listener;
-        this.fragmentManager = fragmentManager;
     }
 
     public void updateList(List<Object> newList) {
@@ -130,14 +127,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 toggleSelection(position);
             } else {
                 TransactionEntityWithCategory transactionEntityWithCategory = (TransactionEntityWithCategory) transactionsList.get(position);
-
-                AddTransactionFragment addTransactionFragment = new AddTransactionFragment();
+                AddTransactionFragment addTransactionFragment = new AddTransactionFragment(selectionListener);
                 addTransactionFragment.setTransaction(transactionEntityWithCategory.getTransaction());
 
-                fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, addTransactionFragment)
-                        .addToBackStack(null)
-                        .commit();
+                selectionListener.onEnterEditMode(addTransactionFragment);
             }
         });
     }
@@ -205,7 +198,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     }
 
-    static class TransactionViewHolder extends RecyclerView.ViewHolder {
+    public static class TransactionViewHolder extends RecyclerView.ViewHolder {
         private final TextView name, amount, date;
         private final ShapeableImageView categoryIcon, typeIcon;
         private final MaterialCardView cardView;

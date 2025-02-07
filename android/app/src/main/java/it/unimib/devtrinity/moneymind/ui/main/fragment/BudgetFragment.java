@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,7 +51,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
         BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
         budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
 
-        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this, requireActivity().getSupportFragmentManager());
+        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(budgetAdapter);
 
@@ -60,13 +59,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
             budgetAdapter.updateBudgets(budgetList);
         });
 
-        fabAddBudget.setOnClickListener(v -> {
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddBudgetFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        fabAddBudget.setOnClickListener(v -> onEnterEditMode(new AddBudgetFragment(this)));
     }
 
     public List<BudgetEntityWithCategory> getSelectedItems() {
@@ -107,5 +100,15 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
     @Override
     public void onSelectionCountChanged(int count) {
         ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
+    }
+
+    @Override
+    public void onExitEditMode() {
+        ((SelectionModeListener) requireActivity()).onExitEditMode();
+    }
+
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
     }
 }

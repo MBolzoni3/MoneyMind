@@ -25,6 +25,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModelFactory;
@@ -33,6 +34,8 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddBudgetFragment extends Fragment {
+
+    private final SelectionModeListener selectionModeListener;
 
     private BudgetEntity currentBudget;
     private BudgetRepository budgetRepository;
@@ -45,8 +48,16 @@ public class AddBudgetFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
+    public AddBudgetFragment(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
     public void setBudget(BudgetEntity budget) {
         this.currentBudget = budget;
+    }
+
+    public BudgetEntity getBudget() {
+        return this.currentBudget;
     }
 
     @Nullable
@@ -68,9 +79,6 @@ public class AddBudgetFragment extends Fragment {
                     }
                 }
         );
-
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(currentBudget == null ? "Aggiungi Budget" : "Modifica Budget");
 
         budgetRepository = new BudgetRepository(requireContext());
         categoryRepository = new CategoryRepository(requireContext());
@@ -116,17 +124,12 @@ public class AddBudgetFragment extends Fragment {
             Utils.showDatePicker(endDateField::setText, this);
         });
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save_budget);
-        MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-
-        saveButton.setOnClickListener(v -> {
-            saveBudget();
-            navigateBack();
-        });
-
-        cancelButton.setOnClickListener(v -> navigateBack());
-
         compileFields();
+    }
+
+    public void onSaveButtonClick() {
+        saveBudget();
+        navigateBack();
     }
 
     private void compileFields() {
@@ -139,7 +142,7 @@ public class AddBudgetFragment extends Fragment {
     }
 
     private void navigateBack() {
-        getParentFragmentManager().popBackStack();
+        selectionModeListener.onExitEditMode();
     }
 
     private void saveBudget() {

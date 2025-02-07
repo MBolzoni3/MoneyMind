@@ -42,7 +42,7 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
         BigDecimal incomeTotal = BigDecimal.ZERO;
         BigDecimal expenseTotal = BigDecimal.ZERO;
 
-        if(transactionsForMonth != null) {
+        if (transactionsForMonth != null) {
             for (TransactionEntity transaction : transactionsForMonth) {
                 if (transaction.getType().equals(MovementTypeEnum.INCOME)) {
                     incomeTotal = incomeTotal.add(transaction.getAmount());

@@ -35,6 +35,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.RecurrenceTypeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionTypeAdapter;
@@ -45,6 +46,8 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddTransactionFragment extends Fragment {
+
+    private final SelectionModeListener selectionModeListener;
 
     private TransactionEntity currentTransaction;
     private TransactionRepository transactionRepository;
@@ -71,14 +74,21 @@ public class AddTransactionFragment extends Fragment {
     private TextInputEditText recurrenceInterval;
     private TextInputEditText endDateField;
 
+    public AddTransactionFragment(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
     public void setTransaction(TransactionEntity transaction) {
         this.currentTransaction = transaction;
     }
 
+    public TransactionEntity getTransaction(){
+        return this.currentTransaction;
+    }
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_add_transaction, container, false);
     }
 
@@ -93,9 +103,6 @@ public class AddTransactionFragment extends Fragment {
                         navigateBack();
                     }
                 });
-
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(getString(currentTransaction == null ? R.string.add_transaction_title : R.string.edit_transaction_title));
 
         transactionRepository = new TransactionRepository(requireContext());
         recurringTransactionRepository = new RecurringTransactionRepository(requireContext());
@@ -157,15 +164,6 @@ public class AddTransactionFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save);
-        saveButton.setOnClickListener(v -> {
-            saveTransaction();
-            navigateBack();
-        });
-
-        MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(v -> navigateBack());
-
         viewModel.fetchCurrencies();
         compileTransaction();
     }
@@ -184,6 +182,11 @@ public class AddTransactionFragment extends Fragment {
             triggerConvertedAmount();
         }
     };
+
+    public void onSaveButtonClick(){
+        saveTransaction();
+        navigateBack();
+    }
 
     private void setupCurrencyDropdown(View view) {
         currencyDropdown = view.findViewById(R.id.edit_transaction_currency);
@@ -280,7 +283,7 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private void navigateBack() {
-        getParentFragmentManager().popBackStack();
+        selectionModeListener.onExitEditMode();
     }
 
     private void compileTransaction() {

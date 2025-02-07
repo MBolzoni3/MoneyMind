@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
@@ -53,9 +52,9 @@ public class TransactionViewModel extends ViewModel {
         List<RecurringTransactionEntity> recurringTransactionsToDelete = new ArrayList<>();
 
         for (Object item : selectedItems) {
-            if(item instanceof TransactionEntityWithCategory){
+            if (item instanceof TransactionEntityWithCategory) {
                 TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) item;
-                if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+                if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                     recurringTransactionsToDelete.add((RecurringTransactionEntity) transaction.getTransaction());
                 } else {
                     transactionsToDelete.add(transaction.getTransaction());

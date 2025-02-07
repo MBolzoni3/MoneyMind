@@ -10,6 +10,11 @@
 
     <string name="add_transaction_title">Aggiungi Movimento</string>
     <string name="edit_transaction_title">Modifica Movimento</string>
+    <string name="add_budget_title">Aggiungi Budget</string>
+    <string name="edit_budget_title">Modifica Budget</string>
+    <string name="add_goal_title">Aggiungi Obiettivo</string>
+    <string name="edit_goal_title">Modifica Obiettivo</string>
+
     <string name="input_transaction_name_hint">Nome</string>
     <string name="input_transaction_amount_hint">Importo</string>
     <string name="input_transaction_converted_amount_hint">Importo Convertito</string>
@@ -49,4 +54,5 @@
     <string name="weekly">Settimanale</string>
     <string name="monthly">Mensile</string>
     <string name="yearly">Annuale</string>
+    <string name="salva">Salva</string>
 </resources>
