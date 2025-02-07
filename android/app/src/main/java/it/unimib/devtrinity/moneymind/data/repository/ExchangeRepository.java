@@ -12,7 +12,6 @@ import it.unimib.devtrinity.moneymind.data.remote.ExchangeAPIResponse;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.api.CallAPIService;
-import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -46,14 +45,23 @@ public class ExchangeRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ExchangeAPIResponse exchangeRateResponse = response.body();
 
-                    Map<String, Double> exchangeRatesHashMap = exchangeRateResponse.getCubeContainer().toHashMap().get(Utils.dateToString2(date));
+                    Map<String, Double> exchangeRatesHashMap;
+                    Date provisionalDate = date;
 
-                    callback.onFailure("");
+                    while(exchangeRateResponse.getCubeContainer().toHashMap().get(Utils.dateToString2(provisionalDate)) == null){
+                        provisionalDate = Utils.previousDate(provisionalDate);
+                        //if too old date
+                        if(provisionalDate == null) callback.onFailure("");
+                    }
+
+                    exchangeRatesHashMap = exchangeRateResponse.getCubeContainer().toHashMap().get(Utils.dateToString2(provisionalDate));
+
+                    callback.onSuccess(exchangeRatesHashMap);
                 } else {
-                    callback.onFailure("Error on API call");
+                    callback.onFailure("");
                 }
             } catch (IOException e) {
-                callback.onFailure("Error on API call");
+                callback.onFailure("");
             }
         });
 

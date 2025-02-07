@@ -19,6 +19,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,6 +67,18 @@ public class Utils {
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return dateFormat.format(date);
+    }
+
+    public static Date previousDate(Date data) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(data);
+
+        if (calendar.get(Calendar.YEAR) < 2000) {
+            return null;
+        }
+
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        return calendar.getTime();
     }
 
     public static int getThemeColor(Context context, int colorAttribute) {

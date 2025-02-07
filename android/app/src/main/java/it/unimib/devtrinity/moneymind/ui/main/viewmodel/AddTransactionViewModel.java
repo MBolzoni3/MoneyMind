@@ -64,7 +64,7 @@ public class AddTransactionViewModel extends ViewModel {
         } else if (currency.equals("EUR")) {
             convertedAmount.setValue(amount);
         } else {
-            exchangeRepository.callAPI(date, new GenericCallback<Map<String, Double>>() {
+            exchangeRepository.callAPI(date, new GenericCallback<>() {
                 @Override
                 public void onSuccess(Map<String, Double> result) {
                     if(result != null) {
