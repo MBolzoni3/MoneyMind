@@ -25,6 +25,7 @@ public class AddTransactionViewModel extends ViewModel {
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
     private final ExchangeRepository exchangeRepository = new ExchangeRepository();
+    private List<String> CURRENCIES = new ArrayList<>();
 
     public AddTransactionViewModel(CategoryRepository repository) {
         this.categories = repository.getAllCategories();
@@ -43,16 +44,29 @@ public class AddTransactionViewModel extends ViewModel {
     }
 
     public void fetchCurrencies() {
+        Date today = new Date();
 
-        //TODO get currencies list from API
-        final List<String> CURRENCIES = Arrays.asList(
+        exchangeRepository.callAPI(today, new GenericCallback<>() {
+            @Override
+            public void onSuccess(Map<String, Double> result) {
+                CURRENCIES = new ArrayList<>(result.keySet());
+                currencies.postValue(Utils.getCurrencyDropdownItems(CURRENCIES));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                CURRENCIES.add("Errore");
+            }
+        });
+
+/*
+        CURRENCIES = Arrays.asList(
                 "EUR", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK",
                 "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY",
                 "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PLN", "RON", "RUB",
                 "SEK", "SGD", "THB", "TRY", "USD", "ZAR"
         );
-
-        currencies.setValue(Utils.getCurrencyDropdownItems(CURRENCIES));
+*/
     }
 
 
