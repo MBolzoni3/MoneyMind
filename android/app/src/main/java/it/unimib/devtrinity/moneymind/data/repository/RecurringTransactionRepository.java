@@ -1,8 +1,9 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 
 import com.google.firebase.firestore.DocumentReference;
 
@@ -13,7 +14,10 @@ import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
-import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class RecurringTransactionRepository extends GenericRepository {
@@ -25,6 +29,22 @@ public class RecurringTransactionRepository extends GenericRepository {
     public RecurringTransactionRepository(Context context) {
         super(context, Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, TAG);
         this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
+    }
+
+    public LiveData<List<RecurringTransactionEntityWithCategory>> getRecurringTransactions() {
+        return recurringTransactionDao.getAll();
+    }
+
+    public void insertTransaction(RecurringTransactionEntity transaction, GenericCallback<Boolean> callback) {
+        executorService.execute(() -> {
+            try {
+                recurringTransactionDao.insertOrUpdate(transaction);
+                callback.onSuccess(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting recurring transaction: " + e.getMessage(), e);
+                callback.onFailure(e.getMessage());
+            }
+        });
     }
 
     @Override

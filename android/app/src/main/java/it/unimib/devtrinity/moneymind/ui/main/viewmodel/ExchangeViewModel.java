@@ -1,14 +1,12 @@
 package it.unimib.devtrinity.moneymind.ui.main.viewmodel;
 
-import android.util.Pair;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import it.unimib.devtrinity.moneymind.domain.model.ExchangeAPIResponse;
-import it.unimib.devtrinity.moneymind.utils.ExchangeRateService;
+
+import it.unimib.devtrinity.moneymind.data.remote.ExchangeAPIResponse;
+import it.unimib.devtrinity.moneymind.utils.api.ExchangeRateService;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;

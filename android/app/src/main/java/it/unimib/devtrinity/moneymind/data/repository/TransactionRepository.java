@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -14,7 +13,11 @@ import java.util.concurrent.CompletableFuture;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
@@ -29,13 +32,37 @@ public class TransactionRepository extends GenericRepository {
         this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
     }
 
-    public LiveData<List<TransactionEntity>> getTransactions() {
-        return transactionDao.selectTransactions();
+    public LiveData<List<TransactionEntity>> getTransactions(int month) {
+        return transactionDao.selectTransactions(month);
+    }
+
+    public LiveData<List<TransactionEntityWithCategory>> getTransactionsWithCategory() {
+        return transactionDao.getAll();
     }
 
     public LiveData<Long> getSpentAmount(String categoryId, long startDate, long endDate) {
         return transactionDao.getSumForCategoryAndDateRange(categoryId, startDate, endDate);
     }
+
+    public void insertTransaction(TransactionEntity transaction, GenericCallback<Boolean> callback) {
+        executorService.execute(() -> {
+            try {
+                transactionDao.insertOrUpdate(transaction);
+                callback.onSuccess(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting transaction: " + e.getMessage(), e);
+                callback.onFailure(e.getMessage());
+            }
+        });
+    }
+
+    /*public void delete(List<TransactionEntityWithCategory> transactions) {
+        executorService.execute(() -> {
+            for (GoalEntityWithCategory goal : goals) {
+                goalDao.deleteById(goal.getGoal().getId());
+            }
+        });
+    }*/
 
     @Override
     protected CompletableFuture<Void> syncLocalToRemoteAsync() {

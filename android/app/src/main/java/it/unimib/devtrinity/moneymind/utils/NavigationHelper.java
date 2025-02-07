@@ -3,6 +3,7 @@ package it.unimib.devtrinity.moneymind.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -40,8 +41,10 @@ public class NavigationHelper {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         for (Fragment fragment : fragments) {
-            fragmentTransaction.add(R.id.fragment_container, fragment, fragment.getTag());
-            fragmentTransaction.hide(fragment);
+            if (fragmentManager.findFragmentByTag(fragment.getClass().getName()) == null) {
+                fragmentTransaction.add(R.id.fragment_container, fragment, fragment.getClass().getName());
+                fragmentTransaction.hide(fragment);
+            }
         }
 
         fragmentTransaction.commitNow();
@@ -54,7 +57,7 @@ public class NavigationHelper {
         for (Fragment fragment : fragmentManager.getFragments()) {
             if (fragment == fragmentToShow) {
                 fragmentTransaction.show(fragment);
-            } else {
+            } else if (fragment.isAdded()) {
                 fragmentTransaction.hide(fragment);
             }
         }

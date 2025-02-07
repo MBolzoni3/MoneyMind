@@ -113,7 +113,12 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
                         100);
             }
 
-            holder.spentAmount.setText(String.format("Hai speso €%s di €%s previsti", spentAmount == null ? BigDecimal.ZERO : spentAmount, budget.getBudget().getAmount()));
+            holder.spentAmount.setText(
+                    String.format(
+                            "Hai speso %s di %s previsti",
+                            Utils.formatTransactionAmount(spentAmount == null ? BigDecimal.ZERO : spentAmount),
+                            Utils.formatTransactionAmount(budget.getBudget().getAmount())
+                    ));
             holder.budgetProgress.setProgress(progress);
         });
     }

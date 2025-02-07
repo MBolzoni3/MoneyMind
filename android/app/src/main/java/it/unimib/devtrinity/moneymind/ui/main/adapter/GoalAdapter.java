@@ -103,7 +103,12 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder
                     100);
         }
 
-        holder.savedAmount.setText(String.format("Hai salvato €%s di €%s previsti", goal.getGoal().getSavedAmount() == null ? BigDecimal.ZERO : goal.getGoal().getSavedAmount(), goal.getGoal().getTargetAmount()));
+        holder.savedAmount.setText(
+                String.format(
+                        "Hai salvato %s di %s previsti",
+                        Utils.formatTransactionAmount(goal.getGoal().getSavedAmount() == null ? BigDecimal.ZERO : goal.getGoal().getSavedAmount()),
+                        Utils.formatTransactionAmount(goal.getGoal().getTargetAmount())
+                ));
         holder.goalProgress.setProgress(progress);
     }
 

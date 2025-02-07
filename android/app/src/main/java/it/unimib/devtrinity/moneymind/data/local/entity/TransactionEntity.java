@@ -19,14 +19,14 @@ public class TransactionEntity extends FirestoreEntity {
 
     @Exclude
     @PrimaryKey(autoGenerate = true)
-    private int id;
-    private String name;
-    private MovementTypeEnum type;
-    private BigDecimal amount;
-    private String currency;
-    private Date date;
-    private String categoryId;
-    private String notes;
+    protected int id;
+    protected String name;
+    protected MovementTypeEnum type;
+    protected BigDecimal amount;
+    protected String currency;
+    protected Date date;
+    protected String categoryId;
+    protected String notes;
 
     @Ignore
     public TransactionEntity() {
