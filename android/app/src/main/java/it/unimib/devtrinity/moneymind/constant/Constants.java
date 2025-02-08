@@ -19,4 +19,8 @@ public class Constants {
 
     public static final String THEME_KEY = "theme";
 
+    //API
+    public static final String BASE_URL = "https://www.ecb.europa.eu/";
+    public static final String SPECIFIC_URL = "stats/eurofxref/eurofxref-hist.xml";
+
 }
