@@ -73,6 +73,8 @@ public class RecurringTransactionRepository extends GenericRepository {
             List<RecurringTransactionEntity> unsyncedRecurringTransactions = recurringTransactionDao.getUnsyncedTransactions();
 
             for (RecurringTransactionEntity recurringTransaction : unsyncedRecurringTransactions) {
+                recurringTransaction.setSynced(true);
+
                 String documentId = recurringTransaction.getFirestoreId();
                 DocumentReference docRef;
 
@@ -90,7 +92,7 @@ public class RecurringTransactionRepository extends GenericRepository {
                             Log.d(TAG, "Recurring Transaction synced to remote: " + recurringTransaction.getFirestoreId());
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "Error syncing Recurring Transaction to remote: " + e.getMessage(), e);
+                            throw new RuntimeException("Error syncing Recurring Transaction to remote: " + e.getMessage(), e);
                         });
             }
         }, executorService);
@@ -106,7 +108,6 @@ public class RecurringTransactionRepository extends GenericRepository {
                     .addOnSuccessListener(executorService, querySnapshot -> {
                         for (RecurringTransactionEntity remoteRecurringTransaction : querySnapshot.toObjects(RecurringTransactionEntity.class)) {
                             RecurringTransactionEntity localRecurringTransaction = recurringTransactionDao.getByFirestoreId(remoteRecurringTransaction.getFirestoreId());
-
                             if (localRecurringTransaction == null) {
                                 recurringTransactionDao.insertOrUpdate(remoteRecurringTransaction);
                             } else {
@@ -116,7 +117,7 @@ public class RecurringTransactionRepository extends GenericRepository {
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing recurring transactions from remote: " + e.getMessage(), e);
+                        throw new RuntimeException("Error syncing recurring transactions from remote: " + e.getMessage(), e);
                     });
         }, executorService);
     }

@@ -235,14 +235,15 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     public void onEnterEditMode(Fragment fragment) {
         editFragment = fragment;
 
-        setTopAppBarEditMenu();
-        setBottomNavigationVisibility(View.GONE);
-
         getSupportFragmentManager()
                 .beginTransaction()
+                .setReorderingAllowed(true)
                 .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
                 .addToBackStack(null)
                 .commit();
+
+        setTopAppBarEditMenu();
+        setBottomNavigationVisibility(View.GONE);
     }
 
     @Override
@@ -286,14 +287,16 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     private void onSelectionExit() {
         if (currentFragment instanceof BudgetFragment) budgetFragment.onExitSelectionMode();
         if (currentFragment instanceof GoalFragment) goalFragment.onExitSelectionMode();
-        if (currentFragment instanceof TransactionFragment) transactionFragment.onExitSelectionMode();
+        if (currentFragment instanceof TransactionFragment)
+            transactionFragment.onExitSelectionMode();
     }
 
     private boolean onDeleteClick(int itemId) {
         if (itemId == R.id.action_delete) {
             if (currentFragment instanceof BudgetFragment) budgetFragment.deleteSelected();
             if (currentFragment instanceof GoalFragment) goalFragment.deleteSelected();
-            if (currentFragment instanceof TransactionFragment) transactionFragment.deleteSelected();
+            if (currentFragment instanceof TransactionFragment)
+                transactionFragment.deleteSelected();
 
             return true;
         }
@@ -314,13 +317,13 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
     private boolean onSaveClick(int itemId) {
         if (itemId == R.id.action_save) {
-            if(editFragment instanceof AddTransactionFragment){
+            if (editFragment instanceof AddTransactionFragment) {
                 AddTransactionFragment addTransactionFragment = (AddTransactionFragment) editFragment;
                 addTransactionFragment.onSaveButtonClick();
-            } else if(editFragment instanceof AddBudgetFragment){
+            } else if (editFragment instanceof AddBudgetFragment) {
                 AddBudgetFragment addBudgetFragment = (AddBudgetFragment) editFragment;
                 addBudgetFragment.onSaveButtonClick();
-            } else if(editFragment instanceof AddGoalFragment){
+            } else if (editFragment instanceof AddGoalFragment) {
                 AddGoalFragment addGoalFragment = (AddGoalFragment) editFragment;
                 addGoalFragment.onSaveButtonClick();
             }
@@ -331,14 +334,14 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         return false;
     }
 
-    private int getEditTitleRes(){
-        if(editFragment instanceof AddTransactionFragment){
+    private int getEditTitleRes() {
+        if (editFragment instanceof AddTransactionFragment) {
             AddTransactionFragment addTransactionFragment = (AddTransactionFragment) editFragment;
             return addTransactionFragment.getTransaction() == null ? R.string.add_transaction_title : R.string.edit_transaction_title;
-        } else if(editFragment instanceof AddBudgetFragment){
+        } else if (editFragment instanceof AddBudgetFragment) {
             AddBudgetFragment addBudgetFragment = (AddBudgetFragment) editFragment;
             return addBudgetFragment.getBudget() == null ? R.string.add_budget_title : R.string.edit_budget_title;
-        } else if(editFragment instanceof AddGoalFragment){
+        } else if (editFragment instanceof AddGoalFragment) {
             AddGoalFragment addGoalFragment = (AddGoalFragment) editFragment;
             return addGoalFragment.getGoal() == null ? R.string.add_goal_title : R.string.edit_goal_title;
         }

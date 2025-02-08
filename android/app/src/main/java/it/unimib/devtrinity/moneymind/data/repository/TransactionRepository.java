@@ -110,6 +110,8 @@ public class TransactionRepository extends GenericRepository {
             List<TransactionEntity> unsyncedTransactions = transactionDao.getUnsyncedTransactions();
 
             for (TransactionEntity transaction : unsyncedTransactions) {
+                transaction.setSynced(true);
+
                 String documentId = transaction.getFirestoreId();
                 DocumentReference docRef;
 
@@ -127,7 +129,7 @@ public class TransactionRepository extends GenericRepository {
                             Log.d(TAG, "Transaction synced to remote: " + transaction.getFirestoreId());
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "Error syncing Transaction to remote: " + e.getMessage(), e);
+                            throw new RuntimeException("Error syncing Transaction to remote: " + e.getMessage(), e);
                         });
             }
         }, executorService);
@@ -141,8 +143,9 @@ public class TransactionRepository extends GenericRepository {
                     .get()
                     .addOnSuccessListener(executorService, querySnapshot -> {
                         for (TransactionEntity remoteTransaction : querySnapshot.toObjects(TransactionEntity.class)) {
-                            TransactionEntity localTransaction = transactionDao.getByFirestoreId(remoteTransaction.getFirestoreId());
+                            remoteTransaction.setSynced(true);
 
+                            TransactionEntity localTransaction = transactionDao.getByFirestoreId(remoteTransaction.getFirestoreId());
                             if (localTransaction == null) {
                                 transactionDao.insertOrUpdate(remoteTransaction);
                             } else {
@@ -152,7 +155,7 @@ public class TransactionRepository extends GenericRepository {
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing transactions from remote: " + e.getMessage(), e);
+                        throw new RuntimeException("Error syncing transactions from remote: " + e.getMessage(), e);
                     });
         }, executorService);
     }

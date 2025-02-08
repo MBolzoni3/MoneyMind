@@ -21,8 +21,8 @@ public class SettingsViewModel extends ViewModel {
         return themeLiveData;
     }
 
-    public void initTheme(Context context){
-        if(themeLiveData.getValue() == null) {
+    public void initTheme(Context context) {
+        if (themeLiveData.getValue() == null) {
             themeLiveData.setValue(SharedPreferencesHelper.getTheme(context));
         }
     }

@@ -59,6 +59,8 @@ public class GoalRepository extends GenericRepository {
             List<GoalEntity> unsyncedGoals = goalDao.getUnsyncedGoals();
 
             for (GoalEntity goal : unsyncedGoals) {
+                goal.setSynced(true);
+
                 String documentId = goal.getFirestoreId();
                 DocumentReference docRef;
 
@@ -76,7 +78,7 @@ public class GoalRepository extends GenericRepository {
                             Log.d(TAG, "Goal synced to remote: " + goal.getFirestoreId());
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "Error syncing goal to remote: " + e.getMessage(), e);
+                            throw new RuntimeException("Error syncing goal to remote: " + e.getMessage(), e);
                         });
             }
         }, executorService);
@@ -91,7 +93,6 @@ public class GoalRepository extends GenericRepository {
                     .addOnSuccessListener(executorService, querySnapshot -> {
                         for (GoalEntity remoteGoal : querySnapshot.toObjects(GoalEntity.class)) {
                             GoalEntity localGoal = goalDao.getByFirestoreId(remoteGoal.getFirestoreId());
-
                             if (localGoal == null) {
                                 goalDao.insertOrUpdate(remoteGoal);
                             } else {
@@ -101,7 +102,7 @@ public class GoalRepository extends GenericRepository {
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing goals from remote: " + e.getMessage(), e);
+                        throw new RuntimeException("Error syncing goals from remote: " + e.getMessage(), e);
                     });
         }, executorService);
     }

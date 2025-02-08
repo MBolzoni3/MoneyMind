@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -16,7 +15,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.SettingsViewModel;
 
 public class SettingsFragment extends Fragment {

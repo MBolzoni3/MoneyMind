@@ -16,7 +16,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +52,7 @@ public class Utils {
         return dateFormat.format(date);
     }
 
-    public static String dateToString2(Date date) {
+    public static String dateToStringApi(Date date) {
         if (date == null) {
             return null;
         }
@@ -145,6 +144,7 @@ public class Utils {
     public static List<String> getCurrencyDropdownItems(List<String> currencyCodes) {
         List<String> items = new ArrayList<>();
 
+        items.add(CurrencyHelper.getCurrencyDescription("EUR"));
         for (String currencyCode : currencyCodes) {
             items.add(CurrencyHelper.getCurrencyDescription(currencyCode));
         }
@@ -158,6 +158,10 @@ public class Utils {
 
     public static String formatTransactionAmount(BigDecimal amount, MovementTypeEnum movementTypeEnum) {
         return String.format(Locale.getDefault(), "%s %.2f €", movementTypeEnum == MovementTypeEnum.INCOME ? "+" : "-", amount);
+    }
+
+    public static String formatConvertedAmount(BigDecimal amount) {
+        return amount.setScale(2, RoundingMode.HALF_EVEN).toPlainString();
     }
 
     public static String getMonthFromDate(Date date) {
@@ -200,6 +204,5 @@ public class Utils {
 
         return diffYear * 12 + diffMonth;
     }
-
 
 }

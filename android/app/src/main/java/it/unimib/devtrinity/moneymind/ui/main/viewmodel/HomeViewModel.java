@@ -31,6 +31,12 @@ public class HomeViewModel extends ViewModel {
 
         this.transactionRepository.getOldestTransactionDate().observeForever(oldestTransactionObserver);
         this.transactionsByMonth = Transformations.switchMap(monthsBack, transactionRepository::getTransactionsByMonth);
+
+        this.transactionsByMonth.observeForever(transactions -> {
+            if (currentCarouselPage.getValue() != null && currentCarouselPage.getValue() == -1 && transactions != null && !transactions.isEmpty()) {
+                currentCarouselPage.setValue(transactions.size() - 1);
+            }
+        });
     }
 
     @Override

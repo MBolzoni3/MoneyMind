@@ -1,7 +1,5 @@
 package it.unimib.devtrinity.moneymind.utils.google;
 
-import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;

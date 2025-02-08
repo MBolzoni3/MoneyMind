@@ -21,6 +21,6 @@ public class Constants {
 
     //API
     public static final String BASE_URL = "https://www.ecb.europa.eu/";
-    public static final String SPECIFIC_URL = "stats/eurofxref/eurofxref-hist.xml";
+    public static final String SPECIFIC_URL = "stats/eurofxref/eurofxref-daily.xml";
 
 }

@@ -61,7 +61,7 @@ public class CategoryRepository extends GenericRepository {
                         Log.d(TAG, "Categories downloaded/updated (" + categories.size() + ")");
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error downloading categories." + e.getMessage(), e);
+                        throw new RuntimeException("Error downloading categories: " + e.getMessage(), e);
                     });
         }, executorService);
     }

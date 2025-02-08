@@ -60,6 +60,8 @@ public class BudgetRepository extends GenericRepository {
             List<BudgetEntity> unsyncedBudgets = budgetDao.getUnsyncedBudgets();
 
             for (BudgetEntity budget : unsyncedBudgets) {
+                budget.setSynced(true);
+
                 String documentId = budget.getFirestoreId();
                 DocumentReference docRef;
 
@@ -77,7 +79,7 @@ public class BudgetRepository extends GenericRepository {
                             Log.d(TAG, "Budget synced to remote: " + budget.getFirestoreId());
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "Error syncing budget to remote: " + e.getMessage(), e);
+                            throw new RuntimeException("Error syncing budget to remote: " + e.getMessage(), e);
                         });
             }
         }, executorService);
@@ -92,7 +94,6 @@ public class BudgetRepository extends GenericRepository {
                     .addOnSuccessListener(executorService, querySnapshot -> {
                         for (BudgetEntity remoteBudget : querySnapshot.toObjects(BudgetEntity.class)) {
                             BudgetEntity localBudget = budgetDao.getByFirestoreId(remoteBudget.getFirestoreId());
-
                             if (localBudget == null) {
                                 budgetDao.insertOrUpdate(remoteBudget);
                             } else {

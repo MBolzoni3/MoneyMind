@@ -8,6 +8,7 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.OutOfQuotaPolicy;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import java.util.concurrent.TimeUnit;
@@ -35,11 +36,29 @@ public class SyncHelper {
         );
     }
 
-    public static void triggerManualSync(Context context) {
-        OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .build();
+    public static void triggerManualSyncAndNavigate(Context context, Runnable onComplete) {
+        WorkManager workManager = WorkManager.getInstance(context);
 
-        WorkManager.getInstance(context).enqueue(syncRequest);
+        workManager.getWorkInfosForUniqueWorkLiveData(Constants.UNIQUE_WORK_NAME).observeForever(workInfos -> {
+            boolean isRunning = workInfos.stream().anyMatch(info ->
+                    info.getState() == WorkInfo.State.RUNNING
+            );
+
+            if (!isRunning) {
+                OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
+                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                        .build();
+
+                workManager.enqueue(syncRequest);
+
+                workManager.getWorkInfoByIdLiveData(syncRequest.getId()).observeForever(workInfo -> {
+                    if (workInfo != null && (workInfo.getState() == WorkInfo.State.SUCCEEDED || workInfo.getState() == WorkInfo.State.FAILED)) {
+                        onComplete.run();
+                    }
+                });
+            } else {
+                onComplete.run();
+            }
+        });
     }
 }

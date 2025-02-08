@@ -18,9 +18,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.GoalAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModel;
