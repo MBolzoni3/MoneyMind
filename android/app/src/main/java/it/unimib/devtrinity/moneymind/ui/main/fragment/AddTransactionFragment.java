@@ -23,8 +23,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
@@ -288,9 +290,28 @@ public class AddTransactionFragment extends Fragment {
 
         if (currentTransaction == null) return;
 
-        nameField.setText(currentTransaction.getName());
-        amountField.setText(currentTransaction.getAmount().toString());
-        dateField.setText(Utils.dateToString(currentTransaction.getDate()));
+        String name = currentTransaction.getName();
+        if (!isValidName(name)) {
+            nameField.setError("Il nome deve contenere solo lettere");
+            return;
+        }
+
+        BigDecimal amount = currentTransaction.getAmount();
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            amountField.setError("L'importo deve essere maggiore o uguale a zero");
+            return;
+        }
+
+        Date transactionDate = currentTransaction.getDate();
+        if (transactionDate != null && isFutureDate(transactionDate)) {
+            dateField.setText(Utils.dateToString(new Date())); // Set to today's date
+            dateField.setError("La data non può essere futura");
+        } else {
+            dateField.setText(Utils.dateToString(transactionDate));
+            dateField.setError(null);
+        }
+        // dateField.setText(Utils.dateToString(currentTransaction.getDate()));
+
         notesField.setText(currentTransaction.getNotes());
 
         if (currentTransaction instanceof RecurringTransactionEntity) {
@@ -399,4 +420,31 @@ public class AddTransactionFragment extends Fragment {
             });
         }
     }
+
+    private boolean isValidName(String name) {
+        // nome è valido solo se composto da lettere maiuscole/minuscole
+        Pattern pattern = Pattern.compile("^[a-zA-Z\\s]+$");
+        return pattern.matcher(name).matches();
+    }
+
+    private boolean isFutureDate(Date date) {
+        // Data di oggi
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
+        // Data della transazione
+        Calendar selected = Calendar.getInstance();
+        selected.setTime(date);
+        selected.set(Calendar.HOUR_OF_DAY, 0);
+        selected.set(Calendar.MINUTE, 0);
+        selected.set(Calendar.SECOND, 0);
+        selected.set(Calendar.MILLISECOND, 0);
+
+        // controllo se la data della transazione è futura
+        return selected.after(today);
+    }
+
 }

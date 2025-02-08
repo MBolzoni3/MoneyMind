@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
@@ -150,7 +151,29 @@ public class AddGoalFragment extends Fragment {
         getParentFragmentManager().popBackStack();
     }
 
+    private boolean isValidName(String name) {
+        // check se è formato solo da lettere e spazi
+        Pattern pattern = Pattern.compile("^[a-zA-Z\\s]+$");
+        return pattern.matcher(name).matches();
+    }
+
     private void saveGoal() {
+
+        Date startDate = Utils.stringToDate(startDateField.getText().toString());
+        Date endDate = Utils.stringToDate(endDateField.getText().toString());
+
+        if (endDate.before(startDate)) {
+            // End date is before start date - show an error
+            endDateField.setError("La data di fine deve essere successiva alla data di inizio");
+            return; // Stop the save operation
+        }
+
+        String name = nameField.getText().toString();
+        if (!isValidName(name)) {
+            nameField.setError("Il nome deve contenere solo lettere");
+            return;
+        }
+
         GoalEntity goal = new GoalEntity(
                 nameField.getText().toString(),
                 Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO),

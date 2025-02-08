@@ -20,4 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MoneyMind"
+include(":app")
 
