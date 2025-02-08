@@ -40,10 +40,8 @@ public class FirebaseHelper {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
-                        Log.d(TAG, "Login successful: " + (user != null ? user.getEmail() : "No email"));
                         callback.onSuccess(user);
                     } else {
-                        Log.e(TAG, "Login failed: " + task.getException().getMessage());
                         callback.onFailure(task.getException().getMessage());
                     }
                 });
@@ -76,7 +74,6 @@ public class FirebaseHelper {
 
     public void logoutUser() {
         auth.signOut();
-        Log.d(TAG, "User logged out");
     }
 }
 

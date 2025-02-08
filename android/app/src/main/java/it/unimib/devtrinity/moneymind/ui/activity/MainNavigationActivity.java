@@ -3,6 +3,7 @@ package it.unimib.devtrinity.moneymind.ui.activity;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -46,6 +47,8 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_navigation);
+
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
 
         topAppBar = findViewById(R.id.top_app_bar);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -106,6 +109,20 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
             getSupportFragmentManager().putFragment(outState, "previousFragment", previousFragment);
         }
     }
+
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if (currentFragment instanceof SettingsFragment) {
+                restorePreviousFragment();
+            } else {
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed();
+                setEnabled(true);
+            }
+        }
+    };
 
     private void setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener(item -> {

@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -14,13 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
@@ -80,8 +79,8 @@ public class AddBudgetFragment extends Fragment {
                 }
         );
 
-        budgetRepository = new BudgetRepository(requireContext());
-        categoryRepository = new CategoryRepository(requireContext());
+        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
         AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(categoryRepository);
         AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
 

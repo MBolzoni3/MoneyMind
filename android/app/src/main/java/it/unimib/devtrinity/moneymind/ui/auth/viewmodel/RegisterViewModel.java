@@ -4,17 +4,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 
 public class RegisterViewModel extends ViewModel {
-    private final UserRepository userRepository;
     private final MutableLiveData<GenericState<Void>> registerState = new MutableLiveData<>();
-
-    public RegisterViewModel() {
-        this.userRepository = new UserRepository();
-    }
 
     public LiveData<GenericState<Void>> getRegisterState() {
         return registerState;
@@ -23,7 +18,7 @@ public class RegisterViewModel extends ViewModel {
     public void register(String name, String email, String password) {
         registerState.setValue(new GenericState.Loading<>());
 
-        userRepository.register(name, email, password, new GenericCallback<>() {
+        ServiceLocator.getInstance().getUserRepository().register(name, email, password, new GenericCallback<>() {
             @Override
             public void onSuccess(Void result) {
                 registerState.setValue(new GenericState.Success<>(null));

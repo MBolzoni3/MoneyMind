@@ -61,7 +61,7 @@ public interface TransactionDao {
             "AND deleted = 0")
     LiveData<List<TransactionEntity>> selectTransactions(long startDate, long endDate);
 
-    @Query("SELECT * FROM transactions WHERE date >= :startDate ORDER BY date DESC")
+    @Query("SELECT * FROM transactions WHERE date >= :startDate AND deleted = 0 ORDER BY date DESC")
     LiveData<List<TransactionEntity>> selectTransactionsFromDate(long startDate);
 
     @Query("SELECT MIN(date) FROM transactions")

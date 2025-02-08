@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
@@ -44,8 +45,8 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
         RecyclerView recyclerView = view.findViewById(R.id.transaction_recycler_view);
         fabAddTransaction = view.findViewById(R.id.fab_add_transaction);
 
-        TransactionRepository transactionRepository = new TransactionRepository(requireContext());
-        RecurringTransactionRepository recurringTransactionRepository = new RecurringTransactionRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
+        RecurringTransactionRepository recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireContext());
 
         TransactionViewModelFactory factory = new TransactionViewModelFactory(transactionRepository, recurringTransactionRepository);
         transactionViewModel = new ViewModelProvider(this, factory).get(TransactionViewModel.class);

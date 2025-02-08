@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
@@ -44,8 +45,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
         RecyclerView recyclerView = view.findViewById(R.id.goal_recycler_view);
         fabAddGoal = view.findViewById(R.id.fab_add_goal);
 
-        GoalRepository goalRepository = new GoalRepository(requireContext());
-
+        GoalRepository goalRepository = ServiceLocator.getInstance().getGoalRepository(requireContext());
         GoalViewModelFactory factory = new GoalViewModelFactory(goalRepository);
         goalViewModel = new ViewModelProvider(this, factory).get(GoalViewModel.class);
 

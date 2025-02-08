@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
@@ -45,8 +46,8 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
         RecyclerView recyclerView = view.findViewById(R.id.budget_recycler_view);
         fabAddBudget = view.findViewById(R.id.fab_add_budget);
 
-        BudgetRepository budgetRepository = new BudgetRepository(requireContext());
-        TransactionRepository transactionRepository = new TransactionRepository(requireContext());
+        BudgetRepository budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
 
         BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
         budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);

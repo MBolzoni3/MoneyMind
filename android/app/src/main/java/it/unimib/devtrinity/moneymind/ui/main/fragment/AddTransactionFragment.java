@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -29,6 +27,7 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -104,9 +103,10 @@ public class AddTransactionFragment extends Fragment {
                     }
                 });
 
-        transactionRepository = new TransactionRepository(requireContext());
-        recurringTransactionRepository = new RecurringTransactionRepository(requireContext());
-        categoryRepository = new CategoryRepository(requireContext());
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
+
         AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(categoryRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);
 

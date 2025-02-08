@@ -16,6 +16,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.InfiniteDotsAdapter;
@@ -45,7 +46,7 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
 
         isFirstLoad = true;
 
-        TransactionRepository transactionRepository = new TransactionRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
         viewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
@@ -69,6 +70,7 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
 
             int newSize = monthCarouselAdapter.getItemCount();
             if (oldSize > 0 && oldPosition == 0 && newSize > oldSize) {
+                System.out.println("QUI?");
                 int insertedCount = newSize - oldSize;
                 monthsViewPager.setCurrentItem(oldPosition + insertedCount, false);
             }
@@ -138,8 +140,9 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        viewModel.getCurrentPage().removeObservers(getViewLifecycleOwner());
         viewModel.setCurrentPage(monthsViewPager.getCurrentItem());
+        super.onDestroyView();
     }
 
     @Override

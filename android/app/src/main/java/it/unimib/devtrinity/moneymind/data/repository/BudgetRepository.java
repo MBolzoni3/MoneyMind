@@ -102,7 +102,7 @@ public class BudgetRepository extends GenericRepository {
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing budgets from remote: " + e.getMessage(), e);
+                        throw new RuntimeException("Error syncing budgets from remote: " + e.getMessage(), e);
                     });
         }, executorService);
     }
