@@ -17,10 +17,15 @@ public class ExchangeDataSource {
         this.apiService = apiService;
     }
 
-    public void fetchExchangeRates(Callback<ExchangeResponse> callback) {
-        String fakeDate = Utils.dateToStringApi(new Date());
+    public void fetchExchangeRates(Date date, Callback<ExchangeResponse> callback) {
+        if (date == null) {
+            date = new Date();
+        }
 
-        Call<ExchangeResponse> call = apiService.getExchangeRates(fakeDate);
+        String startDate = Utils.dateToStringApi(Utils.getDateNDaysAgo(date, 5));
+        String endDate = Utils.dateToStringApi(date);
+
+        Call<ExchangeResponse> call = apiService.getExchangeRates(startDate, endDate, "jsondata");
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ExchangeResponse> call, @NonNull Response<ExchangeResponse> response) {

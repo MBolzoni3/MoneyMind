@@ -7,5 +7,9 @@ import retrofit2.http.Query;
 
 public interface ExchangeService {
     @GET(Constants.SPECIFIC_URL)
-    Call<ExchangeResponse> getExchangeRates(@Query("date") String date);
+    Call<ExchangeResponse> getExchangeRates(
+            @Query("startPeriod") String startDate,
+            @Query("endPeriod") String endDate,
+            @Query("format") String format
+    );
 }

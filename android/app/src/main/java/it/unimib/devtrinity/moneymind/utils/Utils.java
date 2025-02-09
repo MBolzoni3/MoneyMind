@@ -27,6 +27,9 @@ import it.unimib.devtrinity.moneymind.ui.OnDateSelectedListener;
 
 public class Utils {
 
+    private static final String FORMAT_UI = "dd/MM/yyyy";
+    private static final String FORMAT_API = "yyyy-MM-dd";
+
     public static Long bigDecimalToLong(BigDecimal value) {
         return value == null ? null : value.multiply(BigDecimal.valueOf(100)).longValue();
     }
@@ -35,41 +38,32 @@ public class Utils {
         return value == null ? null : BigDecimal.valueOf(value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_EVEN);
     }
 
-    public static Date stringToDate(String dateString) {
+    private static Date parseDate(String dateString, String format) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            return dateFormat.parse(dateString);
+            return new SimpleDateFormat(format, Locale.getDefault()).parse(dateString);
         } catch (ParseException e) {
             return null;
         }
     }
 
+    private static String formatDate(Date date, String format) {
+        return (date == null) ? null : new SimpleDateFormat(format, Locale.getDefault()).format(date);
+    }
+
+    public static Date stringToDate(String dateString) {
+        return parseDate(dateString, FORMAT_UI);
+    }
+
     public static String dateToString(Date date) {
-        if (date == null) {
-            return null;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateFormat.format(date);
+        return formatDate(date, FORMAT_UI);
+    }
+
+    public static Date stringToDateApi(String dateString) {
+        return parseDate(dateString, FORMAT_API);
     }
 
     public static String dateToStringApi(Date date) {
-        if (date == null) {
-            return null;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return dateFormat.format(date);
-    }
-
-    public static Date previousDate(Date data) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(data);
-
-        if (calendar.get(Calendar.YEAR) < 2000) {
-            return null;
-        }
-
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        return calendar.getTime();
+        return formatDate(date, FORMAT_API);
     }
 
     public static int getThemeColor(Context context, int colorAttribute) {
@@ -144,7 +138,6 @@ public class Utils {
     public static List<String> getCurrencyDropdownItems(List<String> currencyCodes) {
         List<String> items = new ArrayList<>();
 
-        items.add(CurrencyHelper.getCurrencyDescription("EUR"));
         for (String currencyCode : currencyCodes) {
             items.add(CurrencyHelper.getCurrencyDescription(currencyCode));
         }
@@ -203,6 +196,26 @@ public class Utils {
         int diffMonth = current.get(Calendar.MONTH) - oldest.get(Calendar.MONTH);
 
         return diffYear * 12 + diffMonth;
+    }
+
+    public static Date getDateNDaysAgo(Date date, int daysAgo) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_YEAR, -daysAgo);
+        return calendar.getTime();
+    }
+
+    public static boolean areSameDay(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            return false;
+        }
+
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(date1);
+        cal2.setTime(date2);
+
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
 }

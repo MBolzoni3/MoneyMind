@@ -1,63 +1,60 @@
 package it.unimib.devtrinity.moneymind.data.remote;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
+import java.util.Map;
 
-import java.util.List;
-
-@Root(name = "Envelope", strict = false)
 public class ExchangeResponse {
+    public Header header;
+    public DataSet[] dataSets;
+    public Structure structure;
 
-    @Element(name = "Cube")
-    private CubeRoot cubeRoot;
-
-    public CubeRoot getCubeRoot() {
-        return cubeRoot;
+    public static class Header {
+        public String id;
+        public boolean test;
+        public String prepared;
+        public Sender sender;
     }
 
-    @Root(name = "Cube", strict = false)
-    public static class CubeRoot {
-        @ElementList(entry = "Cube", inline = true)
-        private List<CubeTime> cubes;
-
-        public List<CubeTime> getCubes() {
-            return cubes;
-        }
+    public static class Sender {
+        public String id;
     }
 
-    @Root(name = "Cube", strict = false)
-    public static class CubeTime {
-        @Attribute(name = "time", required = false)
-        private String time;
-
-        @ElementList(entry = "Cube", inline = true, required = false)
-        private List<CubeRate> rates;
-
-        public String getTime() {
-            return time;
-        }
-
-        public List<CubeRate> getRates() {
-            return rates;
-        }
+    public static class DataSet {
+        public String action;
+        public String validFrom;
+        public Map<String, Series> series;
     }
 
-    @Root(name = "Cube", strict = false)
-    public static class CubeRate {
-        @Attribute(name = "currency")
-        private String currency;
+    public static class Series {
+        public Map<String, Double[]> observations;
+    }
 
-        @Attribute(name = "rate")
-        private double rate;
 
-        public String getCurrency() {
-            return currency;
-        }
+    public static class Structure {
+        public String name;
+        public Dimensions dimensions;
+    }
 
-        public double getRate() {
-            return rate;
-        }
+    public static class Dimensions {
+        public SeriesDimension[] series;
+        public ObservationDimension[] observation;
+    }
+
+    public static class SeriesDimension {
+        public String id;
+        public Value[] values;
+    }
+
+    public static class ObservationDimension {
+        public String id;
+        public TimeValue[] values;
+    }
+
+    public static class Value {
+        public String id;
+        public String name;
+    }
+
+    public static class TimeValue {
+        public String id;
     }
 }

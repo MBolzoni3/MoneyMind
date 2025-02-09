@@ -10,18 +10,19 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.ExchangeEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.ExchangeRepository;
+import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class AddTransactionViewModel extends ViewModel {
 
     private final ExchangeRepository exchangeRepository;
     private final LiveData<List<CategoryEntity>> categories;
-    private final MutableLiveData<Map<String, Double>> exchangeRates = new MutableLiveData<>();
+    private final MutableLiveData<List<ExchangeEntity>> exchangeRates = new MutableLiveData<>();
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
 
@@ -34,13 +35,25 @@ public class AddTransactionViewModel extends ViewModel {
         return categories;
     }
 
-    public void fetchExchangeRates(Date date) {
-        LiveData<Map<String, Double>> liveData = exchangeRepository.getExchangeRates(date);
+    public void fetchExchangeRates(Date date, GenericCallback<Void> callback) {
+        LiveData<List<ExchangeEntity>> liveData = exchangeRepository.getExchangeRates(date);
 
         liveData.observeForever(rates -> {
-            if (rates != null) {
+            if (rates != null && !rates.isEmpty()) {
                 exchangeRates.setValue(rates);
-                currencies.setValue(Utils.getCurrencyDropdownItems(new ArrayList<>(rates.keySet())));
+
+                List<String> newCurrencies = new ArrayList<>();
+                newCurrencies.add("EUR");
+
+                for (ExchangeEntity entity : rates) {
+                    if (!newCurrencies.contains(entity.currency)) {
+                        newCurrencies.add(entity.currency);
+                    }
+                }
+
+                currencies.setValue(Utils.getCurrencyDropdownItems(newCurrencies));
+
+                callback.onSuccess(null);
             }
         });
     }
@@ -56,18 +69,24 @@ public class AddTransactionViewModel extends ViewModel {
             return;
         }
 
-        Map<String, Double> rates = exchangeRates.getValue();
-        if (rates != null && rates.containsKey(selectedCurrency)) {
-            BigDecimal rate = BigDecimal.valueOf(rates.get(selectedCurrency));
-            if (rate.compareTo(BigDecimal.ZERO) == 0) {
-                convertedAmount.setValue(BigDecimal.ZERO);
-            }
+        List<ExchangeEntity> rates = exchangeRates.getValue();
+        if (rates != null) {
+            for (ExchangeEntity entity : rates) {
+                if (entity.currency.equals(selectedCurrency)) {
+                    BigDecimal rate = entity.rate;
+                    if (rate.compareTo(BigDecimal.ZERO) == 0) {
+                        convertedAmount.setValue(BigDecimal.ZERO);
+                        return;
+                    }
 
-            BigDecimal converted = amount.divide(rate, MathContext.DECIMAL128);
-            convertedAmount.setValue(converted.setScale(4, RoundingMode.HALF_EVEN));
-        } else {
-            convertedAmount.setValue(amount);
+                    BigDecimal converted = amount.divide(rate, MathContext.DECIMAL128);
+                    convertedAmount.setValue(converted.setScale(4, RoundingMode.HALF_EVEN));
+                    return;
+                }
+            }
         }
+
+        convertedAmount.setValue(amount);
     }
 
     public LiveData<List<String>> getCurrencies() {

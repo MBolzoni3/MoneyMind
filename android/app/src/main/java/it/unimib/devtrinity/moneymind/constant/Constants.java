@@ -16,11 +16,10 @@ public class Constants {
     public static final String RECURRING_TRANSACTIONS_LAST_SYNC_KEY = "recurring_transactions_last_sync";
     public static final String GOALS_LAST_SYNC_KEY = "goals_last_sync";
     public static final String BUDGETS_LAST_SYNC_KEY = "budgets_last_sync";
-
     public static final String THEME_KEY = "theme";
 
     //API
-    public static final String BASE_URL = "https://www.ecb.europa.eu/";
-    public static final String SPECIFIC_URL = "stats/eurofxref/eurofxref-daily.xml";
+    public static final String BASE_URL = "https://data-api.ecb.europa.eu/service/data/";
+    public static final String SPECIFIC_URL = "EXR/D..EUR.SP00.A";
 
 }

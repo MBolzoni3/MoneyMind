@@ -78,15 +78,15 @@ public class ServiceLocator {
 
     public ExchangeRepository getExchangeRepository(Context context) {
         if (exchangeRepository == null) {
-            exchangeRepository = new ExchangeRepository(getExchangeDataSource(context));
+            exchangeRepository = new ExchangeRepository(context, getExchangeDataSource());
         }
 
         return exchangeRepository;
     }
 
-    private ExchangeDataSource getExchangeDataSource(Context context) {
+    private ExchangeDataSource getExchangeDataSource() {
         if (exchangeDataSource == null) {
-            exchangeDataSource = new ExchangeDataSource(RetrofitClient.getService(context));
+            exchangeDataSource = new ExchangeDataSource(RetrofitClient.getService());
         }
 
         return exchangeDataSource;

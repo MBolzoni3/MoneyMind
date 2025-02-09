@@ -117,7 +117,20 @@ public class AddTransactionFragment extends Fragment {
         nameField = view.findViewById(R.id.edit_transaction_name);
 
         amountField = view.findViewById(R.id.edit_transaction_amount);
-        amountField.addTextChangedListener(textWatcher);
+        amountField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                triggerConvertedAmount();
+            }
+        });
 
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
@@ -127,7 +140,36 @@ public class AddTransactionFragment extends Fragment {
         });
 
         dateField = view.findViewById(R.id.edit_date);
-        dateField.addTextChangedListener(textWatcher);
+        dateField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String dateString = s.toString().trim();
+                selectedDate = Utils.stringToDate(dateString);
+
+                if (selectedDate != null) {
+                    viewModel.fetchExchangeRates(selectedDate, new GenericCallback<>() {
+
+                        @Override
+                        public void onSuccess(Void result) {
+                            triggerConvertedAmount();
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+
+                        }
+                    });
+                }
+            }
+        });
         dateField.setOnClickListener(v -> Utils.showDatePicker(dateField::setText, this));
 
         setupCurrencyDropdown(view);
@@ -169,29 +211,10 @@ public class AddTransactionFragment extends Fragment {
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
         compileTransaction();
-
-        selectedDate = Utils.stringToDate(dateField.getText().toString());
-        if (selectedDate == null) {
-            selectedDate = new Date();
+        if (dateField.getText().toString().trim().isEmpty()) {
+            dateField.setText(Utils.dateToString(new Date()));
         }
-
-        viewModel.fetchExchangeRates(selectedDate);
     }
-
-    private final TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            triggerConvertedAmount();
-        }
-    };
 
     public void onSaveButtonClick() {
         saveTransaction();
