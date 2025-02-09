@@ -79,8 +79,8 @@ public class AddBudgetFragment extends Fragment {
                 }
         );
 
-        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
+        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireActivity().getApplication());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
         AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(categoryRepository);
         AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
 

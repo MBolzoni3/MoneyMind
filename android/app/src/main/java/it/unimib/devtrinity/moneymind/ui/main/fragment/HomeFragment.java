@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
         viewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 

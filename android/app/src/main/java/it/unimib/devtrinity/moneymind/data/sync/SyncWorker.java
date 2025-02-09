@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.sync;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -28,18 +29,18 @@ public class SyncWorker extends Worker {
     public SyncWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
 
-        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(context);
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(context);
-        goalRepository = ServiceLocator.getInstance().getGoalRepository(context);
-        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(context);
-        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(context);
+        Application application = (Application) context.getApplicationContext();
+
+        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(application);
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(application);
+        goalRepository = ServiceLocator.getInstance().getGoalRepository(application);
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(application);
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(application);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        Log.d(TAG, "Starting sync work");
-
         categoryRepository.sync();
         if (FirebaseHelper.getInstance().isUserLoggedIn()) {
             budgetRepository.sync();
@@ -48,7 +49,6 @@ public class SyncWorker extends Worker {
             transactionRepository.sync();
         }
 
-        Log.d(TAG, "Finished sync work");
         return Result.success();
     }
 

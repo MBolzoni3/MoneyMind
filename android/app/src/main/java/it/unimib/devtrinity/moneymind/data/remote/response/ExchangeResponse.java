@@ -1,4 +1,4 @@
-package it.unimib.devtrinity.moneymind.data.remote;
+package it.unimib.devtrinity.moneymind.data.remote.response;
 
 import java.util.Map;
 

@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -24,9 +25,9 @@ public class GoalRepository extends GenericRepository {
 
     private final GoalDao goalDao;
 
-    public GoalRepository(Context context) {
-        super(context, Constants.GOALS_LAST_SYNC_KEY, TAG);
-        this.goalDao = DatabaseClient.getInstance(context).goalDao();
+    public GoalRepository(Application application) {
+        super(application, Constants.GOALS_LAST_SYNC_KEY, TAG);
+        this.goalDao = DatabaseClient.getInstance(application).goalDao();
     }
 
     public LiveData<List<GoalEntityWithCategory>> getAll() {

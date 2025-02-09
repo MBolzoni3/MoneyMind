@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -30,9 +31,9 @@ public class TransactionRepository extends GenericRepository {
 
     private final TransactionDao transactionDao;
 
-    public TransactionRepository(Context context) {
-        super(context, Constants.TRANSACTIONS_LAST_SYNC_KEY, TAG);
-        this.transactionDao = DatabaseClient.getInstance(context).transactionDao();
+    public TransactionRepository(Application application) {
+        super(application, Constants.TRANSACTIONS_LAST_SYNC_KEY, TAG);
+        this.transactionDao = DatabaseClient.getInstance(application).transactionDao();
     }
 
     public LiveData<List<TransactionEntity>> getTransactions(long startDate, long endDate) {

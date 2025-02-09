@@ -2,6 +2,7 @@ package it.unimib.devtrinity.moneymind.data.remote;
 
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
+import it.unimib.devtrinity.moneymind.data.remote.service.ExchangeService;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

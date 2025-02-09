@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -25,9 +26,9 @@ public class CategoryRepository extends GenericRepository {
 
     private final CategoryDao categoryDao;
 
-    public CategoryRepository(Context context) {
-        super(context, null, TAG);
-        this.categoryDao = DatabaseClient.getInstance(context).categoryDao();
+    public CategoryRepository(Application application) {
+        super(application, null, TAG);
+        this.categoryDao = DatabaseClient.getInstance(application).categoryDao();
     }
 
     public LiveData<List<CategoryEntity>> getAllCategories() {

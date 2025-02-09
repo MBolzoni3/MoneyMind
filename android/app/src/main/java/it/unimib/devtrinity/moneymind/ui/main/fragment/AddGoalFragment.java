@@ -80,8 +80,8 @@ public class AddGoalFragment extends Fragment {
                 }
         );
 
-        goalRepository = ServiceLocator.getInstance().getGoalRepository(requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
+        goalRepository = ServiceLocator.getInstance().getGoalRepository(requireActivity().getApplication());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
 
         AddGoalViewModelFactory factory = new AddGoalViewModelFactory(categoryRepository);
         AddGoalViewModel viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);

@@ -1,6 +1,7 @@
-package it.unimib.devtrinity.moneymind.data.remote;
+package it.unimib.devtrinity.moneymind.data.remote.service;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
+import it.unimib.devtrinity.moneymind.data.remote.response.ExchangeResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

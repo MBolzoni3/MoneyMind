@@ -14,8 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
+import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
 import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
+import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SyncHelper;
@@ -38,7 +41,10 @@ public class LoginFragment extends Fragment {
         loadingIndicator = view.findViewById(R.id.loading_indicator);
         loadingOverlay = view.findViewById(R.id.loading_overlay);
 
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        UserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
+        LoginViewModelFactory factory = new LoginViewModelFactory(userRepository);
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+
         loginViewModel.getLoginState().observe(getViewLifecycleOwner(), state -> {
             if (state instanceof GenericState.Loading) {
                 toggleLoadingView(true);

@@ -45,7 +45,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
         RecyclerView recyclerView = view.findViewById(R.id.goal_recycler_view);
         fabAddGoal = view.findViewById(R.id.fab_add_goal);
 
-        GoalRepository goalRepository = ServiceLocator.getInstance().getGoalRepository(requireContext());
+        GoalRepository goalRepository = ServiceLocator.getInstance().getGoalRepository(requireActivity().getApplication());
         GoalViewModelFactory factory = new GoalViewModelFactory(goalRepository);
         goalViewModel = new ViewModelProvider(this, factory).get(GoalViewModel.class);
 

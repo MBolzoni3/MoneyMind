@@ -106,10 +106,10 @@ public class AddTransactionFragment extends Fragment {
                     }
                 });
 
-        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
-        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
-        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireContext());
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireActivity().getApplication());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
+        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireActivity().getApplication());
 
         AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(categoryRepository, exchangeRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);

@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.ExchangeDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.ExchangeEntity;
 import it.unimib.devtrinity.moneymind.data.remote.ExchangeDataSource;
-import it.unimib.devtrinity.moneymind.data.remote.ExchangeResponse;
+import it.unimib.devtrinity.moneymind.data.remote.response.ExchangeResponse;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,9 +33,9 @@ public class ExchangeRepository {
 
     private final MediatorLiveData<List<ExchangeEntity>> exchangeRatesLiveData = new MediatorLiveData<>();
 
-    public ExchangeRepository(Context context, ExchangeDataSource exchangeDataSource) {
+    public ExchangeRepository(Application application, ExchangeDataSource exchangeDataSource) {
         this.exchangeDataSource = exchangeDataSource;
-        this.exchangeDao = DatabaseClient.getInstance(context).exchangeDao();
+        this.exchangeDao = DatabaseClient.getInstance(application).exchangeDao();
         this.executorService = Executors.newSingleThreadExecutor();
     }
 

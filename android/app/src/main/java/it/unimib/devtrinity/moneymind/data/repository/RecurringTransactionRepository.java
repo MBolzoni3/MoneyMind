@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -27,9 +28,9 @@ public class RecurringTransactionRepository extends GenericRepository {
 
     private final RecurringTransactionDao recurringTransactionDao;
 
-    public RecurringTransactionRepository(Context context) {
-        super(context, Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, TAG);
-        this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
+    public RecurringTransactionRepository(Application application) {
+        super(application, Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, TAG);
+        this.recurringTransactionDao = DatabaseClient.getInstance(application).recurringTransactionDao();
     }
 
     public LiveData<List<TransactionEntityWithCategory>> getRecurringTransactions() {

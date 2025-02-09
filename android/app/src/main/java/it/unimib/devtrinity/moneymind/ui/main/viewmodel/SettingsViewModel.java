@@ -1,5 +1,7 @@
 package it.unimib.devtrinity.moneymind.ui.main.viewmodel;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -21,25 +23,25 @@ public class SettingsViewModel extends ViewModel {
         return themeLiveData;
     }
 
-    public void initTheme(Context context) {
+    public void initTheme(Application application) {
         if (themeLiveData.getValue() == null) {
-            themeLiveData.setValue(SharedPreferencesHelper.getTheme(context));
+            themeLiveData.setValue(SharedPreferencesHelper.getTheme(application));
         }
     }
 
-    public void setTheme(Context context, int theme) {
+    public void setTheme(Application application, int theme) {
         AppCompatDelegate.setDefaultNightMode(theme);
-        SharedPreferencesHelper.setTheme(context, theme);
+        SharedPreferencesHelper.setTheme(application, theme);
         themeLiveData.setValue(theme);
     }
 
-    public void logout(Context context) {
+    public void logout(Activity activity) {
         FirebaseHelper.getInstance().logoutUser();
-        SharedPreferencesHelper.clearSharedPrefs(context);
+        SharedPreferencesHelper.clearSharedPrefs(activity.getApplication());
         Executors.newSingleThreadExecutor().execute(() -> {
-            DatabaseClient.getInstance(context).clearAllTables();
+            DatabaseClient.getInstance(activity.getApplication()).clearAllTables();
         });
-        NavigationHelper.navigateToLogin(context);
+        NavigationHelper.navigateToLogin(activity);
     }
 }
 

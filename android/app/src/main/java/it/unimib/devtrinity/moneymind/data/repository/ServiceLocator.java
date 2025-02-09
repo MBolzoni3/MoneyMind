@@ -1,6 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
-import android.content.Context;
+import android.app.Application;
 
 import it.unimib.devtrinity.moneymind.data.remote.ExchangeDataSource;
 import it.unimib.devtrinity.moneymind.data.remote.RetrofitClient;
@@ -28,41 +28,41 @@ public class ServiceLocator {
         return instance;
     }
 
-    public BudgetRepository getBudgetRepository(Context context) {
+    public BudgetRepository getBudgetRepository(Application application) {
         if (budgetRepository == null) {
-            budgetRepository = new BudgetRepository(context);
+            budgetRepository = new BudgetRepository(application);
         }
 
         return budgetRepository;
     }
 
-    public CategoryRepository getCategoryRepository(Context context) {
+    public CategoryRepository getCategoryRepository(Application application) {
         if (categoryRepository == null) {
-            categoryRepository = new CategoryRepository(context);
+            categoryRepository = new CategoryRepository(application);
         }
 
         return categoryRepository;
     }
 
-    public GoalRepository getGoalRepository(Context context) {
+    public GoalRepository getGoalRepository(Application application) {
         if (goalRepository == null) {
-            goalRepository = new GoalRepository(context);
+            goalRepository = new GoalRepository(application);
         }
 
         return goalRepository;
     }
 
-    public RecurringTransactionRepository getRecurringTransactionRepository(Context context) {
+    public RecurringTransactionRepository getRecurringTransactionRepository(Application application) {
         if (recurringTransactionRepository == null) {
-            recurringTransactionRepository = new RecurringTransactionRepository(context);
+            recurringTransactionRepository = new RecurringTransactionRepository(application);
         }
 
         return recurringTransactionRepository;
     }
 
-    public TransactionRepository getTransactionRepository(Context context) {
+    public TransactionRepository getTransactionRepository(Application application) {
         if (transactionRepository == null) {
-            transactionRepository = new TransactionRepository(context);
+            transactionRepository = new TransactionRepository(application);
         }
 
         return transactionRepository;
@@ -76,9 +76,9 @@ public class ServiceLocator {
         return userRepository;
     }
 
-    public ExchangeRepository getExchangeRepository(Context context) {
+    public ExchangeRepository getExchangeRepository(Application application) {
         if (exchangeRepository == null) {
-            exchangeRepository = new ExchangeRepository(context, getExchangeDataSource());
+            exchangeRepository = new ExchangeRepository(application, getExchangeDataSource());
         }
 
         return exchangeRepository;

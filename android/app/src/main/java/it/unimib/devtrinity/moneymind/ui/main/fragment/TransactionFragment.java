@@ -45,8 +45,8 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
         RecyclerView recyclerView = view.findViewById(R.id.transaction_recycler_view);
         fabAddTransaction = view.findViewById(R.id.fab_add_transaction);
 
-        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
-        RecurringTransactionRepository recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
+        RecurringTransactionRepository recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireActivity().getApplication());
 
         TransactionViewModelFactory factory = new TransactionViewModelFactory(transactionRepository, recurringTransactionRepository);
         transactionViewModel = new ViewModelProvider(this, factory).get(TransactionViewModel.class);

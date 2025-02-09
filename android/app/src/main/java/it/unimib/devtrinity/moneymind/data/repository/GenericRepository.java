@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -16,9 +17,9 @@ public abstract class GenericRepository {
     private final String SYNC_KEY;
     private final String TAG;
 
-    public GenericRepository(Context context, String SYNC_KEY, String TAG) {
+    public GenericRepository(Application application, String SYNC_KEY, String TAG) {
         this.executorService = Executors.newSingleThreadExecutor();
-        this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
+        this.sharedPreferences = SharedPreferencesHelper.getPreferences(application);
         this.SYNC_KEY = SYNC_KEY;
         this.TAG = TAG;
     }

@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.util.Date;
 
+import it.unimib.devtrinity.moneymind.data.remote.response.ExchangeResponse;
+import it.unimib.devtrinity.moneymind.data.remote.service.ExchangeService;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;

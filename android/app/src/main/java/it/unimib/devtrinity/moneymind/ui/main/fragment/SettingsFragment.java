@@ -30,7 +30,7 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         SettingsViewModel viewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
-        viewModel.initTheme(getContext());
+        viewModel.initTheme(requireActivity().getApplication());
 
         MaterialButtonToggleGroup toggleGroup = view.findViewById(R.id.theme_toggle_group);
         MaterialButton buttonLight = view.findViewById(R.id.button_light);
@@ -53,14 +53,14 @@ public class SettingsFragment extends Fragment {
         toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
             if (checkedId == R.id.button_light)
-                viewModel.setTheme(requireContext(), AppCompatDelegate.MODE_NIGHT_NO);
+                viewModel.setTheme(requireActivity().getApplication(), AppCompatDelegate.MODE_NIGHT_NO);
             else if (checkedId == R.id.button_dark)
-                viewModel.setTheme(requireContext(), AppCompatDelegate.MODE_NIGHT_YES);
+                viewModel.setTheme(requireActivity().getApplication(), AppCompatDelegate.MODE_NIGHT_YES);
             else if (checkedId == R.id.button_auto)
-                viewModel.setTheme(requireContext(), AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                viewModel.setTheme(requireActivity().getApplication(), AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         });
 
-        btnLogout.setOnClickListener(v -> viewModel.logout(requireContext()));
+        btnLogout.setOnClickListener(v -> viewModel.logout(requireActivity()));
     }
 
 }

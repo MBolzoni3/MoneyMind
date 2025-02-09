@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(SharedPreferencesHelper.getTheme(this));
+        AppCompatDelegate.setDefaultNightMode(SharedPreferencesHelper.getTheme(getApplication()));
 
         setContentView(R.layout.activity_main);
 
@@ -33,18 +33,16 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         SyncHelper.scheduleSyncJob(this);
 
-        new Handler().postDelayed(() -> {
-            if (FirebaseHelper.getInstance().isUserLoggedIn()) {
-                SyncHelper.triggerManualSyncAndNavigate(this, () -> {
-                    NavigationHelper.navigateToMain(this);
-                });
-            } else {
-                loadingIndicator.setVisibility(View.GONE);
-                if (savedInstanceState == null) {
-                    NavigationHelper.loadFragment(this, new LoginFragment());
-                }
+        if (FirebaseHelper.getInstance().isUserLoggedIn()) {
+            SyncHelper.triggerManualSyncAndNavigate(this, () -> {
+                NavigationHelper.navigateToMain(this);
+            });
+        } else {
+            loadingIndicator.setVisibility(View.GONE);
+            if (savedInstanceState == null) {
+                NavigationHelper.loadFragment(this, new LoginFragment());
             }
-        }, 1000);
+        }
 
     }
 

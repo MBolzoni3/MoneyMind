@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -25,9 +26,9 @@ public class BudgetRepository extends GenericRepository {
 
     private final BudgetDao budgetDao;
 
-    public BudgetRepository(Context context) {
-        super(context, Constants.BUDGETS_LAST_SYNC_KEY, TAG);
-        this.budgetDao = DatabaseClient.getInstance(context).budgetDao();
+    public BudgetRepository(Application application) {
+        super(application, Constants.BUDGETS_LAST_SYNC_KEY, TAG);
+        this.budgetDao = DatabaseClient.getInstance(application).budgetDao();
     }
 
     public LiveData<List<BudgetEntityWithCategory>> getAll() {
