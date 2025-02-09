@@ -34,11 +34,10 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddGoalFragment extends Fragment {
 
+    private AddGoalViewModel viewModel;
     private final SelectionModeListener selectionModeListener;
 
     private GoalEntity currentGoal;
-    private GoalRepository goalRepository;
-    private CategoryRepository categoryRepository;
 
     private TextInputEditText nameField;
     private TextInputEditText targetAmountField;
@@ -80,11 +79,11 @@ public class AddGoalFragment extends Fragment {
                 }
         );
 
-        goalRepository = ServiceLocator.getInstance().getGoalRepository(requireActivity().getApplication());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
+        GoalRepository goalRepository = ServiceLocator.getInstance().getGoalRepository(requireActivity().getApplication());
+        CategoryRepository categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
 
-        AddGoalViewModelFactory factory = new AddGoalViewModelFactory(categoryRepository);
-        AddGoalViewModel viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
+        AddGoalViewModelFactory factory = new AddGoalViewModelFactory(goalRepository, categoryRepository);
+        viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
 
         nameField = view.findViewById(R.id.edit_goal_name);
         targetAmountField = view.findViewById(R.id.edit_goal_target_amount);
@@ -171,21 +170,16 @@ public class AddGoalFragment extends Fragment {
             goal = currentGoal;
         }
 
-        goalRepository.insertGoal(
-                goal,
-                new GenericCallback<>() {
+        viewModel.insertGoal(goal, new GenericCallback<>() {
+            @Override
+            public void onSuccess(Void result) {
+                navigateBack();
+            }
 
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        navigateBack();
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-
-                    }
-                }
-        );
+            @Override
+            public void onFailure(String errorMessage) {
+            }
+        });
     }
 }
 

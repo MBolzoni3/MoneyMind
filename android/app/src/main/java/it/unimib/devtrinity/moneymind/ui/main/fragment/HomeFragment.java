@@ -166,17 +166,4 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
 
     }
 
-    private String getWelcomeMessage() {
-        String displayName = FirebaseHelper.getInstance().getCurrentUser().getDisplayName();
-        int choice = (int) (Math.random() * 3);
-
-        switch (choice) {
-            case 0:
-                return "Ehila, " + displayName + "!";
-            case 1:
-                return "Che bello rivederti, " + displayName + "!";
-            default:
-                return "Buongiorno, " + displayName + "!";
-        }
-    }
 }

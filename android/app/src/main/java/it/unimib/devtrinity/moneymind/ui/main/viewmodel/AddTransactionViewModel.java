@@ -13,26 +13,80 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.ExchangeEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.ExchangeRepository;
+import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
+import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class AddTransactionViewModel extends ViewModel {
 
+    private final TransactionRepository transactionRepository;
+    private final RecurringTransactionRepository recurringTransactionRepository;
     private final ExchangeRepository exchangeRepository;
-    private final LiveData<List<CategoryEntity>> categories;
+    private final CategoryRepository categoryRepository;
     private final MutableLiveData<List<ExchangeEntity>> exchangeRates = new MutableLiveData<>();
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
 
-    public AddTransactionViewModel(CategoryRepository categoryRepository, ExchangeRepository exchangeRepository) {
+    public AddTransactionViewModel(TransactionRepository transactionRepository,
+                                   RecurringTransactionRepository recurringTransactionRepository,
+                                   CategoryRepository categoryRepository,
+                                   ExchangeRepository exchangeRepository) {
+        this.transactionRepository = transactionRepository;
+        this.recurringTransactionRepository = recurringTransactionRepository;
+        this.categoryRepository = categoryRepository;
         this.exchangeRepository = exchangeRepository;
-        this.categories = categoryRepository.getAllCategories();
     }
 
     public LiveData<List<CategoryEntity>> getCategories() {
-        return categories;
+        return categoryRepository.getAllCategories();
+    }
+
+    public LiveData<List<String>> getCurrencies() {
+        return currencies;
+    }
+
+    public LiveData<BigDecimal> getConvertedAmount() {
+        return convertedAmount;
+    }
+
+    public void insertTransaction(TransactionEntity transaction, GenericCallback<Void> callback) {
+        transactionRepository.insertTransaction(
+                transaction,
+                new GenericCallback<>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        callback.onSuccess(null);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        callback.onFailure(errorMessage);
+                    }
+                }
+        );
+    }
+
+    public void insertRecurringTransaction(RecurringTransactionEntity transaction, GenericCallback<Void> callback) {
+        recurringTransactionRepository.insertTransaction(
+                transaction,
+                new GenericCallback<>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        callback.onSuccess(null);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        callback.onFailure(errorMessage);
+                    }
+                }
+        );
     }
 
     public void fetchExchangeRates(Date date, GenericCallback<Void> callback) {
@@ -87,14 +141,6 @@ public class AddTransactionViewModel extends ViewModel {
         }
 
         convertedAmount.setValue(amount);
-    }
-
-    public LiveData<List<String>> getCurrencies() {
-        return currencies;
-    }
-
-    public LiveData<BigDecimal> getConvertedAmount() {
-        return convertedAmount;
     }
 
 }

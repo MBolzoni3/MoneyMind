@@ -34,11 +34,10 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddBudgetFragment extends Fragment {
 
+    private AddBudgetViewModel viewModel;
     private final SelectionModeListener selectionModeListener;
 
     private BudgetEntity currentBudget;
-    private BudgetRepository budgetRepository;
-    private CategoryRepository categoryRepository;
 
     private TextInputEditText nameField;
     private TextInputEditText amountField;
@@ -79,10 +78,10 @@ public class AddBudgetFragment extends Fragment {
                 }
         );
 
-        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireActivity().getApplication());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
-        AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(categoryRepository);
-        AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
+        BudgetRepository budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireActivity().getApplication());
+        CategoryRepository categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
+        AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(budgetRepository, categoryRepository);
+        viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
 
         nameField = view.findViewById(R.id.edit_budget_name);
         amountField = view.findViewById(R.id.edit_budget_amount);
@@ -165,20 +164,16 @@ public class AddBudgetFragment extends Fragment {
             budget = currentBudget;
         }
 
-        budgetRepository.insertBudget(
-                budget,
-                new GenericCallback<>() {
+        viewModel.insertBudget(budget, new GenericCallback<>() {
+            @Override
+            public void onSuccess(Void result) {
+                navigateBack();
+            }
 
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        navigateBack();
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                    }
-                }
-        );
+            @Override
+            public void onFailure(String errorMessage) {
+            }
+        });
     }
 
 

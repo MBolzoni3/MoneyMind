@@ -50,10 +50,6 @@ public class AddTransactionFragment extends Fragment {
     private final SelectionModeListener selectionModeListener;
 
     private TransactionEntity currentTransaction;
-    private TransactionRepository transactionRepository;
-    private RecurringTransactionRepository recurringTransactionRepository;
-    private CategoryRepository categoryRepository;
-    private ExchangeRepository exchangeRepository;
     private AddTransactionViewModel viewModel;
 
     private TextInputEditText nameField;
@@ -106,12 +102,12 @@ public class AddTransactionFragment extends Fragment {
                     }
                 });
 
-        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
-        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireActivity().getApplication());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
-        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireActivity().getApplication());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
+        RecurringTransactionRepository recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireActivity().getApplication());
+        CategoryRepository categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
+        ExchangeRepository exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireActivity().getApplication());
 
-        AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(categoryRepository, exchangeRepository);
+        AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(transactionRepository, recurringTransactionRepository, categoryRepository, exchangeRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);
 
         nameField = view.findViewById(R.id.edit_transaction_name);
@@ -411,25 +407,29 @@ public class AddTransactionFragment extends Fragment {
         TransactionEntity transaction = buildTransaction();
 
         if (!recurringCheckbox.isChecked()) {
-            transactionRepository.insertTransaction(transaction, new GenericCallback<>() {
+            viewModel.insertTransaction(transaction, new GenericCallback<>() {
+
                 @Override
-                public void onSuccess(Boolean result) {
+                public void onSuccess(Void result) {
                     navigateBack();
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
+
                 }
             });
         } else {
-            recurringTransactionRepository.insertTransaction((RecurringTransactionEntity) transaction, new GenericCallback<>() {
+            viewModel.insertRecurringTransaction((RecurringTransactionEntity) transaction, new GenericCallback<>() {
+
                 @Override
-                public void onSuccess(Boolean result) {
+                public void onSuccess(Void result) {
                     navigateBack();
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
+
                 }
             });
         }
