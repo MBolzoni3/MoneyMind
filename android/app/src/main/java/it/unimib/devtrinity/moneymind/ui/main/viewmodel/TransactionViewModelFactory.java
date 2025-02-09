@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 

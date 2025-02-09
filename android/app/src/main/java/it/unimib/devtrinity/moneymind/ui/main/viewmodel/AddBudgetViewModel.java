@@ -11,11 +11,11 @@ import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 public class AddBudgetViewModel extends ViewModel {
     private final LiveData<List<CategoryEntity>> categories;
 
-   public AddBudgetViewModel(CategoryRepository repository) {
-       this.categories = repository.getAllCategories();
-   }
+    public AddBudgetViewModel(CategoryRepository repository) {
+        this.categories = repository.getAllCategories();
+    }
 
-   public LiveData<List<CategoryEntity>> getCategories() {
-      return categories;
-   }
+    public LiveData<List<CategoryEntity>> getCategories() {
+        return categories;
+    }
 }

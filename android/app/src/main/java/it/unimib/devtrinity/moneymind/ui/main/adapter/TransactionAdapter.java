@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,10 +21,8 @@ import java.util.Set;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
-import it.unimib.devtrinity.moneymind.ui.main.fragment.AddGoalFragment;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.AddTransactionFragment;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
@@ -32,18 +30,17 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final int VIEW_TYPE_RECURRING = 0;
     private static final int VIEW_TYPE_DIVIDER = 1;
-    private static final int VIEW_TYPE_TRANSACTION = 2;
+    private static final int VIEW_TYPE_DIVIDER_NO_TEXT = 2;
+    private static final int VIEW_TYPE_TRANSACTION = 3;
 
-    private final List<Object> transactionsList = new ArrayList<>();
-    private final FragmentManager fragmentManager;
     private final SelectionModeListener selectionListener;
+    private final List<Object> transactionsList = new ArrayList<>();
     private final Set<Integer> selectedPositions = new HashSet<>();
 
     private boolean isSelectionModeActive = false;
 
-    public TransactionAdapter(SelectionModeListener listener, FragmentManager fragmentManager) {
+    public TransactionAdapter(SelectionModeListener listener) {
         this.selectionListener = listener;
-        this.fragmentManager = fragmentManager;
     }
 
     public void updateList(List<Object> newList) {
@@ -55,15 +52,17 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         Object item = transactionsList.get(position);
-        if(item instanceof TransactionEntityWithCategory){
+        if (item instanceof TransactionEntityWithCategory) {
             TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) item;
-            if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+            if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                 return VIEW_TYPE_RECURRING;
-            } else if(transaction.getTransaction() != null) {
+            } else if (transaction.getTransaction() != null) {
                 return VIEW_TYPE_TRANSACTION;
             }
-        } else if("divider".equals(item)){
+        } else if ("divider".equals(item)) {
             return VIEW_TYPE_DIVIDER;
+        } else if ("divider-no-text".equals(item)) {
+            return VIEW_TYPE_DIVIDER_NO_TEXT;
         }
 
         throw new IllegalArgumentException("Unknown item type at position " + position);
@@ -77,7 +76,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return new TransactionViewHolder(inflater.inflate(R.layout.transaction_item_layout, parent, false));
         } else if (viewType == VIEW_TYPE_DIVIDER) {
             return new DividerViewHolder(inflater.inflate(R.layout.transaction_item_divider_layout, parent, false));
+        } else if (viewType == VIEW_TYPE_DIVIDER_NO_TEXT) {
+            return new DividerNoTextViewHolder(inflater.inflate(R.layout.transaction_item_divider_layout, parent, false));
         }
+
         throw new IllegalArgumentException("Unknown view type");
     }
 
@@ -92,7 +94,16 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             setupItemClickListener(transactionViewHolder, position);
             updateSelectionState(transactionViewHolder, position);
         } else if (holder instanceof DividerViewHolder) {
-            ((DividerViewHolder) holder).bind("Movimenti Normali");
+            if (position == 0 && transactionsList.size() > 1) {
+                TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) transactionsList.get(position + 1);
+                if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
+                    ((DividerViewHolder) holder).bind("Movimenti Ricorrenti");
+                } else {
+                    ((DividerViewHolder) holder).bind("Movimenti");
+                }
+            } else {
+                ((DividerViewHolder) holder).bind("Movimenti");
+            }
         }
     }
 
@@ -116,14 +127,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 toggleSelection(position);
             } else {
                 TransactionEntityWithCategory transactionEntityWithCategory = (TransactionEntityWithCategory) transactionsList.get(position);
-
-                AddTransactionFragment addTransactionFragment = new AddTransactionFragment();
+                AddTransactionFragment addTransactionFragment = new AddTransactionFragment(selectionListener);
                 addTransactionFragment.setTransaction(transactionEntityWithCategory.getTransaction());
 
-                fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, addTransactionFragment)
-                        .addToBackStack(null)
-                        .commit();
+                selectionListener.onEnterEditMode(addTransactionFragment);
             }
         });
     }
@@ -169,19 +176,29 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class DividerViewHolder extends RecyclerView.ViewHolder {
-        //private final TextView dividerTitle;
+
+        private final MaterialTextView dividerTextView;
 
         DividerViewHolder(@NonNull View itemView) {
             super(itemView);
-            //dividerTitle = itemView.findViewById(R.id.divider_title);
+            dividerTextView = itemView.findViewById(R.id.divider);
         }
 
         void bind(String title) {
-            //dividerTitle.setText(title);
+            dividerTextView.setText(title);
         }
+
     }
 
-    static class TransactionViewHolder extends RecyclerView.ViewHolder {
+    static class DividerNoTextViewHolder extends RecyclerView.ViewHolder {
+
+        DividerNoTextViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+    }
+
+    public static class TransactionViewHolder extends RecyclerView.ViewHolder {
         private final TextView name, amount, date;
         private final ShapeableImageView categoryIcon, typeIcon;
         private final MaterialCardView cardView;
@@ -204,7 +221,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             amount.setText(Utils.formatTransactionAmount(transaction.getTransaction().getAmount(), transaction.getTransaction().getType()));
             typeIcon.setImageResource(Utils.getTypeIcon(transaction.getTransaction().getType()));
 
-            if(transaction.getTransaction() instanceof RecurringTransactionEntity){
+            if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                 RecurringTransactionEntity recurringTransaction = (RecurringTransactionEntity) transaction.getTransaction();
                 date.setText(recurringTransaction.getFormattedRecurrence());
             } else {

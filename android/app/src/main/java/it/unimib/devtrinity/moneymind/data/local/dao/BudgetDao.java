@@ -34,7 +34,8 @@ public interface BudgetDao {
 
     @Query("UPDATE budgets SET synced = 1, updatedAt = :updatedAt WHERE id = :id")
     void setSynced(int id, long updatedAt);
-    default void setSynced(int id){
+
+    default void setSynced(int id) {
         setSynced(id, System.currentTimeMillis());
     }
 
@@ -43,7 +44,8 @@ public interface BudgetDao {
 
     @Query("UPDATE budgets SET deleted = 1, synced = 0, updatedAt = :updatedAt WHERE id = :id")
     void deleteById(int id, long updatedAt);
-    default void deleteById(int id){
+
+    default void deleteById(int id) {
         deleteById(id, System.currentTimeMillis());
     }
 

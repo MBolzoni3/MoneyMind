@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,16 +18,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
-import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
-import it.unimib.devtrinity.moneymind.ui.main.adapter.BudgetAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.GoalAdapter;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
-import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.GoalViewModelFactory;
 
@@ -51,12 +45,11 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
         RecyclerView recyclerView = view.findViewById(R.id.goal_recycler_view);
         fabAddGoal = view.findViewById(R.id.fab_add_goal);
 
-        GoalRepository goalRepository = new GoalRepository(requireContext());
-
+        GoalRepository goalRepository = ServiceLocator.getInstance().getGoalRepository(requireContext());
         GoalViewModelFactory factory = new GoalViewModelFactory(goalRepository);
         goalViewModel = new ViewModelProvider(this, factory).get(GoalViewModel.class);
 
-        goalAdapter = new GoalAdapter(this, requireActivity().getSupportFragmentManager());
+        goalAdapter = new GoalAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(goalAdapter);
 
@@ -64,13 +57,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
             goalAdapter.updateGoals(goalList);
         });
 
-        fabAddGoal.setOnClickListener(v -> {
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddGoalFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        fabAddGoal.setOnClickListener(v -> onEnterEditMode(new AddGoalFragment(this)));
     }
 
     public List<GoalEntityWithCategory> getSelectedItems() {
@@ -78,7 +65,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
     }
 
     public void deleteSelected() {
-        if(getSelectedItems().isEmpty()) return;
+        if (getSelectedItems().isEmpty()) return;
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.delete_goal_confirmation_title)
@@ -112,4 +99,15 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
     public void onSelectionCountChanged(int count) {
         ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
     }
+
+    @Override
+    public void onExitEditMode() {
+        ((SelectionModeListener) requireActivity()).onExitEditMode();
+    }
+
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
+    }
+
 }

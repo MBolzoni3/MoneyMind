@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -14,23 +13,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
-import it.unimib.devtrinity.moneymind.ui.main.OnDateSelectedListener;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModelFactory;
@@ -39,6 +33,8 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddGoalFragment extends Fragment {
+
+    private final SelectionModeListener selectionModeListener;
 
     private GoalEntity currentGoal;
     private GoalRepository goalRepository;
@@ -52,8 +48,16 @@ public class AddGoalFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
+    public AddGoalFragment(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
     public void setGoal(GoalEntity goal) {
         this.currentGoal = goal;
+    }
+
+    public GoalEntity getGoal() {
+        return this.currentGoal;
     }
 
     @Nullable
@@ -76,11 +80,9 @@ public class AddGoalFragment extends Fragment {
                 }
         );
 
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(currentGoal == null ? "Aggiungi Obiettivo" : "Modifica Obiettivo");
+        goalRepository = ServiceLocator.getInstance().getGoalRepository(requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
 
-        goalRepository = new GoalRepository(requireContext());
-        categoryRepository = new CategoryRepository(requireContext());
         AddGoalViewModelFactory factory = new AddGoalViewModelFactory(categoryRepository);
         AddGoalViewModel viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
 
@@ -124,21 +126,16 @@ public class AddGoalFragment extends Fragment {
             Utils.showDatePicker(endDateField::setText, this);
         });
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save_goal);
-        MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-
-        saveButton.setOnClickListener(v -> {
-            saveGoal();
-            navigateBack();
-        });
-
-        cancelButton.setOnClickListener(v -> navigateBack());
-
         compileFields();
     }
 
-    private void compileFields(){
-        if(currentGoal == null) return;
+    public void onSaveButtonClick() {
+        saveGoal();
+        navigateBack();
+    }
+
+    private void compileFields() {
+        if (currentGoal == null) return;
 
         nameField.setText(currentGoal.getName());
         targetAmountField.setText(currentGoal.getTargetAmount().toString());
@@ -148,32 +145,10 @@ public class AddGoalFragment extends Fragment {
     }
 
     private void navigateBack() {
-        getParentFragmentManager().popBackStack();
-    }
-
-    private boolean isValidName(String name) {
-        // check se è formato solo da lettere e spazi
-        Pattern pattern = Pattern.compile("^[a-zA-Z\\s]+$");
-        return pattern.matcher(name).matches();
+        selectionModeListener.onExitEditMode();
     }
 
     private void saveGoal() {
-
-        Date startDate = Utils.stringToDate(startDateField.getText().toString());
-        Date endDate = Utils.stringToDate(endDateField.getText().toString());
-
-        if (endDate.before(startDate)) {
-            // End date is before start date - show an error
-            endDateField.setError("La data di fine deve essere successiva alla data di inizio");
-            return; // Stop the save operation
-        }
-
-        String name = nameField.getText().toString();
-        if (!isValidName(name)) {
-            nameField.setError("Il nome deve contenere solo lettere");
-            return;
-        }
-
         GoalEntity goal = new GoalEntity(
                 nameField.getText().toString(),
                 Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO),
@@ -183,7 +158,7 @@ public class AddGoalFragment extends Fragment {
                 selectedCategory.getFirestoreId(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid());
 
-        if(currentGoal != null){
+        if (currentGoal != null) {
             currentGoal.setName(nameField.getText().toString());
             currentGoal.setTargetAmount(Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO));
             currentGoal.setSavedAmount(Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO));

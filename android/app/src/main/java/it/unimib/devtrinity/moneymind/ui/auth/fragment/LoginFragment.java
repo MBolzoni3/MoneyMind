@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,8 @@ import it.unimib.devtrinity.moneymind.utils.SyncHelper;
 
 public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;
+    private ProgressBar loadingIndicator;
+    private View loadingOverlay;
 
     @Nullable
     @Override
@@ -32,15 +35,19 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        loadingIndicator = view.findViewById(R.id.loading_indicator);
+        loadingOverlay = view.findViewById(R.id.loading_overlay);
 
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         loginViewModel.getLoginState().observe(getViewLifecycleOwner(), state -> {
             if (state instanceof GenericState.Loading) {
-                // Mostra una progress bar
+                toggleLoadingView(true);
             } else if (state instanceof GenericState.Success) {
-                NavigationHelper.navigateToMain(getContext());
-                SyncHelper.triggerManualSync(getContext());
+                SyncHelper.triggerManualSyncAndNavigate(getContext(), () -> {
+                    NavigationHelper.navigateToMain(getContext());
+                });
             } else if (state instanceof GenericState.Failure) {
+                toggleLoadingView(false);
                 String error = ((GenericState.Failure<String>) state).getErrorMessage();
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
@@ -65,5 +72,11 @@ public class LoginFragment extends Fragment {
     private boolean validateInput(String email, String password) {
         return email != null && !email.isEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
                 && password != null && !password.isEmpty();
+    }
+
+    private void toggleLoadingView(boolean isLoading) {
+        int visibility = isLoading ? View.VISIBLE : View.GONE;
+        loadingIndicator.setVisibility(visibility);
+        loadingOverlay.setVisibility(visibility);
     }
 }

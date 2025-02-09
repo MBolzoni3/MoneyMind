@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -14,22 +13,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModelFactory;
@@ -38,6 +33,8 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddBudgetFragment extends Fragment {
+
+    private final SelectionModeListener selectionModeListener;
 
     private BudgetEntity currentBudget;
     private BudgetRepository budgetRepository;
@@ -50,8 +47,16 @@ public class AddBudgetFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
+    public AddBudgetFragment(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
     public void setBudget(BudgetEntity budget) {
         this.currentBudget = budget;
+    }
+
+    public BudgetEntity getBudget() {
+        return this.currentBudget;
     }
 
     @Nullable
@@ -74,11 +79,8 @@ public class AddBudgetFragment extends Fragment {
                 }
         );
 
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(currentBudget == null ? "Aggiungi Budget" : "Modifica Budget");
-
-        budgetRepository = new BudgetRepository(requireContext());
-        categoryRepository = new CategoryRepository(requireContext());
+        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
         AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(categoryRepository);
         AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
 
@@ -121,21 +123,16 @@ public class AddBudgetFragment extends Fragment {
             Utils.showDatePicker(endDateField::setText, this);
         });
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save_budget);
-        MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-
-        saveButton.setOnClickListener(v -> {
-            saveBudget();
-            navigateBack();
-        });
-
-        cancelButton.setOnClickListener(v -> navigateBack());
-
         compileFields();
     }
 
-    private void compileFields(){
-        if(currentBudget == null) return;
+    public void onSaveButtonClick() {
+        saveBudget();
+        navigateBack();
+    }
+
+    private void compileFields() {
+        if (currentBudget == null) return;
 
         nameField.setText(currentBudget.getName());
         amountField.setText(currentBudget.getAmount().toString());
@@ -144,58 +141,34 @@ public class AddBudgetFragment extends Fragment {
     }
 
     private void navigateBack() {
-        getParentFragmentManager().popBackStack();
-    }
-
-    private boolean isValidName(String name) {
-        // check se è formato solo da lettere e spazi
-        Pattern pattern = Pattern.compile("^[a-zA-Z\\s]+$");
-        return pattern.matcher(name).matches();
+        selectionModeListener.onExitEditMode();
     }
 
     private void saveBudget() {
+        BudgetEntity budget = new BudgetEntity(
+                nameField.getText().toString(),
+                Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
+                Utils.stringToDate(startDateField.getText().toString()),
+                Utils.stringToDate(endDateField.getText().toString()),
+                selectedCategory.getFirestoreId(),
+                FirebaseHelper.getInstance().getCurrentUser().getUid());
 
-        Date startDate = Utils.stringToDate(startDateField.getText().toString());
-        Date endDate = Utils.stringToDate(endDateField.getText().toString());
-
-        if (endDate.before(startDate)) {
-            // End date is before start date - show an error
-            endDateField.setError("La data di fine deve essere successiva alla data di inizio");
-            return; // Stop the save operation
-        }
-
-        String name = nameField.getText().toString();
-        if (!isValidName(name)) {
-            nameField.setError("Il nome deve contenere solo lettere");
-            return;
-        }
-
-
-        // Create or update the BudgetEntity
-        BudgetEntity budget;
-        if (currentBudget == null) {
-            budget = new BudgetEntity(
-                    nameField.getText().toString(),
-                    Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
-                    startDate,
-                    endDate,
-                    selectedCategory.getFirestoreId(),
-                    FirebaseHelper.getInstance().getCurrentUser().getUid());
-        } else {
+        if (currentBudget != null) {
             currentBudget.setName(nameField.getText().toString());
             currentBudget.setAmount(Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO));
-            currentBudget.setStartDate(startDate);
-            currentBudget.setEndDate(endDate);
+            currentBudget.setStartDate(Utils.stringToDate(startDateField.getText().toString()));
+            currentBudget.setEndDate(Utils.stringToDate(endDateField.getText().toString()));
             currentBudget.setCategoryId(selectedCategory.getFirestoreId());
             currentBudget.setUpdatedAt(Timestamp.now());
             currentBudget.setSynced(false);
+
             budget = currentBudget;
         }
 
-        // Save the budget to the repository
         budgetRepository.insertBudget(
                 budget,
                 new GenericCallback<>() {
+
                     @Override
                     public void onSuccess(Boolean result) {
                         navigateBack();
@@ -203,7 +176,6 @@ public class AddBudgetFragment extends Fragment {
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        // Handle the failure case, e.g., show a toast or log the error
                     }
                 }
         );

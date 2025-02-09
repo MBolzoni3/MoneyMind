@@ -1,7 +1,5 @@
 package it.unimib.devtrinity.moneymind.utils.google;
 
-import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -40,10 +38,8 @@ public class FirebaseHelper {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
-                        Log.d(TAG, "Login successful: " + (user != null ? user.getEmail() : "No email"));
                         callback.onSuccess(user);
                     } else {
-                        Log.e(TAG, "Login failed: " + task.getException().getMessage());
                         callback.onFailure(task.getException().getMessage());
                     }
                 });
@@ -76,7 +72,6 @@ public class FirebaseHelper {
 
     public void logoutUser() {
         auth.signOut();
-        Log.d(TAG, "User logged out");
     }
 }
 

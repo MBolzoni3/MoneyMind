@@ -6,9 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,18 +32,16 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
 
     private final BudgetViewModel budgetViewModel;
     private final LifecycleOwner lifecycleOwner;
-    private final FragmentManager fragmentManager;
     private final List<BudgetEntityWithCategory> budgetList = new ArrayList<>();
     private final Set<Integer> selectedPositions = new HashSet<>();
     private final SelectionModeListener selectionListener;
 
     private boolean isSelectionModeActive = false;
 
-    public BudgetAdapter(BudgetViewModel viewModel, LifecycleOwner lifecycleOwner, SelectionModeListener listener, FragmentManager fragmentManager) {
+    public BudgetAdapter(BudgetViewModel viewModel, LifecycleOwner lifecycleOwner, SelectionModeListener selectionListener) {
         this.budgetViewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
-        this.selectionListener = listener;
-        this.fragmentManager = fragmentManager;
+        this.selectionListener = selectionListener;
     }
 
     @NonNull
@@ -77,13 +72,10 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
             if (isSelectionModeActive) {
                 toggleSelection(position);
             } else {
-                AddBudgetFragment addBudgetFragment = new AddBudgetFragment();
+                AddBudgetFragment addBudgetFragment = new AddBudgetFragment(selectionListener);
                 addBudgetFragment.setBudget(budget.getBudget());
 
-                fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, addBudgetFragment)
-                        .addToBackStack(null)
-                        .commit();
+                selectionListener.onEnterEditMode(addBudgetFragment);
             }
         });
 

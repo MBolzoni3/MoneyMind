@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,7 +20,7 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
-import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.BudgetAdapter;
@@ -47,13 +46,13 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
         RecyclerView recyclerView = view.findViewById(R.id.budget_recycler_view);
         fabAddBudget = view.findViewById(R.id.fab_add_budget);
 
-        BudgetRepository budgetRepository = new BudgetRepository(requireContext());
-        TransactionRepository transactionRepository = new TransactionRepository(requireContext());
+        BudgetRepository budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
 
         BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
         budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
 
-        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this, requireActivity().getSupportFragmentManager());
+        budgetAdapter = new BudgetAdapter(budgetViewModel, getViewLifecycleOwner(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(budgetAdapter);
 
@@ -61,13 +60,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
             budgetAdapter.updateBudgets(budgetList);
         });
 
-        fabAddBudget.setOnClickListener(v -> {
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, new AddBudgetFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
+        fabAddBudget.setOnClickListener(v -> onEnterEditMode(new AddBudgetFragment(this)));
     }
 
     public List<BudgetEntityWithCategory> getSelectedItems() {
@@ -75,7 +68,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
     }
 
     public void deleteSelected() {
-        if(getSelectedItems().isEmpty()) return;
+        if (getSelectedItems().isEmpty()) return;
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.delete_budget_confirmation_title)
@@ -108,5 +101,15 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
     @Override
     public void onSelectionCountChanged(int count) {
         ((SelectionModeListener) requireActivity()).onSelectionCountChanged(count);
+    }
+
+    @Override
+    public void onExitEditMode() {
+        ((SelectionModeListener) requireActivity()).onExitEditMode();
+    }
+
+    @Override
+    public void onEnterEditMode(Fragment fragment) {
+        ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
     }
 }

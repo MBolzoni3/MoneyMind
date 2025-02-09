@@ -5,25 +5,69 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ExchangeRepository;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class AddTransactionViewModel extends ViewModel {
+
+    private final ExchangeRepository exchangeRepository;
     private final LiveData<List<CategoryEntity>> categories;
+    private final MutableLiveData<Map<String, Double>> exchangeRates = new MutableLiveData<>();
     private final MutableLiveData<List<String>> currencies = new MutableLiveData<>();
     private final MutableLiveData<BigDecimal> convertedAmount = new MutableLiveData<>();
 
-    public AddTransactionViewModel(CategoryRepository repository) {
-        this.categories = repository.getAllCategories();
+    public AddTransactionViewModel(CategoryRepository categoryRepository, ExchangeRepository exchangeRepository) {
+        this.exchangeRepository = exchangeRepository;
+        this.categories = categoryRepository.getAllCategories();
     }
 
     public LiveData<List<CategoryEntity>> getCategories() {
         return categories;
+    }
+
+    public void fetchExchangeRates(Date date) {
+        LiveData<Map<String, Double>> liveData = exchangeRepository.getExchangeRates(date);
+
+        liveData.observeForever(rates -> {
+            if (rates != null) {
+                exchangeRates.setValue(rates);
+                currencies.setValue(Utils.getCurrencyDropdownItems(new ArrayList<>(rates.keySet())));
+            }
+        });
+    }
+
+    public void calculateConversion(BigDecimal amount, String selectedCurrency) {
+        if (amount == null || selectedCurrency == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            convertedAmount.setValue(BigDecimal.ZERO);
+            return;
+        }
+
+        if (selectedCurrency.equals("EUR")) {
+            convertedAmount.setValue(amount);
+            return;
+        }
+
+        Map<String, Double> rates = exchangeRates.getValue();
+        if (rates != null && rates.containsKey(selectedCurrency)) {
+            BigDecimal rate = BigDecimal.valueOf(rates.get(selectedCurrency));
+            if (rate.compareTo(BigDecimal.ZERO) == 0) {
+                convertedAmount.setValue(BigDecimal.ZERO);
+            }
+
+            BigDecimal converted = amount.divide(rate, MathContext.DECIMAL128);
+            convertedAmount.setValue(converted.setScale(4, RoundingMode.HALF_EVEN));
+        } else {
+            convertedAmount.setValue(amount);
+        }
     }
 
     public LiveData<List<String>> getCurrencies() {
@@ -32,37 +76,6 @@ public class AddTransactionViewModel extends ViewModel {
 
     public LiveData<BigDecimal> getConvertedAmount() {
         return convertedAmount;
-    }
-
-    public void fetchCurrencies() {
-        //TODO get currencies list from API
-        final List<String> CURRENCIES = Arrays.asList(
-                "EUR", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK",
-                "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY",
-                "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PLN", "RON", "RUB",
-                "SEK", "SGD", "THB", "TRY", "USD", "ZAR"
-        );
-
-        currencies.setValue(Utils.getCurrencyDropdownItems(CURRENCIES));
-    }
-
-    public void fetchConvertedAmount(BigDecimal amount, Date date, String currency) {
-        if(date == null || currency == null) {
-            return;
-        }
-
-        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
-            convertedAmount.setValue(amount);
-            return;
-        }
-
-        if (currency.equals("EUR")) {
-            convertedAmount.setValue(amount);
-            return;
-        }
-
-        //TODO get converted amount from API
-        convertedAmount.setValue(amount);
     }
 
 }

@@ -10,7 +10,6 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 
 @Dao
 public interface RecurringTransactionDao {
@@ -21,11 +20,22 @@ public interface RecurringTransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrUpdate(RecurringTransactionEntity transaction);
 
-    @Query("UPDATE recurring_transactions SET synced = 1, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
-    void setSynced(int id);
+    @Query("UPDATE recurring_transactions SET synced = 1, updatedAt = :updatedAt WHERE id = :id")
+    void setSynced(int id, long updatedAt);
+
+    default void setSynced(int id) {
+        setSynced(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT * FROM recurring_transactions WHERE firestoreId = :firestoreId")
     RecurringTransactionEntity getByFirestoreId(String firestoreId);
+
+    @Query("UPDATE recurring_transactions SET deleted = 1, synced = 0, updatedAt = :updatedAt WHERE id = :id")
+    void deleteById(int id, long updatedAt);
+
+    default void deleteById(int id) {
+        deleteById(id, System.currentTimeMillis());
+    }
 
     @Query("SELECT recurring_transactions.*, " +
             "categories.firestoreId AS category_firestoreId, " +

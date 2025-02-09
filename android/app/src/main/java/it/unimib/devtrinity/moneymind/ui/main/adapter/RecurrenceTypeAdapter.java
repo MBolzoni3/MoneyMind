@@ -15,7 +15,6 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 
 public class RecurrenceTypeAdapter extends ArrayAdapter<RecurrenceTypeEnum> {
@@ -35,7 +34,7 @@ public class RecurrenceTypeAdapter extends ArrayAdapter<RecurrenceTypeEnum> {
         TextView name = convertView.findViewById(R.id.category_name);
 
         RecurrenceTypeEnum type = getItem(position);
-        if(type != null) {
+        if (type != null) {
             switch (type) {
                 case DAILY:
                     name.setText(R.string.daily);

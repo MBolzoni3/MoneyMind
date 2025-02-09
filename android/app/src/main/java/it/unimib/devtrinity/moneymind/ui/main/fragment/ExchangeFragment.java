@@ -12,15 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 import it.unimib.devtrinity.moneymind.R;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
-import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.ExchangeViewModel;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class ExchangeFragment extends Fragment {
 

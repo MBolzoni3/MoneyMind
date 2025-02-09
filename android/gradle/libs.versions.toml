@@ -23,6 +23,7 @@ workRuntime = "2.10.0"
 workRuntimeVersion = "2.9.1"
 
 [libraries]
+converter-jaxb = { module = "com.squareup.retrofit2:converter-jaxb", version.ref = "retrofitVersion" }
 converter-simplexml = { module = "com.squareup.retrofit2:converter-simplexml", version.ref = "retrofitVersion" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }

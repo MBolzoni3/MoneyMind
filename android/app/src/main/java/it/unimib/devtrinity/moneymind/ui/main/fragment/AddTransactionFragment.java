@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -35,8 +33,11 @@ import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ExchangeRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.RecurrenceTypeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionTypeAdapter;
@@ -48,16 +49,20 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddTransactionFragment extends Fragment {
 
+    private final SelectionModeListener selectionModeListener;
+
     private TransactionEntity currentTransaction;
     private TransactionRepository transactionRepository;
     private RecurringTransactionRepository recurringTransactionRepository;
     private CategoryRepository categoryRepository;
+    private ExchangeRepository exchangeRepository;
     private AddTransactionViewModel viewModel;
 
     private TextInputEditText nameField;
     private TextInputEditText amountField;
     private TextInputEditText convertedAmountField;
     private TextInputEditText dateField;
+    private Date selectedDate;
     private MaterialAutoCompleteTextView currencyDropdown;
     private String selectedCurrency;
     private MaterialAutoCompleteTextView typeDropdown;
@@ -73,14 +78,21 @@ public class AddTransactionFragment extends Fragment {
     private TextInputEditText recurrenceInterval;
     private TextInputEditText endDateField;
 
+    public AddTransactionFragment(SelectionModeListener selectionModeListener) {
+        this.selectionModeListener = selectionModeListener;
+    }
+
     public void setTransaction(TransactionEntity transaction) {
         this.currentTransaction = transaction;
     }
 
+    public TransactionEntity getTransaction() {
+        return this.currentTransaction;
+    }
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_add_transaction, container, false);
     }
 
@@ -96,13 +108,12 @@ public class AddTransactionFragment extends Fragment {
                     }
                 });
 
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(getString(currentTransaction == null ? R.string.add_transaction_title : R.string.edit_transaction_title));
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
+        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireContext());
 
-        transactionRepository = new TransactionRepository(requireContext());
-        recurringTransactionRepository = new RecurringTransactionRepository(requireContext());
-        categoryRepository = new CategoryRepository(requireContext());
-        AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(categoryRepository);
+        AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(categoryRepository, exchangeRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);
 
         nameField = view.findViewById(R.id.edit_transaction_name);
@@ -113,7 +124,7 @@ public class AddTransactionFragment extends Fragment {
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
             convertedAmountField.setEnabled(true);
-            convertedAmountField.setText(convertedAmount.toString());
+            convertedAmountField.setText(Utils.formatConvertedAmount(convertedAmount));
             convertedAmountField.setEnabled(false);
         });
 
@@ -159,17 +170,14 @@ public class AddTransactionFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
-        MaterialButton saveButton = view.findViewById(R.id.button_save);
-        saveButton.setOnClickListener(v -> {
-            saveTransaction();
-            navigateBack();
-        });
-
-        MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(v -> navigateBack());
-
-        viewModel.fetchCurrencies();
         compileTransaction();
+
+        selectedDate = Utils.stringToDate(dateField.getText().toString());
+        if (selectedDate == null) {
+            selectedDate = new Date();
+        }
+
+        viewModel.fetchExchangeRates(selectedDate);
     }
 
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -186,6 +194,11 @@ public class AddTransactionFragment extends Fragment {
             triggerConvertedAmount();
         }
     };
+
+    public void onSaveButtonClick() {
+        saveTransaction();
+        navigateBack();
+    }
 
     private void setupCurrencyDropdown(View view) {
         currencyDropdown = view.findViewById(R.id.edit_transaction_currency);
@@ -274,15 +287,14 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private void triggerConvertedAmount() {
-        viewModel.fetchConvertedAmount(
+        viewModel.calculateConversion(
                 Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
-                Utils.stringToDate(dateField.getText() != null ? dateField.getText().toString() : null),
-                currencyDropdown.getText().toString()
+                selectedCurrency
         );
     }
 
     private void navigateBack() {
-        getParentFragmentManager().popBackStack();
+        selectionModeListener.onExitEditMode();
     }
 
     private void compileTransaction() {
@@ -358,7 +370,7 @@ public class AddTransactionFragment extends Fragment {
                 selectedCurrency,
                 Utils.stringToDate(dateField.getText().toString()),
                 selectedCategory.getFirestoreId(),
-                notesField.getText().toString(),
+                notesField.getText().toString().isEmpty() ? null : notesField.getText().toString(),
                 FirebaseHelper.getInstance().getCurrentUser().getUid()
         );
 

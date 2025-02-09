@@ -7,6 +7,7 @@ import java.util.Map;
 public class CurrencyHelper {
 
     private static final Map<String, String> currencyMap;
+
     static {
         Map<String, String> map = new HashMap<>();
 

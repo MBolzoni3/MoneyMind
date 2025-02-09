@@ -8,19 +8,14 @@ import androidx.lifecycle.LiveData;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
-import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
-import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class CategoryRepository extends GenericRepository {
@@ -66,7 +61,7 @@ public class CategoryRepository extends GenericRepository {
                         Log.d(TAG, "Categories downloaded/updated (" + categories.size() + ")");
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error downloading categories." + e.getMessage(), e);
+                        throw new RuntimeException("Error downloading categories: " + e.getMessage(), e);
                     });
         }, executorService);
     }

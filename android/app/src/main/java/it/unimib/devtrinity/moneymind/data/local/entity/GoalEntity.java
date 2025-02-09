@@ -29,7 +29,7 @@ public class GoalEntity extends FirestoreEntity {
     private String categoryId;
 
     @Ignore
-    public GoalEntity(){
+    public GoalEntity() {
     }
 
     public GoalEntity(boolean deleted, Timestamp createdAt, Timestamp updatedAt, String userId, String firestoreId, boolean synced, int id, String name, BigDecimal targetAmount, BigDecimal savedAmount, Date startDate, Date endDate, String categoryId) {

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,7 +17,6 @@ import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
-import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
@@ -31,8 +32,27 @@ public class RecurringTransactionRepository extends GenericRepository {
         this.recurringTransactionDao = DatabaseClient.getInstance(context).recurringTransactionDao();
     }
 
-    public LiveData<List<RecurringTransactionEntityWithCategory>> getRecurringTransactions() {
-        return recurringTransactionDao.getAll();
+    public LiveData<List<TransactionEntityWithCategory>> getRecurringTransactions() {
+        return Transformations.map(recurringTransactionDao.getAll(), recurringTransactions -> {
+            List<TransactionEntityWithCategory> recurringTransactionsAsTransactions = new ArrayList<>();
+            for (RecurringTransactionEntityWithCategory recurringTransaction : recurringTransactions) {
+                TransactionEntityWithCategory transaction = new TransactionEntityWithCategory();
+                transaction.setTransaction(recurringTransaction.getTransaction());
+                transaction.setCategory(recurringTransaction.getCategory());
+
+                recurringTransactionsAsTransactions.add(transaction);
+            }
+
+            return recurringTransactionsAsTransactions;
+        });
+    }
+
+    public void delete(List<RecurringTransactionEntity> transactions) {
+        executorService.execute(() -> {
+            for (RecurringTransactionEntity transaction : transactions) {
+                recurringTransactionDao.deleteById(transaction.getId());
+            }
+        });
     }
 
     public void insertTransaction(RecurringTransactionEntity transaction, GenericCallback<Boolean> callback) {
@@ -53,6 +73,8 @@ public class RecurringTransactionRepository extends GenericRepository {
             List<RecurringTransactionEntity> unsyncedRecurringTransactions = recurringTransactionDao.getUnsyncedTransactions();
 
             for (RecurringTransactionEntity recurringTransaction : unsyncedRecurringTransactions) {
+                recurringTransaction.setSynced(true);
+
                 String documentId = recurringTransaction.getFirestoreId();
                 DocumentReference docRef;
 
@@ -70,7 +92,7 @@ public class RecurringTransactionRepository extends GenericRepository {
                             Log.d(TAG, "Recurring Transaction synced to remote: " + recurringTransaction.getFirestoreId());
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "Error syncing Recurring Transaction to remote: " + e.getMessage(), e);
+                            throw new RuntimeException("Error syncing Recurring Transaction to remote: " + e.getMessage(), e);
                         });
             }
         }, executorService);
@@ -86,7 +108,6 @@ public class RecurringTransactionRepository extends GenericRepository {
                     .addOnSuccessListener(executorService, querySnapshot -> {
                         for (RecurringTransactionEntity remoteRecurringTransaction : querySnapshot.toObjects(RecurringTransactionEntity.class)) {
                             RecurringTransactionEntity localRecurringTransaction = recurringTransactionDao.getByFirestoreId(remoteRecurringTransaction.getFirestoreId());
-
                             if (localRecurringTransaction == null) {
                                 recurringTransactionDao.insertOrUpdate(remoteRecurringTransaction);
                             } else {
@@ -96,7 +117,7 @@ public class RecurringTransactionRepository extends GenericRepository {
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error syncing recurring transactions from remote: " + e.getMessage(), e);
+                        throw new RuntimeException("Error syncing recurring transactions from remote: " + e.getMessage(), e);
                     });
         }, executorService);
     }

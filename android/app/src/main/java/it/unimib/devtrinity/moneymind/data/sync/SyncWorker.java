@@ -7,15 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import java.util.concurrent.Executors;
-
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
+import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
-import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class SyncWorker extends Worker {
 
@@ -30,11 +28,11 @@ public class SyncWorker extends Worker {
     public SyncWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
 
-        budgetRepository = new BudgetRepository(context);
-        categoryRepository = new CategoryRepository(context);
-        goalRepository = new GoalRepository(context);
-        recurringTransactionRepository = new RecurringTransactionRepository(context);
-        transactionRepository = new TransactionRepository(context);
+        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(context);
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(context);
+        goalRepository = ServiceLocator.getInstance().getGoalRepository(context);
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(context);
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(context);
     }
 
     @NonNull
@@ -43,8 +41,7 @@ public class SyncWorker extends Worker {
         Log.d(TAG, "Starting sync work");
 
         categoryRepository.sync();
-
-        if(FirebaseHelper.getInstance().isUserLoggedIn()) {
+        if (FirebaseHelper.getInstance().isUserLoggedIn()) {
             budgetRepository.sync();
             goalRepository.sync();
             recurringTransactionRepository.sync();
@@ -54,4 +51,5 @@ public class SyncWorker extends Worker {
         Log.d(TAG, "Finished sync work");
         return Result.success();
     }
+
 }
