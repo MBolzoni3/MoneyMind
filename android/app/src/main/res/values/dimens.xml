@@ -27,6 +27,8 @@
     <dimen name="icon_small">32dp</dimen>
     <dimen name="icon_extra_small">24dp</dimen>
 
+    <dimen name="icon_logo">120dp</dimen>
+
     <dimen name="custom_progress_height">16dp</dimen>
     <dimen name="custom_progress_margin_top">8dp</dimen>
     <dimen name="custom_progress_margin_bottom">16dp</dimen>

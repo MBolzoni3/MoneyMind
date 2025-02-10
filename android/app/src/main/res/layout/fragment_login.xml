@@ -5,6 +5,19 @@
     android:background="?android:attr/colorBackground"
     android:padding="@dimen/spacing_medium">
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/app_logo"
+        android:layout_width="@dimen/icon_logo"
+        android:layout_height="@dimen/icon_logo"
+        android:src="@mipmap/ic_launcher_round"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        app:strokeColor="?attr/colorPrimary"
+        android:layout_marginTop="@dimen/spacing_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/main_title"
         android:layout_width="wrap_content"
@@ -16,7 +29,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/app_logo" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/main_subtitle"

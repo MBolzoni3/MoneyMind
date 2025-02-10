@@ -87,4 +87,10 @@
 
     <string name="no_goals">Nessun obiettivo creato</string>
     <string name="no_goals_hint">Crea un obiettivo per risparmiare in modo efficace e raggiungere i tuoi traguardi finanziari.</string>
+
+    <string name="disclaimer_text">Questa app utilizza i tassi di cambio forniti dalla <b>Banca Centrale Europea (BCE)</b>,
+        che vengono aggiornati solo nei giorni feriali dopo le <b>16:00 CET</b>. Se selezioni una data
+        che cade nel weekend, in un giorno festivo o prima dell\'aggiornamento giornaliero,
+        l\'app utilizzerà automaticamente il <b>tasso più recente disponibile</b>.
+    </string>
 </resources>
