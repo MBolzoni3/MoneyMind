@@ -25,7 +25,6 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.MonthCarouselAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionHomeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModelFactory;
-import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class HomeFragment extends Fragment implements SelectionModeListener {
 
@@ -105,7 +104,10 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionAdapter);
 
-        viewModel.getLastTransactions().observe(getViewLifecycleOwner(), transactionAdapter::updateList);
+        viewModel.getLastTransactions().observe(getViewLifecycleOwner(), newList -> {
+            transactionAdapter.updateList(newList);
+            view.findViewById(R.id.emptyStateLayout).setVisibility(newList.isEmpty() ? View.VISIBLE : View.GONE);
+        });
 
         ExtendedFloatingActionButton addTransactionButton = view.findViewById(R.id.fab_add_transaction);
         addTransactionButton.setOnClickListener(v -> onEnterEditMode(new AddTransactionFragment(this)));

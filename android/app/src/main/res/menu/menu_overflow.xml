@@ -5,15 +5,11 @@
         android:id="@+id/menu_currency_converter"
         android:title="Convertitore Valuta"
         android:icon="@drawable/ic_currency_exchange"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_settings"
         android:title="Impostazioni"
         android:icon="@drawable/ic_settings"
         app:showAsAction="always" />
-    <!--<item
-        android:id="@+id/menu_logout"
-        android:title="Logout"
-        android:icon="@drawable/ic_logout"
-        app:showAsAction="never" />-->
 </menu>

@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
@@ -66,7 +68,8 @@ public class LoginFragment extends Fragment {
             if (validateInput(email, password)) {
                 loginViewModel.login(email, password);
             } else {
-                Toast.makeText(getContext(), "Please enter valid credentials", Toast.LENGTH_SHORT).show();
+                Snackbar.make(view, "Please enter valid credentials", Snackbar.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Please enter valid credentials", Toast.LENGTH_SHORT).show();
             }
         });
 

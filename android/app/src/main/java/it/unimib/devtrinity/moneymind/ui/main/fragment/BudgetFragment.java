@@ -58,6 +58,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
 
         budgetViewModel.getBudgets().observe(getViewLifecycleOwner(), budgetList -> {
             budgetAdapter.updateBudgets(budgetList);
+            view.findViewById(R.id.emptyStateLayout).setVisibility(budgetList.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
         fabAddBudget.setOnClickListener(v -> onEnterEditMode(new AddBudgetFragment(this)));

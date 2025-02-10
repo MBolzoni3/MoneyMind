@@ -16,6 +16,7 @@ import java.util.List;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class CategoryAdapter extends ArrayAdapter<CategoryEntity> {
@@ -38,7 +39,7 @@ public class CategoryAdapter extends ArrayAdapter<CategoryEntity> {
         if (category != null) {
             categoryName.setText(category.getName());
 
-            int iconResource = Utils.getCategoryIcon(category);
+            int iconResource = ResourceHelper.getCategoryIcon(category);
             categoryIcon.setImageResource(iconResource);
         }
 

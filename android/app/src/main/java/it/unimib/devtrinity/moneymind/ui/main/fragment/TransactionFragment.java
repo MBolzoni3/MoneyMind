@@ -57,6 +57,7 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
 
         transactionViewModel.getTransactions().observe(getViewLifecycleOwner(), transactionList -> {
             transactionAdapter.updateList(transactionList);
+            view.findViewById(R.id.emptyStateLayout).setVisibility(transactionList.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
         fabAddTransaction.setOnClickListener(v -> onEnterEditMode(new AddTransactionFragment(this)));

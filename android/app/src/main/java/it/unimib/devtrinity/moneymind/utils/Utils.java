@@ -66,12 +66,6 @@ public class Utils {
         return formatDate(date, FORMAT_API);
     }
 
-    public static int getThemeColor(Context context, int colorAttribute) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(colorAttribute, typedValue, true);
-        return typedValue.data;
-    }
-
     public static BigDecimal safeParseBigDecimal(String input, BigDecimal defaultValue) {
         if (TextUtils.isEmpty(input)) {
             return defaultValue;
@@ -83,42 +77,6 @@ public class Utils {
             Log.e("InputError", "Invalid number format: " + input, e);
             return defaultValue;
         }
-    }
-
-    public static int getCategoryIcon(CategoryEntity categoryEntity) {
-        if (categoryEntity == null || categoryEntity.getName() == null) {
-            return R.drawable.ic_money_bag;
-        }
-
-        String categoryName = categoryEntity.getName().toLowerCase();
-        switch (categoryName) {
-            case "lavoro":
-                return R.drawable.ic_work;
-            case "investimenti":
-                return R.drawable.ic_finance_mode;
-            case "casa":
-                return R.drawable.ic_home;
-            case "utilità":
-                return R.drawable.ic_build;
-            case "trasporti":
-                return R.drawable.ic_directions_car;
-            case "alimentazione":
-                return R.drawable.ic_restaurant;
-            case "salute e benessere":
-                return R.drawable.ic_favorite;
-            case "educazione":
-                return R.drawable.ic_school;
-            case "svago":
-                return R.drawable.ic_sports_esports;
-            case "varie":
-                return R.drawable.ic_category;
-            default:
-                return R.drawable.ic_money_bag;
-        }
-    }
-
-    public static int getTypeIcon(MovementTypeEnum movementTypeEnum) {
-        return movementTypeEnum == MovementTypeEnum.INCOME ? R.drawable.ic_trending_up : R.drawable.ic_trending_down;
     }
 
     public static void showDatePicker(OnDateSelectedListener listener, Fragment fragment) {

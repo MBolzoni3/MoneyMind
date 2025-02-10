@@ -26,6 +26,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntityWithCategory
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.AddBudgetFragment;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.BudgetViewModel;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder> {
@@ -56,7 +57,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     public void onBindViewHolder(@NonNull BudgetViewHolder holder, int position) {
         BudgetEntityWithCategory budget = budgetList.get(position);
 
-        int iconResource = Utils.getCategoryIcon(budget.getCategory());
+        int iconResource = ResourceHelper.getCategoryIcon(budget.getCategory());
         holder.categoryIcon.setImageResource(iconResource);
 
         holder.itemView.setOnLongClickListener(v -> {
@@ -81,18 +82,18 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
 
         boolean isSelected = selectedPositions.contains(position);
         if (isSelected) {
-            holder.cardView.setCardBackgroundColor(Utils.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceContainerHighest));
-            holder.budgetProgress.setTrackColor(Utils.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceContainer));
+            holder.cardView.setCardBackgroundColor(ResourceHelper.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceContainerHighest));
+            holder.budgetProgress.setTrackColor(ResourceHelper.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceContainer));
         } else {
-            holder.cardView.setCardBackgroundColor(Utils.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceContainer));
-            holder.budgetProgress.setTrackColor(Utils.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant));
+            holder.cardView.setCardBackgroundColor(ResourceHelper.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceContainer));
+            holder.budgetProgress.setTrackColor(ResourceHelper.getThemeColor(holder.itemView.getContext(), com.google.android.material.R.attr.colorSurfaceVariant));
         }
 
         holder.cardView.setChecked(isSelected);
 
         holder.budgetName.setText(budget.getBudget().getName());
         holder.categoryName.setText(budget.getCategory() != null ? budget.getCategory().getName() : "");
-        holder.dateRange.setText(String.format("%1$td/%1$tm - %2$td/%2$tm", budget.getBudget().getStartDate(), budget.getBudget().getEndDate()));
+        holder.dateRange.setText(ResourceHelper.getFormattedDateRange(holder.itemView.getContext(), budget.getBudget().getStartDate(), budget.getBudget().getEndDate()));
 
         LiveData<Long> progressLiveData = budgetViewModel.getSpentAmount(budget);
         progressLiveData.observe(lifecycleOwner, spentAmountLong -> {
@@ -105,12 +106,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
                         100);
             }
 
-            holder.spentAmount.setText(
-                    String.format(
-                            "Hai speso %s di %s previsti",
-                            Utils.formatTransactionAmount(spentAmount == null ? BigDecimal.ZERO : spentAmount),
-                            Utils.formatTransactionAmount(budget.getBudget().getAmount())
-                    ));
+            holder.spentAmount.setText(ResourceHelper.getBudgetMessage(holder.itemView.getContext(), spentAmount, budget.getBudget().getAmount()));
             holder.budgetProgress.setProgress(progress);
         });
     }

@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Money Mind</string>
+    <string name="welcome_morning">Buongiorno, %1$s!</string>
+    <string name="welcome_afternoon">Buon pomeriggio, %1$s!</string>
+    <string name="welcome_evening">Buona sera, %1$s!</string>
+    <string name="settings">Impostazioni</string>
 
     <string name="delete_transaction_confirmation_title">Elimina Movimento</string>
     <string name="delete_transaction_confirmation_message">Sei sicuro di voler eliminare i movimenti selezionati?</string>
@@ -14,6 +18,25 @@
     <string name="edit_budget_title">Modifica Budget</string>
     <string name="add_goal_title">Aggiungi Obiettivo</string>
     <string name="edit_goal_title">Modifica Obiettivo</string>
+
+    <string name="budget_under_control">Stai gestendo bene il tuo budget! Hai speso %1$s su %2$s</string>
+    <string name="budget_warning">Attenzione! Hai speso %1$s su %2$s (oltre il 75%% del tuo budget)</string>
+    <string name="budget_exceeded">Hai superato il budget! Hai speso %1$s su %2$s</string>
+    <string name="budget_not_used">Non hai ancora usato il tuo budget di %1$s</string>
+
+    <string name="savings_in_progress">Stai risparmiando con costanza! Hai messo da parte %1$s su %2$s</string>
+    <string name="savings_almost_there">Sei vicino al tuo obiettivo! Hai risparmiato %1$s su %2$s</string>
+    <string name="savings_goal_reached">Complimenti! Hai raggiunto il tuo obiettivo di risparmio con %1$s su %2$s</string>
+    <string name="savings_no_progress">Non hai ancora iniziato a risparmiare. Il tuo obiettivo è %1$s</string>
+
+    <string name="balance_excellent">Ottimo lavoro! Non hai spese o il tuo bilancio è molto positivo.</string>
+    <string name="balance_good">Buon lavoro! Le tue entrate superano le spese.</string>
+    <string name="balance_neutral">Il tuo bilancio è quasi in equilibrio.</string>
+    <string name="balance_slightly_negative">Attenzione! Hai speso più di quanto hai guadagnato, ma la situazione è sotto controllo.</string>
+    <string name="balance_critical">Bilancio a rischio! Le tue spese superano di molto le tue entrate.</string>
+    <string name="balance_no_activity">Nessuna attività finanziaria per questo meso</string>
+
+    <string name="date_range">%1$s - %2$s</string>
 
     <string name="input_transaction_name_hint">Nome</string>
     <string name="input_transaction_amount_hint">Importo</string>
@@ -55,4 +78,13 @@
     <string name="monthly">Mensile</string>
     <string name="yearly">Annuale</string>
     <string name="salva">Salva</string>
+
+    <string name="no_movements">Nessun movimento registrato</string>
+    <string name="no_movements_hint">Aggiungi una transazione per iniziare a tracciare le tue finanze!</string>
+
+    <string name="no_budgets">Nessun budget salvato</string>
+    <string name="no_budgets_hint">Aggiungi un budget per monitorare le tue spese e raggiungere i tuoi obiettivi finanziari.</string>
+
+    <string name="no_goals">Nessun obiettivo creato</string>
+    <string name="no_goals_hint">Crea un obiettivo per risparmiare in modo efficace e raggiungere i tuoi traguardi finanziari.</string>
 </resources>

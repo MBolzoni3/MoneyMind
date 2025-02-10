@@ -55,6 +55,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
 
         goalViewModel.getGoals().observe(getViewLifecycleOwner(), goalList -> {
             goalAdapter.updateGoals(goalList);
+            view.findViewById(R.id.emptyStateLayout).setVisibility(goalList.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
         fabAddGoal.setOnClickListener(v -> onEnterEditMode(new AddGoalFragment(this)));
