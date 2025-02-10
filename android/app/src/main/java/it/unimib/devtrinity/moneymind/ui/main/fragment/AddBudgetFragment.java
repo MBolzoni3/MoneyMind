@@ -55,6 +55,7 @@ public class AddBudgetFragment extends Fragment {
     TextInputLayout amountFieldLayout;
     TextInputLayout startDateFieldLayout;
     TextInputLayout endDateFieldLayout;
+    TextInputLayout categoryFieldLayout;
 
     public AddBudgetFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -97,6 +98,7 @@ public class AddBudgetFragment extends Fragment {
         amountFieldLayout = view.findViewById(R.id.input_budget_amount);
         startDateFieldLayout = view.findViewById(R.id.input_start_date);
         endDateFieldLayout = view.findViewById(R.id.input_end_date);
+        categoryFieldLayout = view.findViewById(R.id.input_budget_category);
 
         nameField = view.findViewById(R.id.edit_budget_name);
         amountField = view.findViewById(R.id.edit_budget_amount);
@@ -142,33 +144,43 @@ public class AddBudgetFragment extends Fragment {
     }
 
     public void onSaveButtonClick() {
-        if (validateField()) {
+        if (validateField() && validateName(nameField, nameFieldLayout)) {
             saveBudget();
             navigateBack();
         }
     }
 
-    private boolean validateField() {
-        boolean isValid = true;
+    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
+        String name = field.getText().toString();
+        if (!name.matches("[a-zA-Z]+")) {
+            fieldLayout.setBoxStrokeColor(ContextCompat.getColor(requireContext(), R.color.md_theme_error));
+            fieldLayout.setHintTextColor(ContextCompat.getColorStateList(requireContext(), R.color.md_theme_error));
+            Toast.makeText(requireContext(), "Il nome inserito deve contenere solo lettere", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            return true;
+        }
+    }
 
+    private boolean validateField() {
         if (isEmptyField(nameField, nameFieldLayout, "Il campo relativo al nome del budget non può essere vuoto")) {
-            isValid = false;
+            return false;
         }
         if (isEmptyField(amountField, amountFieldLayout, "Il campo relativo all'importo non può essere vuoto")) {
-            isValid = false;
+            return false;
         }
         if (selectedCategory == null) {
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
             Toast.makeText(requireContext(), "Il campo categoria non può essere vuoto", Toast.LENGTH_SHORT).show();
-            isValid = false;
+            return false;
         }
         if (isEmptyField(startDateField, startDateFieldLayout, "Il campo relativo alla data di inizio non può essere vuoto")) {
-            isValid = false;
+            return false;
         }
         if (isEmptyField(endDateField, endDateFieldLayout, "Il campo relativo alla data di fine non può essere vuoto")) {
-            isValid = false;
+            return false;
         }
-
-        return isValid;
+        return true;
     }
 
 
