@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Money Mind</string>
+    <string name="app_name" translatable="false">Money Mind</string>
     <string name="welcome_morning">Buongiorno, %1$s!</string>
     <string name="welcome_afternoon">Buon pomeriggio, %1$s!</string>
     <string name="welcome_evening">Buona sera, %1$s!</string>
@@ -34,9 +34,9 @@
     <string name="balance_neutral">Il tuo bilancio è quasi in equilibrio.</string>
     <string name="balance_slightly_negative">Attenzione! Hai speso più di quanto hai guadagnato, ma la situazione è sotto controllo.</string>
     <string name="balance_critical">Bilancio a rischio! Le tue spese superano di molto le tue entrate.</string>
-    <string name="balance_no_activity">Nessuna attività finanziaria per questo meso</string>
+    <string name="balance_no_activity">Nessuna attività finanziaria per questo mese</string>
 
-    <string name="date_range">%1$s - %2$s</string>
+    <string name="date_range" translatable="false">%1$s - %2$s</string>
 
     <string name="input_transaction_name_hint">Nome</string>
     <string name="input_transaction_amount_hint">Importo</string>
@@ -52,9 +52,9 @@
     <string name="expense">Uscita</string>
 
     <string name="confirm">Conferma</string>
-    <string name="cancel">Annulla</string>
+    <string name="cancel" translatable="false">Annulla</string>
 
-    <plurals name="selection_count">
+    <plurals name="selection_count" translatable="false">
         <item quantity="one">%d elemento selezionato</item>
         <item quantity="other">%d elementi selezionati</item>
     </plurals>
