@@ -7,9 +7,9 @@
         android:id="@+id/budget_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="16dp"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="80dp"
+        android:paddingTop="@dimen/spacing_medium"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        android:paddingBottom="@dimen/spacing_after_recycler_view"
         android:clipToPadding="false"
         android:scrollbars="vertical" />
 
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/spacing_medium"
         android:contentDescription="Add budget"
         app:srcCompat="@drawable/ic_add" />
 

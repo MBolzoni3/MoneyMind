@@ -3,30 +3,30 @@
     android:id="@+id/carousel_item_card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
-    app:cardCornerRadius="16dp"
+    android:layout_margin="@dimen/card_margin"
+    app:cardCornerRadius="@dimen/card_corner_radius"
     app:strokeColor="?attr/colorOutline"
-    app:strokeWidth="0dp"
+    app:strokeWidth="@dimen/card_stroke_width"
     app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/card_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="@dimen/spacing_small"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/home_carousel_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="@dimen/icon_medium"
+                android:layout_height="@dimen/icon_medium"
+                android:layout_marginEnd="@dimen/icon_margin_end"
                 android:src="@drawable/ic_money_bag"
                 app:tint="?attr/colorOnSurfaceVariant" />
 
@@ -40,15 +40,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Gennaio 2025"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/carousel_month_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
+                    android:layout_marginBottom="@dimen/spacing_small"
                     android:text="Bilancio sotto controllo! Continua così."
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant" />
@@ -58,35 +57,35 @@
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/income_progress_bar"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:progress="50"
+            android:layout_height="@dimen/custom_progress_height"
+            android:layout_marginHorizontal="@dimen/spacing_small"
+            android:layout_marginTop="@dimen/custom_progress_margin_top"
+            android:layout_marginBottom="@dimen/custom_progress_margin_bottom"
             app:indicatorColor="?attr/colorPrimary"
             app:trackColor="?attr/colorSurfaceVariant"
-            app:trackCornerRadius="4dp"
-            app:trackStopIndicatorSize="0dp"
-            app:trackThickness="32dp" />
+            app:trackCornerRadius="@dimen/custom_progress_corner_radius"
+            app:trackStopIndicatorSize="@dimen/custom_progess_track_stop_indicator_size"
+            app:trackThickness="@dimen/custom_progress_thickness"
+            android:progress="50"/>
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/outflow_progress_bar"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:progress="50"
+            android:layout_height="@dimen/custom_progress_height"
+            android:layout_marginHorizontal="@dimen/spacing_small"
+            android:layout_marginTop="@dimen/custom_progress_margin_top"
+            android:layout_marginBottom="@dimen/custom_progress_margin_bottom"
             app:indicatorColor="?attr/colorError"
             app:trackColor="?attr/colorSurfaceVariant"
-            app:trackCornerRadius="4dp"
-            app:trackStopIndicatorSize="0dp"
-            app:trackThickness="32dp" />
+            app:trackCornerRadius="@dimen/custom_progress_corner_radius"
+            app:trackStopIndicatorSize="@dimen/custom_progess_track_stop_indicator_size"
+            app:trackThickness="@dimen/custom_progress_thickness"
+            android:progress="50"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/spacing_medium"
             android:baselineAligned="false"
             android:gravity="center"
             android:orientation="horizontal">
@@ -99,9 +98,9 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_width="@dimen/icon_small"
+                    android:layout_height="@dimen/icon_small"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
                     android:src="@drawable/ic_trending_up"
                     android:tint="?attr/colorPrimary" />
 
@@ -122,9 +121,9 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_width="@dimen/icon_small"
+                    android:layout_height="@dimen/icon_small"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
                     android:src="@drawable/ic_trending_down"
                     android:tint="?attr/colorError" />
 
