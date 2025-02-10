@@ -120,7 +120,8 @@ public class AddBudgetFragment extends Fragment {
         });
 
         endDateField.setOnClickListener(v -> {
-            Utils.showDatePicker(endDateField::setText, this);
+
+            Utils.showEndDatePicker(endDateField::setText, this, startDateField);
         });
 
         compileFields();

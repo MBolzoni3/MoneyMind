@@ -130,7 +130,7 @@ public class AddTransactionFragment extends Fragment {
 
         dateField = view.findViewById(R.id.edit_date);
         dateField.addTextChangedListener(textWatcher);
-        dateField.setOnClickListener(v -> Utils.showDatePicker(dateField::setText, this));
+        dateField.setOnClickListener(v -> Utils.showNonFutureDatePicker(dateField::setText, this));
 
         setupCurrencyDropdown(view);
         setupTransactionTypeDropdown(view);
