@@ -2,18 +2,22 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
@@ -46,6 +50,11 @@ public class AddBudgetFragment extends Fragment {
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    TextInputLayout nameFieldLayout;
+    TextInputLayout amountFieldLayout;
+    TextInputLayout startDateFieldLayout;
+    TextInputLayout endDateFieldLayout;
 
     public AddBudgetFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -83,6 +92,11 @@ public class AddBudgetFragment extends Fragment {
         categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
         AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(categoryRepository);
         AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
+
+        nameFieldLayout = view.findViewById(R.id.input_budget_name);
+        amountFieldLayout = view.findViewById(R.id.input_budget_amount);
+        startDateFieldLayout = view.findViewById(R.id.input_start_date);
+        endDateFieldLayout = view.findViewById(R.id.input_end_date);
 
         nameField = view.findViewById(R.id.edit_budget_name);
         amountField = view.findViewById(R.id.edit_budget_amount);
@@ -128,8 +142,47 @@ public class AddBudgetFragment extends Fragment {
     }
 
     public void onSaveButtonClick() {
-        saveBudget();
-        navigateBack();
+        if (validateField()) {
+            saveBudget();
+            navigateBack();
+        }
+    }
+
+    private boolean validateField() {
+        boolean isValid = true;
+
+        if (isEmptyField(nameField, nameFieldLayout, "Il campo relativo al nome del budget non può essere vuoto")) {
+            isValid = false;
+        }
+        if (isEmptyField(amountField, amountFieldLayout, "Il campo relativo all'importo non può essere vuoto")) {
+            isValid = false;
+        }
+        if (selectedCategory == null) {
+            Toast.makeText(requireContext(), "Il campo categoria non può essere vuoto", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+        if (isEmptyField(startDateField, startDateFieldLayout, "Il campo relativo alla data di inizio non può essere vuoto")) {
+            isValid = false;
+        }
+        if (isEmptyField(endDateField, endDateFieldLayout, "Il campo relativo alla data di fine non può essere vuoto")) {
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+
+    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
+
+        if (TextUtils.isEmpty(field.getText())) {
+            // fieldLayout.setBoxStrokeColor(ContextCompat.getColor(requireContext(), R.color.md_theme_error));
+            // fieldLayout.setHintTextColor(ContextCompat.getColorStateList(requireContext(), R.color.md_theme_error));
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            Toast.makeText(requireContext(), fieldError, Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void compileFields() {

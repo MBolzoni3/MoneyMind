@@ -2,18 +2,22 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
@@ -47,6 +51,13 @@ public class AddGoalFragment extends Fragment {
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    TextInputLayout nameFieldLayout;
+    TextInputLayout targetAmountFieldLayout;
+    TextInputLayout savedAmountFieldLayout;
+    TextInputLayout startDateFieldLayout;
+    TextInputLayout endDateFieldLayout;
+
 
     public AddGoalFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -90,6 +101,12 @@ public class AddGoalFragment extends Fragment {
         targetAmountField = view.findViewById(R.id.edit_goal_target_amount);
         savedAmountField = view.findViewById(R.id.edit_goal_saved_amount);
 
+        nameFieldLayout = view.findViewById(R.id.input_goal_name);
+        targetAmountFieldLayout = view.findViewById(R.id.input_goal_target_amount);
+        savedAmountFieldLayout = view.findViewById(R.id.input_goal_saved_amount);
+        startDateFieldLayout = view.findViewById(R.id.input_start_date);
+        endDateFieldLayout = view.findViewById(R.id.input_end_date);
+
         categoryDropdown = view.findViewById(R.id.edit_goal_category);
         viewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
             CategoryAdapter adapter = new CategoryAdapter(requireContext(), categories);
@@ -130,8 +147,61 @@ public class AddGoalFragment extends Fragment {
     }
 
     public void onSaveButtonClick() {
-        saveGoal();
-        navigateBack();
+        if (validateField() && validateAmounts()) {
+            saveGoal();
+            navigateBack();
+        }
+    }
+
+    private boolean validateField() {
+        boolean isValid = true;
+
+        if (isEmptyField(nameField, nameFieldLayout, "Il campo relativo al nome del budget non può essere vuoto")) {
+            isValid = false;
+        }
+        if (isEmptyField(targetAmountField, targetAmountFieldLayout, "Il campo relativo all'importo target non può essere vuoto")) {
+            isValid = false;
+        }
+        if (isEmptyField(savedAmountField, savedAmountFieldLayout, "Il campo relativo all'importo risparmiato non può essere vuoto")) {
+            isValid = false;
+        }
+        if (selectedCategory == null) {
+            Toast.makeText(requireContext(), "Il campo categoria non può essere vuoto", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+        if (isEmptyField(startDateField, startDateFieldLayout, "Il campo relativo alla data di inizio non può essere vuoto")) {
+            isValid = false;
+        }
+        if (isEmptyField(endDateField, endDateFieldLayout, "Il campo relativo alla data di fine non può essere vuoto")) {
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
+
+        if (TextUtils.isEmpty(field.getText())) {
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            Toast.makeText(requireContext(), fieldError, Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean validateAmounts(){
+        BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
+        BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
+
+        if(targetAmount.compareTo(savedAmount) <= 0){
+            Toast.makeText(requireContext(), "L'importo target deve essere maggiore dell'importo risparmiato", Toast.LENGTH_SHORT).show();
+            targetAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            savedAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else{
+            return true;
+        }
     }
 
     private void compileFields() {
