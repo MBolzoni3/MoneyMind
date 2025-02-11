@@ -31,7 +31,7 @@
                 android:layout_height="@dimen/icon_medium"
                 android:layout_marginEnd="@dimen/icon_margin_end"
                 android:src="@drawable/ic_money_bag"
-                android:contentDescription="Category Icon"
+                android:contentDescription="@string/category_icon"
                 app:tint="?attr/colorOnSurfaceVariant" />
 
             <LinearLayout
@@ -43,7 +43,7 @@
                     android:id="@+id/goal_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Goal Name"
+                    android:text="@string/goal_name"
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                     android:textColor="?attr/colorOnSurface" />
 
@@ -51,7 +51,7 @@
                     android:id="@+id/goal_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Category"
+                    android:text="@string/category"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_small"
-            android:text="01/01 - 01/31"
+            android:text="@string/_01_01_01_31"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurface"
             android:textStyle="bold"
@@ -86,7 +86,7 @@
             android:id="@+id/saved_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1000€"
+            android:text="@string/_1000EUR"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"

@@ -20,7 +20,7 @@
             android:layout_height="@dimen/icon_small"
             android:layout_gravity="center"
             android:src="@drawable/ic_money_bag"
-            android:contentDescription="Category Icon"
+            android:contentDescription="@string/category_icon"
             app:tint="?attr/colorOnSurfaceVariant" />
 
         <LinearLayout
@@ -34,7 +34,7 @@
                 android:id="@+id/transaction_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nome Transazione"
+                android:text="@string/transaction_name"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="?attr/colorOnSurface" />
 
@@ -42,7 +42,7 @@
                 android:id="@+id/transaction_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01/01/2025"
+                android:text="@string/_01_01_2025"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
@@ -57,7 +57,7 @@
                 android:id="@+id/transaction_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="100.00 €"
+                android:text="@string/_100_00EUR"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:layout_marginEnd="@dimen/icon_margin_end_extra_small" />
 
@@ -67,7 +67,7 @@
                 android:layout_height="@dimen/icon_extra_small"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_trending_up"
-                android:contentDescription="type_icon"
+                android:contentDescription="@string/type_icon"
                 app:tint="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 

@@ -93,4 +93,35 @@
         che cade nel weekend, in un giorno festivo o prima dell\'aggiornamento giornaliero,
         l\'app utilizzerà automaticamente il <b>tasso più recente disponibile</b>.
     </string>
+    <string name="aggiungi_movimento">Aggiungi movimento</string>
+    <string name="App_claim">Gestisci le tue finanze in modo intelligente.</string>
+    <string name="email" translatable="false">Email</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="login">Accedi</string>
+    <string name="register">Registrati</string>
+    <string name="Compile_all_field">Compila tutti i campi per continuare</string>
+    <string name="name">Nome</string>
+    <string name="password_confirm">Conferma Password</string>
+    <string name="already_got_account">Hai già un account? Accedi</string>
+    <string name="add_transaction">Aggiungi transazione</string>
+    <string name="category_icon">Icona Categoria</string>
+    <string name="goal_name">Nome Goal</string>
+    <string name="category">Categoria</string>
+    <string name="_01_01_01_31" translatable="false">01/01 - 01/31</string>
+    <string name="_1000EUR" translatable="false">1000€</string>
+    <string name="transaction_name">Nome Transazione</string>
+    <string name="_01_01_2025" translatable="false">01/01/2025</string>
+    <string name="_100_00EUR" translatable="false">100.00 €</string>
+    <string name="type_icon">tipo_icona</string>
+    <string name="add_goal">Aggiungi goal</string>
+    <string name="add_budget">Aggiungi budget</string>
+    <string name="goal_amount">Importo Obiettivo</string>
+    <string name="saved_amount">Importo Risparmiato</string>
+    <string name="begin_date">Data di Inizio</string>
+    <string name="end_date">Data di Fine</string>
+    <string name="budget_name">Nome Budget</string>
+    <string name="amount">Importo</string>
+    <string name="genuary_2025">Gennaio 2025</string>
+    <string name="Good_bilance">Bilancio sotto controllo! Continua così.</string>
+    <string name="not_available">Non disponibile</string>
 </resources>
