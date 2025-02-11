@@ -135,6 +135,7 @@ public class Utils {
         int year = Integer.parseInt(monthYear.substring(2, 6));
 
         String monthName = new DateFormatSymbols(Locale.getDefault()).getMonths()[month];
+        monthName = monthName.substring(0, 1).toUpperCase() + monthName.substring(1);
 
         return monthName + " " + year;
     }

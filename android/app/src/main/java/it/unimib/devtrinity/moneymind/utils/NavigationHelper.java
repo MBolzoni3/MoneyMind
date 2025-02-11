@@ -1,6 +1,7 @@
 package it.unimib.devtrinity.moneymind.utils;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
@@ -10,13 +11,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.DatabaseRepository;
 import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
 import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
+import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class NavigationHelper {
-    private static final String TAG = NavigationHelper.class.getSimpleName();
 
     public static void navigateToActivity(Context context, Class<?> targetActivity) {
         Intent intent = new Intent(context, targetActivity);
@@ -83,6 +86,13 @@ public class NavigationHelper {
 
     public static void loadFragment(AppCompatActivity activity, Fragment fragment) {
         loadFragment(activity, fragment, true);
+    }
+
+    public static CompletableFuture<Void> logout(Activity activity, DatabaseRepository databaseRepository) {
+        return SyncHelper.triggerManualSync(activity)
+                .thenRun(() -> FirebaseHelper.getInstance().logoutUser())
+                .thenRun(() -> SharedPreferencesHelper.clearSharedPrefs(activity.getApplication()))
+                .thenCompose(v -> databaseRepository.clearUserTables());
     }
 
 }

@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">Money Mind</string>
     <string name="welcome_morning">Buongiorno, %1$s!</string>
     <string name="welcome_afternoon">Buon pomeriggio, %1$s!</string>
-    <string name="welcome_evening">Buona sera, %1$s!</string>
+    <string name="welcome_evening">Buonasera, %1$s!</string>
     <string name="settings">Impostazioni</string>
 
     <string name="delete_transaction_confirmation_title">Elimina Movimento</string>
@@ -29,11 +29,11 @@
     <string name="savings_goal_reached">Complimenti! Hai raggiunto il tuo obiettivo di risparmio con %1$s su %2$s</string>
     <string name="savings_no_progress">Non hai ancora iniziato a risparmiare. Il tuo obiettivo è %1$s</string>
 
-    <string name="balance_excellent">Ottimo lavoro! Non hai spese o il tuo bilancio è molto positivo.</string>
-    <string name="balance_good">Buon lavoro! Le tue entrate superano le spese.</string>
-    <string name="balance_neutral">Il tuo bilancio è quasi in equilibrio.</string>
-    <string name="balance_slightly_negative">Attenzione! Hai speso più di quanto hai guadagnato, ma la situazione è sotto controllo.</string>
-    <string name="balance_critical">Bilancio a rischio! Le tue spese superano di molto le tue entrate.</string>
+    <string name="balance_excellent">Ottimo lavoro! Non hai spese o il tuo bilancio è molto positivo</string>
+    <string name="balance_good">Buon lavoro! Le tue entrate superano le spese</string>
+    <string name="balance_neutral">Il tuo bilancio è quasi in equilibrio</string>
+    <string name="balance_slightly_negative">Attenzione! Hai speso più di quanto hai guadagnato, ma la situazione è sotto controllo</string>
+    <string name="balance_critical">Bilancio a rischio! Le tue spese superano di molto le tue entrate</string>
     <string name="balance_no_activity">Nessuna attività finanziaria per questo mese</string>
 
     <string name="date_range" translatable="false">%1$s - %2$s</string>
@@ -43,7 +43,7 @@
     <string name="input_transaction_converted_amount_hint">Importo Convertito</string>
     <string name="input_date_hint">Data</string>
     <string name="input_transaction_currency_hint">Valuta</string>
-    <string name="input_transaction_currency_disclaimer">Disclaimer sulla valuta</string>
+    <string name="input_transaction_currency_disclaimer">Disclaimer valuta</string>
     <string name="add_transaction_currency_disclaimer">L\'importo verrà convertito nella tua valuta predefinita (EUR) sfruttando il cambio alla data inserita</string>
     <string name="input_transaction_type_hint">Tipologia</string>
     <string name="input_transaction_notes_hint">Note</string>
@@ -54,7 +54,7 @@
     <string name="confirm">Conferma</string>
     <string name="cancel">Annulla</string>
 
-    <plurals name="selection_count" translatable="false">
+    <plurals name="selection_count">
         <item quantity="one">%d elemento selezionato</item>
         <item quantity="other">%d elementi selezionati</item>
     </plurals>
@@ -63,6 +63,9 @@
     <string name="settings_theme_light">Chiaro</string>
     <string name="settings_theme_dark">Scuro</string>
     <string name="settings_theme_auto">Auto</string>
+    <string name="settings_language_title">Lingua</string>
+    <string name="settings_language_it" translatable="false">Italiano</string>
+    <string name="settings_language_en" translatable="false">English</string>
 
     <string name="settings_notifications">Notifiche</string>
     <string name="settings_logout">Esci</string>
@@ -80,21 +83,21 @@
     <string name="salva">Salva</string>
 
     <string name="no_movements">Nessun movimento registrato</string>
-    <string name="no_movements_hint">Aggiungi una transazione per iniziare a tracciare le tue finanze!</string>
+    <string name="no_movements_hint">Aggiungi un movimento per iniziare a tracciare le tue finanze!</string>
 
     <string name="no_budgets">Nessun budget salvato</string>
-    <string name="no_budgets_hint">Aggiungi un budget per monitorare le tue spese e raggiungere i tuoi obiettivi finanziari.</string>
+    <string name="no_budgets_hint">Aggiungi un budget per monitorare le tue spese e raggiungere i tuoi obiettivi finanziari</string>
 
     <string name="no_goals">Nessun obiettivo creato</string>
-    <string name="no_goals_hint">Crea un obiettivo per risparmiare in modo efficace e raggiungere i tuoi traguardi finanziari.</string>
+    <string name="no_goals_hint">Crea un obiettivo per risparmiare in modo efficace e raggiungere i tuoi traguardi finanziari</string>
 
     <string name="disclaimer_text">Questa app utilizza i tassi di cambio forniti dalla <b>Banca Centrale Europea (BCE)</b>,
         che vengono aggiornati solo nei giorni feriali dopo le <b>16:00 CET</b>. Se selezioni una data
         che cade nel weekend, in un giorno festivo o prima dell\'aggiornamento giornaliero,
-        l\'app utilizzerà automaticamente il <b>tasso più recente disponibile</b>.
+        l\'app utilizzerà automaticamente il <b>tasso più recente disponibile</b>
     </string>
     <string name="aggiungi_movimento">Aggiungi movimento</string>
-    <string name="app_claim">Gestisci le tue finanze in modo intelligente.</string>
+    <string name="app_claim">Gestisci le tue finanze in modo intelligente</string>
     <string name="email" translatable="false">Email</string>
     <string name="password" translatable="false">Password</string>
     <string name="login">Accedi</string>
@@ -103,11 +106,11 @@
     <string name="name">Nome</string>
     <string name="password_confirm">Conferma Password</string>
     <string name="already_got_account">Hai già un account? Accedi</string>
-    <string name="add_transaction">Aggiungi transazione</string>
+    <string name="add_transaction">Aggiungi movimento</string>
     <string name="category_icon">Icona Categoria</string>
     <string name="goal_name">Nome Goal</string>
     <string name="category">Categoria</string>
-    <string name="transaction_name">Nome Transazione</string>
+    <string name="transaction_name">Nome Movimento</string>
     <string name="type_icon">tipo_icona</string>
     <string name="add_goal">Aggiungi goal</string>
     <string name="add_budget">Aggiungi budget</string>

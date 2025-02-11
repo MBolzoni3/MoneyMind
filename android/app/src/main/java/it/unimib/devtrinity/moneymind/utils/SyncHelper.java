@@ -11,6 +11,9 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
@@ -36,29 +39,37 @@ public class SyncHelper {
         );
     }
 
-    public static void triggerManualSyncAndNavigate(Context context, Runnable onComplete) {
-        WorkManager workManager = WorkManager.getInstance(context);
+    public static CompletableFuture<Void> triggerManualSync(Context context) {
+        return CompletableFuture.supplyAsync(() -> {
+            WorkManager workManager = WorkManager.getInstance(context);
 
-        workManager.getWorkInfosForUniqueWorkLiveData(Constants.UNIQUE_WORK_NAME).observeForever(workInfos -> {
-            boolean isRunning = workInfos.stream().anyMatch(info ->
-                    info.getState() == WorkInfo.State.RUNNING
-            );
+            try {
+                List<WorkInfo> workInfos = workManager.getWorkInfosForUniqueWork(Constants.UNIQUE_WORK_NAME).get();
 
-            if (!isRunning) {
-                OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
-                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                        .build();
+                boolean isRunning = workInfos.stream().anyMatch(info ->
+                        info.getState() == WorkInfo.State.RUNNING
+                );
 
-                workManager.enqueue(syncRequest);
+                if (!isRunning) {
+                    OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
+                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                            .build();
 
-                workManager.getWorkInfoByIdLiveData(syncRequest.getId()).observeForever(workInfo -> {
-                    if (workInfo != null && (workInfo.getState() == WorkInfo.State.SUCCEEDED || workInfo.getState() == WorkInfo.State.FAILED)) {
-                        onComplete.run();
-                    }
-                });
-            } else {
-                onComplete.run();
+                    workManager.enqueue(syncRequest);
+
+                    WorkInfo workInfo;
+                    do {
+                        workInfo = workManager.getWorkInfoById(syncRequest.getId()).get();
+                        Thread.sleep(50);
+                    } while (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
+
+            return null;
         });
     }
+
 }

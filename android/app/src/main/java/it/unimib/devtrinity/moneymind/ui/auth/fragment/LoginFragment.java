@@ -51,9 +51,7 @@ public class LoginFragment extends Fragment {
             if (state instanceof GenericState.Loading) {
                 toggleLoadingView(true);
             } else if (state instanceof GenericState.Success) {
-                SyncHelper.triggerManualSyncAndNavigate(getContext(), () -> {
-                    NavigationHelper.navigateToMain(getContext());
-                });
+                SyncHelper.triggerManualSync(getContext()).thenRun(() -> NavigationHelper.navigateToMain(getContext()));
             } else if (state instanceof GenericState.Failure) {
                 toggleLoadingView(false);
                 String error = ((GenericState.Failure<String>) state).getErrorMessage();

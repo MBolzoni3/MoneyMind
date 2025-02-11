@@ -34,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
         SyncHelper.scheduleSyncJob(this);
 
         if (FirebaseHelper.getInstance().isUserLoggedIn()) {
-            SyncHelper.triggerManualSyncAndNavigate(this, () -> {
-                NavigationHelper.navigateToMain(this);
-            });
+            SyncHelper.triggerManualSync(this).thenRun(() -> NavigationHelper.navigateToMain(this));
         } else {
             loadingIndicator.setVisibility(View.GONE);
             if (savedInstanceState == null) {
