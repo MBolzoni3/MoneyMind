@@ -130,4 +130,9 @@
     <string name="home" translatable="false">Home</string>
     <string name="currency_converter">Convertitore Valuta</string>
     <string name="delete">Elimina</string>
+    <string name="invalid_credentials">Inserire credenziali valide</string>
+    <string name="completed_registration">Registrazione completata! Effettua il login.</string>
+    <string name="field_error">Compila tutti i campi</string>
+    <string name="password_error">Le password non coincidono</string>
+    <string name="password_length">La password deve avere almeno 6 caratteri</string>
 </resources>

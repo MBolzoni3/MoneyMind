@@ -72,6 +72,8 @@ public class AddTransactionFragment extends Fragment {
     private TextInputEditText recurrenceInterval;
     private TextInputEditText endDateField;
 
+    private View thisView;
+
     public AddTransactionFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
     }
@@ -93,6 +95,8 @@ public class AddTransactionFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        thisView = view;
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -160,7 +164,7 @@ public class AddTransactionFragment extends Fragment {
 
                         @Override
                         public void onFailure(String errorMessage) {
-
+                            Utils.makeSnackBar(view, errorMessage);
                         }
                     });
                 }
@@ -416,7 +420,7 @@ public class AddTransactionFragment extends Fragment {
 
                 @Override
                 public void onFailure(String errorMessage) {
-
+                    Utils.makeSnackBar(thisView, errorMessage);
                 }
             });
         } else {
@@ -429,7 +433,7 @@ public class AddTransactionFragment extends Fragment {
 
                 @Override
                 public void onFailure(String errorMessage) {
-
+                    Utils.makeSnackBar(thisView, errorMessage);
                 }
             });
         }

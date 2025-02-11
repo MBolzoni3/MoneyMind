@@ -103,4 +103,9 @@
     </plurals>
     <string name="settings_language_title">Language</string>
     <string name="recurring_movements">Recurring movements</string>
+    <string name="invalid_credentials">Please enter valid credentials</string>
+    <string name="completed_registration">Registration completed! You can log in now</string>
+    <string name="field_error">Compile all fields correctly</string>
+    <string name="password_error">Passwords do not match</string>
+    <string name="password_length">Passwords must be at least 6 characters long</string>
 </resources>

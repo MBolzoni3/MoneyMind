@@ -23,6 +23,7 @@ import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class RegisterFragment extends Fragment {
     private RegisterViewModel registerViewModel;
@@ -33,6 +34,7 @@ public class RegisterFragment extends Fragment {
     private EditText nameInput;
     private ProgressBar loadingIndicator;
     private View loadingOverlay;
+    private View thisView;
 
     @Nullable
     @Override
@@ -43,6 +45,8 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        thisView = view;
 
         nameInput = view.findViewById(R.id.register_name_input);
         emailInput = view.findViewById(R.id.register_email_input);
@@ -66,7 +70,7 @@ public class RegisterFragment extends Fragment {
             if (state instanceof GenericState.Loading) {
                 toggleLoadingView(true);
             } else if (state instanceof GenericState.Success) {
-                Toast.makeText(getContext(), "Registrazione completata! Effettua il login.", Toast.LENGTH_SHORT).show();
+                Utils.makeSnackBar(view, getString(R.string.completed_registration));
                 getParentFragmentManager().popBackStack();
             } else if (state instanceof GenericState.Failure) {
                 toggleLoadingView(false);
@@ -83,17 +87,17 @@ public class RegisterFragment extends Fragment {
         String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
-            Toast.makeText(getActivity(), "Compila tutti i campi", Toast.LENGTH_SHORT).show();
+            Utils.makeSnackBar(thisView, getString(R.string.field_error));
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            Toast.makeText(getActivity(), "Le password non coincidono", Toast.LENGTH_SHORT).show();
+            Utils.makeSnackBar(thisView, getString(R.string.password_error));
             return;
         }
 
         if (password.length() < 6) {
-            Toast.makeText(getActivity(), "La password deve avere almeno 6 caratteri", Toast.LENGTH_SHORT).show();
+            Utils.makeSnackBar(thisView, getString(R.string.password_length));
             return;
         }
 
