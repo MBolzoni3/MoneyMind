@@ -98,12 +98,12 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (position == 0 && transactionsList.size() > 1) {
                 TransactionEntityWithCategory transaction = (TransactionEntityWithCategory) transactionsList.get(position + 1);
                 if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
-                    ((DividerViewHolder) holder).bind("Movimenti Ricorrenti");
+                    ((DividerViewHolder) holder).bind(holder.itemView.getContext().getString(R.string.recurring_movements));
                 } else {
-                    ((DividerViewHolder) holder).bind("Movimenti");
+                    ((DividerViewHolder) holder).bind(holder.itemView.getContext().getString(R.string.movements));
                 }
             } else {
-                ((DividerViewHolder) holder).bind("Movimenti");
+                ((DividerViewHolder) holder).bind(holder.itemView.getContext().getString(R.string.movements));
             }
         }
     }
