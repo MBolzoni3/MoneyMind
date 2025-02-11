@@ -4,10 +4,12 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -105,6 +107,10 @@ public class Utils {
         }
 
         return items;
+    }
+
+    public static void makeSnackBar(View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
     public static String formatTransactionAmount(BigDecimal amount) {

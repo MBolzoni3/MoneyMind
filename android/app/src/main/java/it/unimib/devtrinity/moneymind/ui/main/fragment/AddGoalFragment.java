@@ -47,6 +47,8 @@ public class AddGoalFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
+    private View thisView;
+
     public AddGoalFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
     }
@@ -68,6 +70,8 @@ public class AddGoalFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        thisView = view;
 
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
@@ -178,6 +182,7 @@ public class AddGoalFragment extends Fragment {
 
             @Override
             public void onFailure(String errorMessage) {
+                Utils.makeSnackBar(thisView, errorMessage);
             }
         });
     }

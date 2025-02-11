@@ -24,6 +24,7 @@ import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SyncHelper;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;
@@ -68,8 +69,7 @@ public class LoginFragment extends Fragment {
             if (validateInput(email, password)) {
                 loginViewModel.login(email, password);
             } else {
-                Snackbar.make(view, "Please enter valid credentials", Snackbar.LENGTH_SHORT).show();
-                //Toast.makeText(getContext(), "Please enter valid credentials", Toast.LENGTH_SHORT).show();
+                Utils.makeSnackBar(view, getString(R.string.invalid_credentials));
             }
         });
 

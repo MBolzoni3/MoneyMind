@@ -46,6 +46,8 @@ public class AddBudgetFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
+    private View thisView;
+
     public AddBudgetFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
     }
@@ -67,6 +69,8 @@ public class AddBudgetFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        thisView = view;
 
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
@@ -172,6 +176,7 @@ public class AddBudgetFragment extends Fragment {
 
             @Override
             public void onFailure(String errorMessage) {
+                Utils.makeSnackBar(thisView, errorMessage);
             }
         });
     }
