@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
@@ -40,7 +41,8 @@ public class SyncHelper {
     public static CompletableFuture<WorkInfo> triggerManualSync(Context context) {
         OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
         WorkManager workManager = WorkManager.getInstance(context);
-        workManager.enqueue(request);
+
+        workManager.beginUniqueWork(Constants.MANUAL_WORK_NAME, ExistingWorkPolicy.REPLACE, request).enqueue();
 
         CompletableFuture<WorkInfo> completableFuture = new CompletableFuture<>();
 

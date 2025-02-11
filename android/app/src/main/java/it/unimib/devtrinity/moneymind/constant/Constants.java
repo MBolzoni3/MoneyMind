@@ -16,6 +16,7 @@ public class Constants {
     public static final String EXCHANGE_RATES_TABLE_NAME = "exchange_rates";
 
     public static final String UNIQUE_WORK_NAME = "sync_work";
+    public static final String MANUAL_WORK_NAME = "manual_sync_work";
     public static final int REPEAT_INTERVAL_MIN = 30;
 
     public static final String SHARED_PREFS_NAME = "moneymind_preferences";

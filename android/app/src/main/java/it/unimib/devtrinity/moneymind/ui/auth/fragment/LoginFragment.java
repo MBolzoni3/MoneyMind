@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -12,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.button.MaterialButton;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
@@ -45,6 +49,11 @@ public class LoginFragment extends Fragment {
         LoginViewModelFactory factory = new LoginViewModelFactory(userRepository);
         loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
 
+        EditText mailEditText = view.findViewById(R.id.email_input);
+        EditText passwordEditText = view.findViewById(R.id.password_input);
+        MaterialButton loginButton = view.findViewById(R.id.login_button);
+        MaterialButton registerButton = view.findViewById(R.id.register_button);
+
         loginViewModel.getLoginState().observe(getViewLifecycleOwner(), state -> {
             if (state instanceof GenericState.Loading) {
                 toggleLoadingView(true);
@@ -53,13 +62,23 @@ public class LoginFragment extends Fragment {
             } else if (state instanceof GenericState.Failure) {
                 toggleLoadingView(false);
                 String error = ((GenericState.Failure<String>) state).getErrorMessage();
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                Utils.makeSnackBar(view, error);
             }
         });
 
-        view.findViewById(R.id.login_button).setOnClickListener(v -> {
-            String email = ((EditText) view.findViewById(R.id.email_input)).getText().toString();
-            String password = ((EditText) view.findViewById(R.id.password_input)).getText().toString();
+        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                loginButton.performClick();
+                return true;
+            }
+            return false;
+        });
+
+        loginButton.setOnClickListener(v -> {
+            Utils.closeKeyboard(requireContext(), view);
+
+            String email = mailEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
 
             if (validateInput(email, password)) {
                 loginViewModel.login(email, password, getContext());
@@ -68,7 +87,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.register_button).setOnClickListener(v -> {
+        registerButton.setOnClickListener(v -> {
             NavigationHelper.loadFragment((MainActivity) getActivity(), new RegisterFragment());
         });
     }

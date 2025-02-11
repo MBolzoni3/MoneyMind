@@ -45,7 +45,7 @@ public class ExchangeRepository {
 
         exchangeRatesLiveData.addSource(localData, rates -> {
             if (rates != null && !rates.isEmpty()) {
-                ExchangeEntity latestRate = rates.get(0);
+                 ExchangeEntity latestRate = rates.get(0);
                 Date latestStoredDate = latestRate.getDate();
 
                 if (Utils.isDataOutdated(latestStoredDate)) {

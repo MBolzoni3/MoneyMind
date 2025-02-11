@@ -1,8 +1,10 @@
 package it.unimib.devtrinity.moneymind.utils;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.fragment.app.Fragment;
 
@@ -102,7 +104,7 @@ public class Utils {
         return items;
     }
 
-    public static void makeSnackBar(View view, String message) {
+    public static void makeSnackBar(View view, String message){
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
@@ -179,7 +181,7 @@ public class Utils {
             safeCycle++;
         }
 
-        if (safeCycle >= 20) {
+        if(safeCycle >= 20){
             Log.e("ExchangeRepository", "Errore: impossibile trovare un giorno lavorativo valido dopo 20 tentativi.");
             return true;
         }
@@ -195,6 +197,13 @@ public class Utils {
         now.setTimeZone(cetTimeZone);
 
         return now.getTimeInMillis() > lastPossibleUpdate;
+    }
+
+    public static void closeKeyboard(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 }

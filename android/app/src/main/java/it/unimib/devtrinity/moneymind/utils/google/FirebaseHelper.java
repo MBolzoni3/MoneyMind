@@ -40,7 +40,7 @@ public class FirebaseHelper {
                         FirebaseUser user = auth.getCurrentUser();
                         callback.onSuccess(user);
                     } else {
-                        callback.onFailure(task.getException().getMessage());
+                        callback.onFailure(task.getException().getLocalizedMessage());
                     }
                 });
     }
@@ -58,14 +58,14 @@ public class FirebaseHelper {
                                         if (profileTask.isSuccessful()) {
                                             callback.onSuccess(user);
                                         } else {
-                                            callback.onFailure(profileTask.getException().getMessage());
+                                            callback.onFailure(profileTask.getException().getLocalizedMessage());
                                         }
                                     });
                         } else {
                             callback.onFailure("User not found after registration");
                         }
                     } else {
-                        callback.onFailure(task.getException().getMessage());
+                        callback.onFailure(task.getException().getLocalizedMessage());
                     }
                 });
     }

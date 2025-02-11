@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -58,8 +59,19 @@ public class RegisterFragment extends Fragment {
         Button registerButton = view.findViewById(R.id.register_button);
         TextView loginLink = view.findViewById(R.id.login_link);
 
-        registerButton.setOnClickListener(v -> registerAction());
+        registerButton.setOnClickListener(v -> {
+            Utils.closeKeyboard(requireContext(), view);
+            registerAction();
+        });
         loginLink.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
+        confirmPasswordInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                registerButton.performClick();
+                return true;
+            }
+            return false;
+        });
 
         UserRepository userRepository = ServiceLocator.getInstance().getUserRepository();
         RegisterViewModelFactory factory = new RegisterViewModelFactory(userRepository);
@@ -74,7 +86,7 @@ public class RegisterFragment extends Fragment {
             } else if (state instanceof GenericState.Failure) {
                 toggleLoadingView(false);
                 String error = ((GenericState.Failure<Void>) state).getErrorMessage();
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                Utils.makeSnackBar(view, error);
             }
         });
     }

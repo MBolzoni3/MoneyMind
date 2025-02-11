@@ -71,7 +71,7 @@
             app:trackCornerRadius="@dimen/custom_progress_corner_radius"
             app:trackStopIndicatorSize="@dimen/custom_progess_track_stop_indicator_size"
             app:trackThickness="@dimen/custom_progress_thickness"
-            android:progress="50" />
+            android:progress="50"/>
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/outflow_progress_bar"
@@ -85,7 +85,7 @@
             app:trackCornerRadius="@dimen/custom_progress_corner_radius"
             app:trackStopIndicatorSize="@dimen/custom_progess_track_stop_indicator_size"
             app:trackThickness="@dimen/custom_progress_thickness"
-            android:progress="50" />
+            android:progress="50"/>
 
         <LinearLayout
             android:layout_width="match_parent"
