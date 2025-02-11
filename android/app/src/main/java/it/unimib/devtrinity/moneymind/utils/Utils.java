@@ -8,8 +8,12 @@ import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -96,6 +100,47 @@ public class Utils {
             listener.onDateSelected(formattedDate);
         });
 
+        datePicker.show(fragment.getParentFragmentManager(), "DATE_PICKER");
+    }
+
+    public static void showEndDatePicker(OnDateSelectedListener listener, Fragment fragment, TextInputEditText startDateField) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String startDateString = startDateField.getText().toString();
+        Date startDate;
+        try {
+            startDate = dateFormat.parse(startDateString);
+        } catch (ParseException e) {
+            Log.e("Utils", "Error parsing start date", e);
+            return;
+        }
+        if (startDate == null) {
+            return;
+        }
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        constraintsBuilder.setValidator(DateValidatorPointForward.from(startDate.getTime()));
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Seleziona una data")
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build();
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    .format(new Date(selection));
+            listener.onDateSelected(formattedDate);
+        });
+        datePicker.show(fragment.getParentFragmentManager(), "DATE_PICKER");
+    }
+    public static void showNonFutureDatePicker(OnDateSelectedListener listener, Fragment fragment) {
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        constraintsBuilder.setValidator(DateValidatorPointBackward.now());
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Seleziona una data")
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build();
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    .format(new Date(selection));
+            listener.onDateSelected(formattedDate);
+        });
         datePicker.show(fragment.getParentFragmentManager(), "DATE_PICKER");
     }
 

@@ -2,21 +2,26 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
@@ -46,6 +51,8 @@ public class AddGoalFragment extends Fragment {
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    private TextInputLayout nameFieldLayout, targetAmountFieldLayout, savedAmountFieldLayout, startDateFieldLayout, endDateFieldLayout, categoryFieldLayout;
 
     private View thisView;
 
@@ -93,6 +100,13 @@ public class AddGoalFragment extends Fragment {
         targetAmountField = view.findViewById(R.id.edit_goal_target_amount);
         savedAmountField = view.findViewById(R.id.edit_goal_saved_amount);
 
+        nameFieldLayout = view.findViewById(R.id.input_goal_name);
+        targetAmountFieldLayout = view.findViewById(R.id.input_goal_target_amount);
+        savedAmountFieldLayout = view.findViewById(R.id.input_goal_saved_amount);
+        startDateFieldLayout = view.findViewById(R.id.input_start_date);
+        endDateFieldLayout = view.findViewById(R.id.input_end_date);
+        categoryFieldLayout = view.findViewById(R.id.input_goal_category);
+
         categoryDropdown = view.findViewById(R.id.edit_goal_category);
         viewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
             CategoryAdapter adapter = new CategoryAdapter(requireContext(), categories);
@@ -126,15 +140,105 @@ public class AddGoalFragment extends Fragment {
         });
 
         endDateField.setOnClickListener(v -> {
-            Utils.showDatePicker(endDateField::setText, this);
+            Utils.showEndDatePicker(endDateField::setText, this, startDateField);
         });
 
         compileFields();
     }
 
     public void onSaveButtonClick() {
-        saveGoal();
-        navigateBack();
+        if (validateFields() && validateAmounts()){
+            saveGoal();
+            navigateBack();
+        }
+
+    }
+
+    private boolean validateAmounts() {
+
+        BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
+        BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
+
+        if(targetAmount.compareTo(savedAmount) <= 0){
+            Toast.makeText(requireContext(), R.string.invalid_amounts_error, Toast.LENGTH_SHORT).show();
+            targetAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            savedAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateFields() {
+
+        if (isEmptyField(nameField, nameFieldLayout, getString(R.string.empty_name_error))) {
+            return false;
+        } else if (!validateName(nameField, nameFieldLayout)) {
+            return false;
+        } else {
+            nameFieldLayout.setError(null);
+            nameFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(targetAmountField, targetAmountFieldLayout, getString(R.string.empty_targetamount_error))) {
+            return false;
+        } else {
+            targetAmountFieldLayout.setError(null);
+            targetAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(savedAmountField, savedAmountFieldLayout, getString(R.string.empty_savedamount_error))) {
+            return false;
+        } else {
+            savedAmountFieldLayout.setError(null);
+            savedAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (selectedCategory == null) {
+            categoryFieldLayout.setError(getString(R.string.empty_category_error));
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            categoryFieldLayout.setError(null);
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(startDateField, startDateFieldLayout, getString(R.string.empty_startdate_error))) {
+            return false;
+        } else {
+            startDateFieldLayout.setError(null);
+            startDateFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(endDateField, endDateFieldLayout, getString(R.string.empty_enddate_error))) {
+            return false;
+        } else {
+            endDateFieldLayout.setError(null);
+            endDateFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        return true;
+    }
+
+    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
+        String name = Objects.requireNonNull(field.getText()).toString();
+        if (!name.matches("[a-zA-Z]+")) {
+            fieldLayout.setError(getString(R.string.invalid_name_error));
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
+        if (TextUtils.isEmpty(field.getText())) {
+            fieldLayout.setError(fieldError);
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void compileFields() {
