@@ -65,7 +65,11 @@ public class SettingsFragment extends Fragment {
         });
 
         toggleGroupTheme.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
+            if (!isChecked) {
+                group.check(checkedId);
+                return;
+            }
+
             if (checkedId == R.id.button_light)
                 viewModel.setTheme(requireActivity().getApplication(), AppCompatDelegate.MODE_NIGHT_NO);
             else if (checkedId == R.id.button_dark)
@@ -85,7 +89,11 @@ public class SettingsFragment extends Fragment {
         });
 
         toggleGroupLanguage.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
+            if (!isChecked) {
+                group.check(checkedId);
+                return;
+            }
+
             if (checkedId == R.id.button_it)
                 viewModel.setLanguage(requireActivity().getApplication(), Locale.ITALIAN.getLanguage());
             else if (checkedId == R.id.button_en)
