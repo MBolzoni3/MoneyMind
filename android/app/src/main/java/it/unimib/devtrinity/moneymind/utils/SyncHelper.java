@@ -2,6 +2,7 @@ package it.unimib.devtrinity.moneymind.utils;
 
 import android.content.Context;
 
+import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
@@ -39,37 +40,24 @@ public class SyncHelper {
         );
     }
 
-    public static CompletableFuture<Void> triggerManualSync(Context context) {
-        return CompletableFuture.supplyAsync(() -> {
-            WorkManager workManager = WorkManager.getInstance(context);
+    public static CompletableFuture<WorkInfo> triggerManualSync(Context context) {
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+        WorkManager workManager = WorkManager.getInstance(context);
+        workManager.enqueue(request);
 
-            try {
-                List<WorkInfo> workInfos = workManager.getWorkInfosForUniqueWork(Constants.UNIQUE_WORK_NAME).get();
+        CompletableFuture<WorkInfo> completableFuture = new CompletableFuture<>();
 
-                boolean isRunning = workInfos.stream().anyMatch(info ->
-                        info.getState() == WorkInfo.State.RUNNING
-                );
-
-                if (!isRunning) {
-                    OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
-                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                            .build();
-
-                    workManager.enqueue(syncRequest);
-
-                    WorkInfo workInfo;
-                    do {
-                        workInfo = workManager.getWorkInfoById(syncRequest.getId()).get();
-                        Thread.sleep(50);
-                    } while (workInfo != null && workInfo.getState() == WorkInfo.State.RUNNING);
+        workManager.getWorkInfoByIdLiveData(request.getId()).observeForever(new Observer<>() {
+            @Override
+            public void onChanged(WorkInfo workInfo) {
+                if (workInfo != null && workInfo.getState().isFinished()) {
+                    completableFuture.complete(workInfo);
+                    workManager.getWorkInfoByIdLiveData(request.getId()).removeObserver(this);
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-                Thread.currentThread().interrupt();
             }
-
-            return null;
         });
+
+        return completableFuture;
     }
 
 }
