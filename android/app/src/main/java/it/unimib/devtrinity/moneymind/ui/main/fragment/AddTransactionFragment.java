@@ -217,6 +217,8 @@ public class AddTransactionFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
+        categoryFieldLayout = view.findViewById(R.id.input_category);
+
         compileTransaction();
         if (dateField.getText().toString().trim().isEmpty()) {
             dateField.setText(Utils.dateToString(new Date()));
