@@ -17,7 +17,6 @@ import java.util.List;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class CategoryAdapter extends ArrayAdapter<CategoryEntity> {
 

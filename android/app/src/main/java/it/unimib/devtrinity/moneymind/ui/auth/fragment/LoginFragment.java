@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
@@ -23,7 +21,6 @@ import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
-import it.unimib.devtrinity.moneymind.utils.SyncHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class LoginFragment extends Fragment {

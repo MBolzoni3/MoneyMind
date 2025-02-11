@@ -312,7 +312,8 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         /*if (itemId == R.id.menu_currency_converter && currentFragment != exchangeFragment) {
             navigateToFragment(exchangeFragment);
             return true;
-        } else*/ if (itemId == R.id.menu_settings && currentFragment != settingsFragment) {
+        } else*/
+        if (itemId == R.id.menu_settings && currentFragment != settingsFragment) {
             topAppBar.setTitle(R.string.settings);
             navigateToFragment(settingsFragment);
             return true;

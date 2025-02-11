@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
