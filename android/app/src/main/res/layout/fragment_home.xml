@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/spacing_small"
-                android:text="Ultimi movimenti"
+                android:text="@string/last_movements"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                 android:textColor="?attr/colorOnSurface" />
 
@@ -93,8 +93,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/spacing_medium"
-                android:text="Aggiungi movimento"
-                android:contentDescription="Aggiungi movimento"
+                android:text="@string/aggiungi_movimento"
+                android:contentDescription="@string/aggiungi_movimento"
                 app:icon="@drawable/ic_add"
                 app:backgroundTint="?attr/colorPrimary"
                 app:iconTint="?attr/colorOnPrimary"

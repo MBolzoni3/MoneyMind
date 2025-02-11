@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/spacing_medium"
-        android:contentDescription="Add goal"
+        android:contentDescription="@string/add_goal"
         app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

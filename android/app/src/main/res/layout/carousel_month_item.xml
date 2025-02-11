@@ -39,7 +39,7 @@
                     android:id="@+id/carousel_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gennaio 2025"
+                    android:text="@string/not_available"
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -47,7 +47,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/icon_margin_end"
-                    android:text="Bilancio sotto controllo! Continua così."
+                    android:layout_marginBottom="@dimen/spacing_small"
+                    android:text="@string/Good_bilance"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
@@ -112,7 +113,7 @@
                     android:id="@+id/income_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Non disponibile"
+                    android:text="@string/not_available"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
@@ -135,7 +136,7 @@
                     android:id="@+id/outflow_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Non disponibile"
+                    android:text="@string/not_available"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>

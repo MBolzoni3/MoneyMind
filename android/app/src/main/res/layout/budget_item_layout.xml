@@ -43,14 +43,14 @@
                     android:id="@+id/budget_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Budget Name"
+                    android:text="@string/budget_name"
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/budget_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Category"
+                    android:text="@string/category"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/spacing_small"
-            android:text="01/01 - 01/31"
+            android:text="@string/not_available"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +84,7 @@
             android:id="@+id/spent_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1000€"
+            android:text="@string/not_available"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
