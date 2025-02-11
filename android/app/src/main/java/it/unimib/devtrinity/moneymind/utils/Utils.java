@@ -4,10 +4,12 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,10 +17,14 @@ import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TimeZone;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
@@ -26,6 +32,9 @@ import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 import it.unimib.devtrinity.moneymind.ui.OnDateSelectedListener;
 
 public class Utils {
+
+    private static final String FORMAT_UI = "dd/MM/yyyy";
+    private static final String FORMAT_API = "yyyy-MM-dd";
 
     public static Long bigDecimalToLong(BigDecimal value) {
         return value == null ? null : value.multiply(BigDecimal.valueOf(100)).longValue();
@@ -35,47 +44,32 @@ public class Utils {
         return value == null ? null : BigDecimal.valueOf(value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_EVEN);
     }
 
-    public static Date stringToDate(String dateString) {
+    private static Date parseDate(String dateString, String format) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            return dateFormat.parse(dateString);
+            return new SimpleDateFormat(format, Locale.getDefault()).parse(dateString);
         } catch (ParseException e) {
             return null;
         }
     }
 
+    private static String formatDate(Date date, String format) {
+        return (date == null) ? null : new SimpleDateFormat(format, Locale.getDefault()).format(date);
+    }
+
+    public static Date stringToDate(String dateString) {
+        return parseDate(dateString, FORMAT_UI);
+    }
+
     public static String dateToString(Date date) {
-        if (date == null) {
-            return null;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateFormat.format(date);
+        return formatDate(date, FORMAT_UI);
+    }
+
+    public static Date stringToDateApi(String dateString) {
+        return parseDate(dateString, FORMAT_API);
     }
 
     public static String dateToStringApi(Date date) {
-        if (date == null) {
-            return null;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return dateFormat.format(date);
-    }
-
-    public static Date previousDate(Date data) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(data);
-
-        if (calendar.get(Calendar.YEAR) < 2000) {
-            return null;
-        }
-
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        return calendar.getTime();
-    }
-
-    public static int getThemeColor(Context context, int colorAttribute) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(colorAttribute, typedValue, true);
-        return typedValue.data;
+        return formatDate(date, FORMAT_API);
     }
 
     public static BigDecimal safeParseBigDecimal(String input, BigDecimal defaultValue) {
@@ -89,42 +83,6 @@ public class Utils {
             Log.e("InputError", "Invalid number format: " + input, e);
             return defaultValue;
         }
-    }
-
-    public static int getCategoryIcon(CategoryEntity categoryEntity) {
-        if (categoryEntity == null || categoryEntity.getName() == null) {
-            return R.drawable.ic_money_bag;
-        }
-
-        String categoryName = categoryEntity.getName().toLowerCase();
-        switch (categoryName) {
-            case "lavoro":
-                return R.drawable.ic_work;
-            case "investimenti":
-                return R.drawable.ic_finance_mode;
-            case "casa":
-                return R.drawable.ic_home;
-            case "utilità":
-                return R.drawable.ic_build;
-            case "trasporti":
-                return R.drawable.ic_directions_car;
-            case "alimentazione":
-                return R.drawable.ic_restaurant;
-            case "salute e benessere":
-                return R.drawable.ic_favorite;
-            case "educazione":
-                return R.drawable.ic_school;
-            case "svago":
-                return R.drawable.ic_sports_esports;
-            case "varie":
-                return R.drawable.ic_category;
-            default:
-                return R.drawable.ic_money_bag;
-        }
-    }
-
-    public static int getTypeIcon(MovementTypeEnum movementTypeEnum) {
-        return movementTypeEnum == MovementTypeEnum.INCOME ? R.drawable.ic_trending_up : R.drawable.ic_trending_down;
     }
 
     public static void showDatePicker(OnDateSelectedListener listener, Fragment fragment) {
@@ -144,12 +102,15 @@ public class Utils {
     public static List<String> getCurrencyDropdownItems(List<String> currencyCodes) {
         List<String> items = new ArrayList<>();
 
-        items.add(CurrencyHelper.getCurrencyDescription("EUR"));
         for (String currencyCode : currencyCodes) {
             items.add(CurrencyHelper.getCurrencyDescription(currencyCode));
         }
 
         return items;
+    }
+
+    public static void makeSnackBar(View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
     public static String formatTransactionAmount(BigDecimal amount) {
@@ -203,6 +164,43 @@ public class Utils {
         int diffMonth = current.get(Calendar.MONTH) - oldest.get(Calendar.MONTH);
 
         return diffYear * 12 + diffMonth;
+    }
+
+    public static Date getDateNDaysAgo(Date date, int daysAgo) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_YEAR, -daysAgo);
+        return calendar.getTime();
+    }
+
+    public static boolean isDataOutdated(Date latestStoredDate) {
+        TimeZone cetTimeZone = TimeZone.getTimeZone("Europe/Paris");
+        Calendar calendar = Calendar.getInstance(cetTimeZone);
+        calendar.setTimeZone(cetTimeZone);
+        calendar.setTime(latestStoredDate);
+
+        int safeCycle = 0;
+        while (safeCycle < 20 && (HolidayHelper.isWeekend(calendar) || HolidayHelper.isBceHoliday(calendar))) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            safeCycle++;
+        }
+
+        if(safeCycle >= 20){
+            Log.e("ExchangeRepository", "Errore: impossibile trovare un giorno lavorativo valido dopo 20 tentativi.");
+            return true;
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, 16);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        long lastPossibleUpdate = calendar.getTimeInMillis();
+
+        Calendar now = Calendar.getInstance(cetTimeZone);
+        now.setTimeZone(cetTimeZone);
+
+        return now.getTimeInMillis() > lastPossibleUpdate;
     }
 
 }

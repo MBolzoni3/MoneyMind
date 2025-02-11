@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
+import android.app.Application;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -106,12 +107,12 @@ public class AddTransactionFragment extends Fragment {
                     }
                 });
 
-        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
-        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
-        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireContext());
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository((Application) requireContext());
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository((Application) requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository((Application) requireContext());
+        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository((Application) requireContext());
 
-        AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(categoryRepository, exchangeRepository);
+        AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(transactionRepository, recurringTransactionRepository, categoryRepository, exchangeRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);
 
         nameField = view.findViewById(R.id.edit_transaction_name);
@@ -175,7 +176,7 @@ public class AddTransactionFragment extends Fragment {
             selectedDate = new Date();
         }
 
-        viewModel.fetchExchangeRates(selectedDate);
+        // viewModel.fetchExchangeRates(selectedDate);
     }
 
     private final TextWatcher textWatcher = new TextWatcher() {
