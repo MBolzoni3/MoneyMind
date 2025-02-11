@@ -6,47 +6,41 @@ import java.util.Map;
 
 public class CurrencyHelper {
 
-    private static final Map<String, String> currencyMap;
-
-    static {
-        Map<String, String> map = new HashMap<>();
-
-        map.put("EUR", "Euro");
-        map.put("AUD", "Dollaro australiano");
-        map.put("BGN", "Lev bulgaro");
-        map.put("BRL", "Real brasiliano");
-        map.put("CAD", "Dollaro canadese");
-        map.put("CHF", "Franco svizzero");
-        map.put("CNY", "Yuan cinese");
-        map.put("CZK", "Corona ceca");
-        map.put("DKK", "Corona danese");
-        map.put("GBP", "Sterlina britannica");
-        map.put("HKD", "Dollaro di Hong Kong");
-        map.put("HRK", "Kuna croata");
-        map.put("HUF", "Fiorino ungherese");
-        map.put("IDR", "Rupia indonesiana");
-        map.put("ILS", "Nuovo siclo israeliano");
-        map.put("INR", "Rupia indiana");
-        map.put("ISK", "Corona islandese");
-        map.put("JPY", "Yen giapponese");
-        map.put("KRW", "Won sudcoreano");
-        map.put("MXN", "Peso messicano");
-        map.put("MYR", "Ringgit malese");
-        map.put("NOK", "Corona norvegese");
-        map.put("NZD", "Dollaro neozelandese");
-        map.put("PHP", "Peso filippino");
-        map.put("PLN", "Zloty polacco");
-        map.put("RON", "Leu rumeno");
-        map.put("RUB", "Rublo russo");
-        map.put("SEK", "Corona svedese");
-        map.put("SGD", "Dollaro di Singapore");
-        map.put("THB", "Baht thailandese");
-        map.put("TRY", "Lira turca");
-        map.put("USD", "Dollaro statunitense");
-        map.put("ZAR", "Rand sudafricano");
-
-        currencyMap = Collections.unmodifiableMap(map);
-    }
+    private static final Map<String, String> CURRENCY_MAP = Map.ofEntries(
+            Map.entry("EUR", "Euro"),
+            Map.entry("AUD", "Dollaro australiano"),
+            Map.entry("BGN", "Lev bulgaro"),
+            Map.entry("BRL", "Real brasiliano"),
+            Map.entry("CAD", "Dollaro canadese"),
+            Map.entry("CHF", "Franco svizzero"),
+            Map.entry("CNY", "Yuan cinese"),
+            Map.entry("CZK", "Corona ceca"),
+            Map.entry("DKK", "Corona danese"),
+            Map.entry("GBP", "Sterlina britannica"),
+            Map.entry("HKD", "Dollaro di Hong Kong"),
+            Map.entry("HRK", "Kuna croata"),
+            Map.entry("HUF", "Fiorino ungherese"),
+            Map.entry("IDR", "Rupia indonesiana"),
+            Map.entry("ILS", "Nuovo siclo israeliano"),
+            Map.entry("INR", "Rupia indiana"),
+            Map.entry("ISK", "Corona islandese"),
+            Map.entry("JPY", "Yen giapponese"),
+            Map.entry("KRW", "Won sudcoreano"),
+            Map.entry("MXN", "Peso messicano"),
+            Map.entry("MYR", "Ringgit malese"),
+            Map.entry("NOK", "Corona norvegese"),
+            Map.entry("NZD", "Dollaro neozelandese"),
+            Map.entry("PHP", "Peso filippino"),
+            Map.entry("PLN", "Zloty polacco"),
+            Map.entry("RON", "Leu rumeno"),
+            Map.entry("RUB", "Rublo russo"),
+            Map.entry("SEK", "Corona svedese"),
+            Map.entry("SGD", "Dollaro di Singapore"),
+            Map.entry("THB", "Baht thailandese"),
+            Map.entry("TRY", "Lira turca"),
+            Map.entry("USD", "Dollaro statunitense"),
+            Map.entry("ZAR", "Rand sudafricano")
+    );
 
     public static String getCurrencyDescription(String code) {
         if (code == null || code.trim().isEmpty()) {
@@ -54,7 +48,7 @@ public class CurrencyHelper {
         }
 
         String upperCode = code.toUpperCase();
-        String description = currencyMap.get(upperCode);
+        String description = CURRENCY_MAP.get(upperCode);
         if (description != null) {
             return upperCode + " - " + description;
         } else {

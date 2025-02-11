@@ -49,4 +49,7 @@ public interface GoalDao {
             "WHERE goals.deleted = 0")
     LiveData<List<GoalEntityWithCategory>> getAll();
 
+    @Query("SELECT MAX(updatedAt) FROM goals WHERE synced = 1")
+    Long getLastSyncedTimestamp();
+
 }

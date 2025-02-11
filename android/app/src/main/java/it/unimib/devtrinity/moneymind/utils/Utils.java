@@ -15,10 +15,14 @@ import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TimeZone;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
@@ -161,6 +165,27 @@ public class Utils {
         calendar.setTime(date);
         calendar.add(Calendar.DAY_OF_YEAR, -daysAgo);
         return calendar.getTime();
+    }
+
+    public static boolean isDataOutdated(Date latestStoredDate) {
+        TimeZone cetTimeZone = TimeZone.getTimeZone("Europe/Paris");
+        Calendar calendar = Calendar.getInstance(cetTimeZone);
+        calendar.setTimeZone(cetTimeZone);
+
+        calendar.setTime(latestStoredDate);
+
+        while (HolidayHelper.isWeekend(calendar) || HolidayHelper.isBceHoliday(calendar)) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, 16);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        long lastPossibleUpdate = calendar.getTimeInMillis();
+
+        return latestStoredDate.getTime() < lastPossibleUpdate;
     }
 
 }

@@ -1,13 +1,14 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,57 +57,80 @@ public class BudgetRepository extends GenericRepository {
     }
 
     @Override
-    protected CompletableFuture<Void> syncLocalToRemoteAsync() {
-        return CompletableFuture.runAsync(() -> {
-            List<BudgetEntity> unsyncedBudgets = budgetDao.getUnsyncedBudgets();
+    protected CompletableFuture<Long> syncLocalToRemoteAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+                    List<BudgetEntity> unsyncedBudgets = budgetDao.getUnsyncedBudgets();
+                    List<CompletableFuture<Void>> syncFutures = new ArrayList<>();
 
-            for (BudgetEntity budget : unsyncedBudgets) {
-                budget.setSynced(true);
+                    for (BudgetEntity budget : unsyncedBudgets) {
+                        budget.setSynced(true);
 
-                String documentId = budget.getFirestoreId();
-                DocumentReference docRef;
+                        String documentId = budget.getFirestoreId();
+                        DocumentReference docRef;
 
-                if (documentId == null || documentId.isEmpty()) {
-                    docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
-                    budget.setFirestoreId(docRef.getId());
-                } else {
-                    docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
-                }
+                        if (documentId == null || documentId.isEmpty()) {
+                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                            budget.setFirestoreId(docRef.getId());
+                        } else {
+                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                        }
 
-                docRef.set(budget)
-                        .addOnSuccessListener(executorService, aVoid -> {
-                            budgetDao.setSynced(budget.getId());
+                        CompletableFuture<Void> future = runFirestoreSet(docRef, budget)
+                                .thenRunAsync(() -> budgetDao.setSynced(budget.getId()), executorService);
 
-                            Log.d(TAG, "Budget synced to remote: " + budget.getFirestoreId());
-                        })
-                        .addOnFailureListener(e -> {
-                            throw new RuntimeException("Error syncing budget to remote: " + e.getMessage(), e);
-                        });
-            }
-        }, executorService);
+                        syncFutures.add(future);
+                    }
+
+                    return syncFutures;
+                }, executorService)
+                .thenCompose(syncFutures -> CompletableFuture.allOf(syncFutures.toArray(new CompletableFuture[0])))
+                .thenApply(v -> budgetDao.getLastSyncedTimestamp())
+                .exceptionally(e -> {
+                    Log.e(TAG, "Sync failed", e);
+                    return 0L;
+                });
+    }
+
+    private CompletableFuture<Void> runFirestoreSet(DocumentReference docRef, BudgetEntity budget) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        docRef.set(budget)
+                .addOnSuccessListener(executorService, aVoid -> future.complete(null))
+                .addOnFailureListener(e -> future.completeExceptionally(new RuntimeException("Error syncing budget to remote", e)));
+
+        return future;
     }
 
     @Override
     protected CompletableFuture<Void> syncRemoteToLocalAsync(long lastSyncedTimestamp) {
-        return CompletableFuture.runAsync(() -> {
-            FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
-                    .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
-                    .get()
-                    .addOnSuccessListener(executorService, querySnapshot -> {
-                        for (BudgetEntity remoteBudget : querySnapshot.toObjects(BudgetEntity.class)) {
-                            BudgetEntity localBudget = budgetDao.getByFirestoreId(remoteBudget.getFirestoreId());
-                            if (localBudget == null) {
-                                budgetDao.insertOrUpdate(remoteBudget);
-                            } else {
-                                BudgetEntity resolvedBudget = resolveConflict(localBudget, remoteBudget);
-                                budgetDao.insertOrUpdate(resolvedBudget);
-                            }
+        return runFirestoreQuery(lastSyncedTimestamp)
+                .thenAcceptAsync(querySnapshot -> {
+                    for (BudgetEntity remoteBudget : querySnapshot.toObjects(BudgetEntity.class)) {
+                        BudgetEntity localBudget = budgetDao.getByFirestoreId(remoteBudget.getFirestoreId());
+                        if (localBudget == null) {
+                            budgetDao.insertOrUpdate(remoteBudget);
+                        } else {
+                            BudgetEntity resolvedBudget = resolveConflict(localBudget, remoteBudget);
+                            budgetDao.insertOrUpdate(resolvedBudget);
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        throw new RuntimeException("Error syncing budgets from remote: " + e.getMessage(), e);
-                    });
-        }, executorService);
+                    }
+                }, executorService)
+                .exceptionally(e -> {
+                    Log.e(TAG, "Error syncing budgets from remote", e);
+                    return null;
+                });
+    }
+
+    private CompletableFuture<QuerySnapshot> runFirestoreQuery(long lastSyncedTimestamp) {
+        CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
+
+        FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
+                .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
+                .get()
+                .addOnSuccessListener(executorService, future::complete)
+                .addOnFailureListener(e -> future.completeExceptionally(new RuntimeException("Error fetching budgets from remote", e)));
+
+        return future;
     }
 
     private BudgetEntity resolveConflict(BudgetEntity local, BudgetEntity remote) {

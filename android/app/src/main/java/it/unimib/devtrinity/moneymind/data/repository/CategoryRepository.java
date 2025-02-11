@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,35 +37,43 @@ public class CategoryRepository extends GenericRepository {
     }
 
     @Override
-    public void sync() {
-        Timestamp timestamp = categoryDao.getLastSyncedTimestamp();
-        sync(timestamp == null ? new Timestamp(0, 0).getSeconds() : timestamp.getSeconds());
+    protected CompletableFuture<Long> syncLocalToRemoteAsync() {
+        return CompletableFuture.supplyAsync(() -> categoryDao.getLastSyncedTimestamp(), executorService);
     }
 
     @Override
     protected CompletableFuture<Void> syncRemoteToLocalAsync(long lastSyncedTimestamp) {
-        return CompletableFuture.runAsync(() -> {
-            FirestoreHelper.getInstance().getGlobalCollection(COLLECTION_NAME)
-                    .whereGreaterThan("updatedAt", new Timestamp(lastSyncedTimestamp, 0))
-                    .orderBy("order", Query.Direction.ASCENDING)
-                    .get()
-                    .addOnSuccessListener(executorService, querySnapshot -> {
-                        List<CategoryEntity> categories = new ArrayList<>();
-                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            CategoryEntity category = document.toObject(CategoryEntity.class);
-                            if (category != null) {
-                                category.setFirestoreId(document.getId());
-                                categories.add(category);
-                            }
+        return runFirestoreCategoryQuery(lastSyncedTimestamp)
+                .thenAcceptAsync(querySnapshot -> {
+                    List<CategoryEntity> categories = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        CategoryEntity category = document.toObject(CategoryEntity.class);
+                        if (category != null) {
+                            category.setFirestoreId(document.getId());
+                            categories.add(category);
                         }
+                    }
 
-                        categoryDao.insert(categories);
-                        Log.d(TAG, "Categories downloaded/updated (" + categories.size() + ")");
-                    })
-                    .addOnFailureListener(e -> {
-                        throw new RuntimeException("Error downloading categories: " + e.getMessage(), e);
-                    });
-        }, executorService);
+                    categoryDao.insert(categories);
+                    Log.d(TAG, "Categories downloaded/updated (" + categories.size() + ")");
+                }, executorService)
+                .exceptionally(e -> {
+                    Log.e(TAG, "Error downloading categories", e);
+                    return null;
+                });
+    }
+
+    private CompletableFuture<QuerySnapshot> runFirestoreCategoryQuery(long lastSyncedTimestamp) {
+        CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
+
+        FirestoreHelper.getInstance().getGlobalCollection(COLLECTION_NAME)
+                .whereGreaterThan("updatedAt", new Timestamp(lastSyncedTimestamp, 0))
+                .orderBy("order", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(executorService, future::complete)
+                .addOnFailureListener(e -> future.completeExceptionally(new RuntimeException("Error fetching categories", e)));
+
+        return future;
     }
 
 }

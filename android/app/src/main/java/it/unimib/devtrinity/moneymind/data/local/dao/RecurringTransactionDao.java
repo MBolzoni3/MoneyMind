@@ -51,4 +51,7 @@ public interface RecurringTransactionDao {
             "ORDER BY recurring_transactions.date DESC ")
     LiveData<List<RecurringTransactionEntityWithCategory>> getAll();
 
+    @Query("SELECT MAX(updatedAt) FROM recurring_transactions WHERE synced = 1")
+    Long getLastSyncedTimestamp();
+
 }

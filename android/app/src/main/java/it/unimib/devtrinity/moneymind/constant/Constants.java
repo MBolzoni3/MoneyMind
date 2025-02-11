@@ -1,5 +1,9 @@
 package it.unimib.devtrinity.moneymind.constant;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Constants {
 
     private Constants() {
@@ -18,7 +22,6 @@ public class Constants {
     public static final String BUDGETS_LAST_SYNC_KEY = "budgets_last_sync";
     public static final String THEME_KEY = "theme";
 
-    //API
     public static final String BASE_URL = "https://data-api.ecb.europa.eu/service/data/";
     public static final String SPECIFIC_URL = "EXR/D..EUR.SP00.A";
 

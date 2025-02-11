@@ -8,6 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
@@ -41,15 +45,24 @@ public class SyncWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        categoryRepository.sync();
-        if (FirebaseHelper.getInstance().isUserLoggedIn()) {
-            budgetRepository.sync();
-            goalRepository.sync();
-            recurringTransactionRepository.sync();
-            transactionRepository.sync();
-        }
+        try {
+            List<CompletableFuture<Void>> syncFutures = new ArrayList<>();
+            syncFutures.add(categoryRepository.sync());
 
-        return Result.success();
+            if (FirebaseHelper.getInstance().isUserLoggedIn()) {
+                syncFutures.add(budgetRepository.sync());
+                syncFutures.add(goalRepository.sync());
+                syncFutures.add(recurringTransactionRepository.sync());
+                syncFutures.add(transactionRepository.sync());
+            }
+
+            CompletableFuture.allOf(syncFutures.toArray(new CompletableFuture[0])).join();
+
+            return Result.success();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in worker sync: " + e.getMessage(), e);
+            return Result.failure();
+        }
     }
 
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/spacing_medium"
-    android:paddingVertical="@dimen/spacing_small"
+    android:paddingVertical="@dimen/spacing_small_medium"
     android:gravity="center_vertical"
     android:textAppearance="?attr/textAppearanceBodyLarge"
     android:textColor="?attr/colorOnSurface" />

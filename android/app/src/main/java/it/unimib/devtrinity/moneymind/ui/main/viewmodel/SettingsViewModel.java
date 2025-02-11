@@ -9,11 +9,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
+import it.unimib.devtrinity.moneymind.utils.SyncHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class SettingsViewModel extends ViewModel {
@@ -36,12 +38,17 @@ public class SettingsViewModel extends ViewModel {
     }
 
     public void logout(Activity activity) {
-        FirebaseHelper.getInstance().logoutUser();
-        SharedPreferencesHelper.clearSharedPrefs(activity.getApplication());
-        Executors.newSingleThreadExecutor().execute(() -> {
-            DatabaseClient.getInstance(activity.getApplication()).clearAllTables();
+        SyncHelper.triggerManualSyncAndNavigate(activity, () -> {
+            FirebaseHelper.getInstance().logoutUser();
+            SharedPreferencesHelper.clearSharedPrefs(activity.getApplication());
+
+            CompletableFuture.runAsync(() -> {
+                DatabaseClient.getInstance(activity.getApplication()).clearAllTables();
+            }).thenRun(() -> {
+                NavigationHelper.navigateToLogin(activity);
+            });
         });
-        NavigationHelper.navigateToLogin(activity);
     }
+
 }
 

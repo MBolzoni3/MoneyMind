@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             loadingIndicator.setVisibility(View.GONE);
             if (savedInstanceState == null) {
-                NavigationHelper.loadFragment(this, new LoginFragment());
+                NavigationHelper.loadFragment(this, new LoginFragment(), false);
             }
         }
 
