@@ -32,6 +32,16 @@ public class SharedPreferencesHelper {
         prefs.edit().putInt(Constants.THEME_KEY, theme).apply();
     }
 
+    public static String getLanguage(Application application) {
+        SharedPreferences prefs = getPreferences(application);
+        return prefs.getString(Constants.LANG_KEY, null);
+    }
+
+    public static void setLanguage(Application application, String lang) {
+        SharedPreferences prefs = getPreferences(application);
+        prefs.edit().putString(Constants.LANG_KEY, lang).apply();
+    }
+
     public static void clearSharedPrefs(Application application) {
         SharedPreferences prefs = getPreferences(application);
         SharedPreferences.Editor editor = prefs.edit();

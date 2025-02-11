@@ -52,9 +52,7 @@ public class LoginFragment extends Fragment {
             if (state instanceof GenericState.Loading) {
                 toggleLoadingView(true);
             } else if (state instanceof GenericState.Success) {
-                SyncHelper.triggerManualSyncAndNavigate(getContext(), () -> {
-                    NavigationHelper.navigateToMain(getContext());
-                });
+                NavigationHelper.navigateToMain(getContext());
             } else if (state instanceof GenericState.Failure) {
                 toggleLoadingView(false);
                 String error = ((GenericState.Failure<String>) state).getErrorMessage();
@@ -67,7 +65,7 @@ public class LoginFragment extends Fragment {
             String password = ((EditText) view.findViewById(R.id.password_input)).getText().toString();
 
             if (validateInput(email, password)) {
-                loginViewModel.login(email, password);
+                loginViewModel.login(email, password, getContext());
             } else {
                 Utils.makeSnackBar(view, getString(R.string.invalid_credentials));
             }

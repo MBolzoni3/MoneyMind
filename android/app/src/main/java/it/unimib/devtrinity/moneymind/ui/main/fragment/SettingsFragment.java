@@ -14,14 +14,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
+import java.util.Locale;
+
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.repository.DatabaseRepository;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
-import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
-import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
-import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModelFactory;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.SettingsViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.SettingsViewModelFactory;
+import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 
 public class SettingsFragment extends Fragment {
 
@@ -39,11 +39,17 @@ public class SettingsFragment extends Fragment {
         SettingsViewModelFactory factory = new SettingsViewModelFactory(databaseRepository);
         SettingsViewModel viewModel = new ViewModelProvider(this, factory).get(SettingsViewModel.class);
         viewModel.initTheme(requireActivity().getApplication());
+        viewModel.initLanguage(requireActivity().getApplication());
 
-        MaterialButtonToggleGroup toggleGroup = view.findViewById(R.id.theme_toggle_group);
+        MaterialButtonToggleGroup toggleGroupTheme = view.findViewById(R.id.theme_toggle_group);
         MaterialButton buttonLight = view.findViewById(R.id.button_light);
         MaterialButton buttonDark = view.findViewById(R.id.button_dark);
         MaterialButton buttonAuto = view.findViewById(R.id.button_auto);
+
+        MaterialButtonToggleGroup toggleGroupLanguage = view.findViewById(R.id.language_toggle_group);
+        MaterialButton buttonItalian = view.findViewById(R.id.button_it);
+        MaterialButton buttonEnglish = view.findViewById(R.id.button_en);
+
         MaterialButton btnLogout = view.findViewById(R.id.btn_logout);
 
         viewModel.getTheme().observe(getViewLifecycleOwner(), theme -> {
@@ -58,8 +64,12 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
+        toggleGroupTheme.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) {
+                group.check(checkedId);
+                return;
+            }
+
             if (checkedId == R.id.button_light)
                 viewModel.setTheme(requireActivity().getApplication(), AppCompatDelegate.MODE_NIGHT_NO);
             else if (checkedId == R.id.button_dark)
@@ -68,7 +78,34 @@ public class SettingsFragment extends Fragment {
                 viewModel.setTheme(requireActivity().getApplication(), AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         });
 
+        viewModel.getLanguage().observe(getViewLifecycleOwner(), language -> {
+            if (language == null) return;
+
+            if (language.equals(Locale.ITALIAN.getLanguage())) {
+                buttonItalian.setChecked(true);
+            } else if (language.equals(Locale.ENGLISH.getLanguage())) {
+                buttonEnglish.setChecked(true);
+            }
+        });
+
+        toggleGroupLanguage.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) {
+                group.check(checkedId);
+                return;
+            }
+
+            if (checkedId == R.id.button_it)
+                viewModel.setLanguage(requireActivity().getApplication(), Locale.ITALIAN.getLanguage());
+            else if (checkedId == R.id.button_en)
+                viewModel.setLanguage(requireActivity().getApplication(), Locale.ENGLISH.getLanguage());
+        });
+
         btnLogout.setOnClickListener(v -> viewModel.logout(requireActivity()));
+        viewModel.getLogoutLiveData().observe(getViewLifecycleOwner(), loggedOut -> {
+            if (loggedOut) {
+                NavigationHelper.navigateToLogin(requireActivity());
+            }
+        });
     }
 
 }

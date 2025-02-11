@@ -84,11 +84,14 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
         });
 
         viewModel.getTransactionsByMonth().observe(getViewLifecycleOwner(), transactionsByMonth -> {
+            int oldSize = monthCarouselAdapter.getItemCount();
             int oldPosition = monthsViewPager.getCurrentItem();
 
-            int insertedCount = monthCarouselAdapter.updateMap(transactionsByMonth, oldPosition);
-            if (insertedCount > 0) {
-                monthsViewPager.post(() -> monthsViewPager.setCurrentItem(oldPosition + insertedCount, false));
+            monthCarouselAdapter.updateMap(transactionsByMonth);
+            int newSize = monthCarouselAdapter.getItemCount();
+            if (oldSize > 0 && oldPosition == 0 && newSize > oldSize) {
+                int insertedCount = newSize - oldSize;
+                monthsViewPager.setCurrentItem(oldPosition + insertedCount, false);
             }
 
             viewModel.getCurrentPage().removeObserver(pageObserver);

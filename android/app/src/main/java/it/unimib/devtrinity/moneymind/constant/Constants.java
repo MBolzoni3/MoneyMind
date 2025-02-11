@@ -29,6 +29,7 @@ public class Constants {
     public static final String BUDGETS_LAST_SYNC_KEY = "budgets_last_sync";
     public static final String CATEGORIES_LAST_SYNC_KEY = "categories_last_sync";
     public static final String THEME_KEY = "theme";
+    public static final String LANG_KEY = "lang";
 
     public static final String BASE_URL = "https://data-api.ecb.europa.eu/service/data/";
     public static final String SPECIFIC_URL = "EXR/D..EUR.SP00.A";

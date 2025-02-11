@@ -2,6 +2,7 @@ package it.unimib.devtrinity.moneymind.utils;
 
 import android.content.Context;
 
+import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
@@ -11,6 +12,9 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import it.unimib.devtrinity.moneymind.constant.Constants;
@@ -36,29 +40,24 @@ public class SyncHelper {
         );
     }
 
-    public static void triggerManualSyncAndNavigate(Context context, Runnable onComplete) {
+    public static CompletableFuture<WorkInfo> triggerManualSync(Context context) {
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
         WorkManager workManager = WorkManager.getInstance(context);
+        workManager.enqueue(request);
 
-        workManager.getWorkInfosForUniqueWorkLiveData(Constants.UNIQUE_WORK_NAME).observeForever(workInfos -> {
-            boolean isRunning = workInfos.stream().anyMatch(info ->
-                    info.getState() == WorkInfo.State.RUNNING
-            );
+        CompletableFuture<WorkInfo> completableFuture = new CompletableFuture<>();
 
-            if (!isRunning) {
-                OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
-                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                        .build();
-
-                workManager.enqueue(syncRequest);
-
-                workManager.getWorkInfoByIdLiveData(syncRequest.getId()).observeForever(workInfo -> {
-                    if (workInfo != null && (workInfo.getState() == WorkInfo.State.SUCCEEDED || workInfo.getState() == WorkInfo.State.FAILED)) {
-                        onComplete.run();
-                    }
-                });
-            } else {
-                onComplete.run();
+        workManager.getWorkInfoByIdLiveData(request.getId()).observeForever(new Observer<>() {
+            @Override
+            public void onChanged(WorkInfo workInfo) {
+                if (workInfo != null && workInfo.getState().isFinished()) {
+                    completableFuture.complete(workInfo);
+                    workManager.getWorkInfoByIdLiveData(request.getId()).removeObserver(this);
+                }
             }
         });
+
+        return completableFuture;
     }
+
 }
