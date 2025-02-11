@@ -13,6 +13,7 @@ import it.unimib.devtrinity.moneymind.data.local.AppDatabase;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 
 public class DatabaseRepository {
+    private static final String TAG = CategoryRepository.class.getSimpleName();
 
     private final AppDatabase database;
 
@@ -43,7 +44,7 @@ public class DatabaseRepository {
                 }
             });
         }).exceptionally(e -> {
-            Log.e("DatabaseRepository", "Error clearing tables: " + e.getMessage(), e);
+            Log.e(TAG, "Error clearing tables: " + e.getMessage(), e);
             return null;
         });
     }

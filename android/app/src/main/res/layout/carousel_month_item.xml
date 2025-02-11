@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/icon_margin_end"
                     android:layout_marginBottom="@dimen/spacing_small"
-                    android:text="@string/Good_bilance"
+                    android:text="@string/balance_no_activity"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>

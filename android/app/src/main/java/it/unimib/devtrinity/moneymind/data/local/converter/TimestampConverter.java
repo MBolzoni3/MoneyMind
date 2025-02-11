@@ -8,7 +8,6 @@ import java.util.Date;
 
 public class TimestampConverter {
 
-    // Conversione Room: Long <-> Date
     @TypeConverter
     public static Date fromLong(Long value) {
         return value == null ? null : new Date(value);
@@ -19,7 +18,6 @@ public class TimestampConverter {
         return date == null ? null : date.getTime();
     }
 
-    // Conversione Firestore: Long <-> Firebase Timestamp
     @TypeConverter
     public static Timestamp fromLongToTimestamp(Long value) {
         return value == null ? null : new Timestamp(new Date(value));

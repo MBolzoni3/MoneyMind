@@ -67,10 +67,10 @@
     <string name="no_goals_hint">Add a goal to save effectively and achieve your financial milestones</string>
     <string name="disclaimer_text">This app uses exchange rates provided by the European Central Bank (ECB), which are updated only on weekdays after 4:00 PM CET. If you select a date that falls on the weekend, a public holiday, or before the daily update, the app will automatically use the most recent available rate.</string>
     <string name="aggiungi_movimento">Add movement</string>
-    <string name="App_claim">Manage your finances smartly</string>
+    <string name="app_claim">Manage your finances smartly</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="Compile_all_field">Fill in all fields to continue</string>
+    <string name="compile_all_field">Fill in all fields to continue</string>
     <string name="name">Name</string>
     <string name="password_confirm">Confirm Password</string>
     <string name="already_got_account">Do you alreasy have an account? Login</string>
@@ -88,8 +88,7 @@
     <string name="end_date">End Date</string>
     <string name="budget_name">Budget Name</string>
     <string name="amount">Amount</string>
-    <string name="genuary_2025">Jenuary 2025</string>
-    <string name="Good_bilance">Budget under control! Keep it up.</string>
+    <string name="january_2025">January 2025</string>
     <string name="not_available">Not available</string>
     <string name="last_movements">Last movements</string>
     <string name="goals">Goals</string>
@@ -97,4 +96,5 @@
     <string name="movements">Movements</string>
     <string name="currency_converter">Currency Converter</string>
     <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>
