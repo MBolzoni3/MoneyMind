@@ -23,7 +23,6 @@ public class HomeViewModel extends ViewModel {
     private Long oldestTransactionDate;
     private final MutableLiveData<Integer> currentCarouselPage = new MutableLiveData<>(-1);
 
-
     private final Observer<Long> oldestTransactionObserver = date -> oldestTransactionDate = date;
 
     public HomeViewModel(TransactionRepository transactionRepository) {
