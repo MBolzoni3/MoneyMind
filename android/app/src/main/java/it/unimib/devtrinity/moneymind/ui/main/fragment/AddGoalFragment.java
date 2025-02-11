@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
-import android.app.Application;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,11 +34,10 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddGoalFragment extends Fragment {
 
+    private AddGoalViewModel viewModel;
     private final SelectionModeListener selectionModeListener;
 
     private GoalEntity currentGoal;
-    private GoalRepository goalRepository;
-    private CategoryRepository categoryRepository;
 
     private TextInputEditText nameField;
     private TextInputEditText targetAmountField;
@@ -48,6 +46,8 @@ public class AddGoalFragment extends Fragment {
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    private View thisView;
 
     public AddGoalFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -71,6 +71,8 @@ public class AddGoalFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        thisView = view;
+
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -81,11 +83,11 @@ public class AddGoalFragment extends Fragment {
                 }
         );
 
-        goalRepository = ServiceLocator.getInstance().getGoalRepository((Application) requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository((Application) requireContext());
+        GoalRepository goalRepository = ServiceLocator.getInstance().getGoalRepository(requireActivity().getApplication());
+        CategoryRepository categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
 
         AddGoalViewModelFactory factory = new AddGoalViewModelFactory(goalRepository, categoryRepository);
-        AddGoalViewModel viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
+        viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
 
         nameField = view.findViewById(R.id.edit_goal_name);
         targetAmountField = view.findViewById(R.id.edit_goal_target_amount);
@@ -172,21 +174,16 @@ public class AddGoalFragment extends Fragment {
             goal = currentGoal;
         }
 
-        goalRepository.insertGoal(
-                goal,
-                new GenericCallback<>() {
+        viewModel.insertGoal(goal, new GenericCallback<>() {
+            @Override
+            public void onSuccess(Void result) {
+                navigateBack();
+            }
 
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        navigateBack();
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-
-                    }
-                }
-        );
+            @Override
+            public void onFailure(String errorMessage) {
+                Utils.makeSnackBar(thisView, errorMessage);
+            }
+        });
     }
 }
-

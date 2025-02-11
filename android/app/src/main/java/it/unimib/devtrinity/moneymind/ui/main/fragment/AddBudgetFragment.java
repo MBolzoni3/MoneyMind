@@ -34,11 +34,10 @@ import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class AddBudgetFragment extends Fragment {
 
+    private AddBudgetViewModel viewModel;
     private final SelectionModeListener selectionModeListener;
 
     private BudgetEntity currentBudget;
-    private BudgetRepository budgetRepository;
-    private CategoryRepository categoryRepository;
 
     private TextInputEditText nameField;
     private TextInputEditText amountField;
@@ -46,6 +45,8 @@ public class AddBudgetFragment extends Fragment {
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    private View thisView;
 
     public AddBudgetFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -69,6 +70,8 @@ public class AddBudgetFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        thisView = view;
+
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -79,10 +82,10 @@ public class AddBudgetFragment extends Fragment {
                 }
         );
 
-        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireActivity().getApplication());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
+        BudgetRepository budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireActivity().getApplication());
+        CategoryRepository categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
         AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(budgetRepository, categoryRepository);
-        AddBudgetViewModel viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
+        viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
 
         nameField = view.findViewById(R.id.edit_budget_name);
         amountField = view.findViewById(R.id.edit_budget_amount);
@@ -165,22 +168,18 @@ public class AddBudgetFragment extends Fragment {
             budget = currentBudget;
         }
 
-        budgetRepository.insertBudget(
-                budget,
-                new GenericCallback<>() {
+        viewModel.insertBudget(budget, new GenericCallback<>() {
+            @Override
+            public void onSuccess(Void result) {
+                navigateBack();
+            }
 
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        navigateBack();
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                    }
-                }
-        );
+            @Override
+            public void onFailure(String errorMessage) {
+                Utils.makeSnackBar(thisView, errorMessage);
+            }
+        });
     }
 
 
 }
-

@@ -1,6 +1,5 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
-import android.app.Application;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,10 +50,6 @@ public class AddTransactionFragment extends Fragment {
     private final SelectionModeListener selectionModeListener;
 
     private TransactionEntity currentTransaction;
-    private TransactionRepository transactionRepository;
-    private RecurringTransactionRepository recurringTransactionRepository;
-    private CategoryRepository categoryRepository;
-    private ExchangeRepository exchangeRepository;
     private AddTransactionViewModel viewModel;
 
     private TextInputEditText nameField;
@@ -76,6 +71,8 @@ public class AddTransactionFragment extends Fragment {
     private RecurrenceTypeEnum selectedRecurrence;
     private TextInputEditText recurrenceInterval;
     private TextInputEditText endDateField;
+
+    private View thisView;
 
     public AddTransactionFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -99,6 +96,8 @@ public class AddTransactionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        thisView = view;
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
                     @Override
@@ -107,10 +106,10 @@ public class AddTransactionFragment extends Fragment {
                     }
                 });
 
-        transactionRepository = ServiceLocator.getInstance().getTransactionRepository((Application) requireContext());
-        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository((Application) requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository((Application) requireContext());
-        exchangeRepository = ServiceLocator.getInstance().getExchangeRepository((Application) requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
+        RecurringTransactionRepository recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(requireActivity().getApplication());
+        CategoryRepository categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireActivity().getApplication());
+        ExchangeRepository exchangeRepository = ServiceLocator.getInstance().getExchangeRepository(requireActivity().getApplication());
 
         AddTransactionViewModelFactory factory = new AddTransactionViewModelFactory(transactionRepository, recurringTransactionRepository, categoryRepository, exchangeRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);
@@ -118,7 +117,20 @@ public class AddTransactionFragment extends Fragment {
         nameField = view.findViewById(R.id.edit_transaction_name);
 
         amountField = view.findViewById(R.id.edit_transaction_amount);
-        amountField.addTextChangedListener(textWatcher);
+        amountField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                triggerConvertedAmount();
+            }
+        });
 
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
@@ -128,7 +140,36 @@ public class AddTransactionFragment extends Fragment {
         });
 
         dateField = view.findViewById(R.id.edit_date);
-        dateField.addTextChangedListener(textWatcher);
+        dateField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String dateString = s.toString().trim();
+                selectedDate = Utils.stringToDate(dateString);
+
+                if (selectedDate != null) {
+                    viewModel.fetchExchangeRates(selectedDate, new GenericCallback<>() {
+
+                        @Override
+                        public void onSuccess(Void result) {
+                            triggerConvertedAmount();
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Utils.makeSnackBar(view, errorMessage);
+                        }
+                    });
+                }
+            }
+        });
         dateField.setOnClickListener(v -> Utils.showDatePicker(dateField::setText, this));
 
         setupCurrencyDropdown(view);
@@ -170,29 +211,10 @@ public class AddTransactionFragment extends Fragment {
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
         compileTransaction();
-
-        selectedDate = Utils.stringToDate(dateField.getText().toString());
-        if (selectedDate == null) {
-            selectedDate = new Date();
+        if (dateField.getText().toString().trim().isEmpty()) {
+            dateField.setText(Utils.dateToString(new Date()));
         }
-
-        // viewModel.fetchExchangeRates(selectedDate);
     }
-
-    private final TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            triggerConvertedAmount();
-        }
-    };
 
     public void onSaveButtonClick() {
         saveTransaction();
@@ -389,25 +411,29 @@ public class AddTransactionFragment extends Fragment {
         TransactionEntity transaction = buildTransaction();
 
         if (!recurringCheckbox.isChecked()) {
-            transactionRepository.insertTransaction(transaction, new GenericCallback<>() {
+            viewModel.insertTransaction(transaction, new GenericCallback<>() {
+
                 @Override
-                public void onSuccess(Boolean result) {
+                public void onSuccess(Void result) {
                     navigateBack();
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
+                    Utils.makeSnackBar(thisView, errorMessage);
                 }
             });
         } else {
-            recurringTransactionRepository.insertTransaction((RecurringTransactionEntity) transaction, new GenericCallback<>() {
+            viewModel.insertRecurringTransaction((RecurringTransactionEntity) transaction, new GenericCallback<>() {
+
                 @Override
-                public void onSuccess(Boolean result) {
+                public void onSuccess(Void result) {
                     navigateBack();
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
+                    Utils.makeSnackBar(thisView, errorMessage);
                 }
             });
         }
