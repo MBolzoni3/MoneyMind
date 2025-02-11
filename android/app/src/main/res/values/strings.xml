@@ -55,15 +55,4 @@
     <string name="monthly">Mensile</string>
     <string name="yearly">Annuale</string>
     <string name="salva">Salva</string>
-    <string name="input_budget_name">Nome</string>
-    <string name="input_buget_amount">Importo</string>
-    <string name="input_budget_category">Categoria</string>
-    <string name="input_budget_init_date">Data di Inizio</string>
-    <string name="input_budget_end_date">Data di Fine</string>
-    <string name="input_goal_name">Nome</string>
-    <string name="input_goal_amount">Importo Target</string>
-    <string name="input_goal_target_amount">Importo Risparmiato</string>
-    <string name="input_goal_category">Categoria</string>
-    <string name="input_goal_init_date">Data di Inizio</string>
-    <string name="input_goal_end_date">Data di Fine</string>
 </resources>

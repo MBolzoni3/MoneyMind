@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.local;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.room.Room;
@@ -11,13 +12,12 @@ public class DatabaseClient {
     private static AppDatabase instance;
 
     private DatabaseClient() {
-        // Private constructor to prevent instantiation
     }
 
-    public static synchronized AppDatabase getInstance(Context context) {
+    public static synchronized AppDatabase getInstance(Application application) {
         if (instance == null) {
             instance = Room.databaseBuilder(
-                            context.getApplicationContext(),
+                            application.getApplicationContext(),
                             AppDatabase.class,
                             Constants.DATABASE_NAME
                     )

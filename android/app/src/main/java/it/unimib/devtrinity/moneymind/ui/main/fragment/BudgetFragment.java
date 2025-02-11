@@ -46,8 +46,8 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
         RecyclerView recyclerView = view.findViewById(R.id.budget_recycler_view);
         fabAddBudget = view.findViewById(R.id.fab_add_budget);
 
-        BudgetRepository budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireContext());
-        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
+        BudgetRepository budgetRepository = ServiceLocator.getInstance().getBudgetRepository(requireActivity().getApplication());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
 
         BudgetViewModelFactory factory = new BudgetViewModelFactory(budgetRepository, transactionRepository);
         budgetViewModel = new ViewModelProvider(this, factory).get(BudgetViewModel.class);
@@ -58,6 +58,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
 
         budgetViewModel.getBudgets().observe(getViewLifecycleOwner(), budgetList -> {
             budgetAdapter.updateBudgets(budgetList);
+            view.findViewById(R.id.emptyStateLayout).setVisibility(budgetList.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
         fabAddBudget.setOnClickListener(v -> onEnterEditMode(new AddBudgetFragment(this)));

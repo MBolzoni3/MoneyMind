@@ -4,18 +4,21 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 
 public class AddBudgetViewModelFactory implements ViewModelProvider.Factory {
-    private final CategoryRepository repository;
+    private final CategoryRepository categoryRepository;
+    private final BudgetRepository budgetRepository;
 
-    public AddBudgetViewModelFactory(CategoryRepository repository) {
-        this.repository = repository;
+    public AddBudgetViewModelFactory(BudgetRepository budgetRepository, CategoryRepository categoryRepository) {
+        this.budgetRepository = budgetRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new AddBudgetViewModel(repository);
+        return (T) new AddBudgetViewModel(budgetRepository, categoryRepository);
     }
 }

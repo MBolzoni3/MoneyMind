@@ -1,12 +1,15 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,9 +27,9 @@ public class GoalRepository extends GenericRepository {
 
     private final GoalDao goalDao;
 
-    public GoalRepository(Context context) {
-        super(context, Constants.GOALS_LAST_SYNC_KEY, TAG);
-        this.goalDao = DatabaseClient.getInstance(context).goalDao();
+    public GoalRepository(Application application) {
+        super(application, Constants.GOALS_LAST_SYNC_KEY, TAG);
+        this.goalDao = DatabaseClient.getInstance(application).goalDao();
     }
 
     public LiveData<List<GoalEntityWithCategory>> getAll() {
@@ -54,57 +57,80 @@ public class GoalRepository extends GenericRepository {
     }
 
     @Override
-    protected CompletableFuture<Void> syncLocalToRemoteAsync() {
-        return CompletableFuture.runAsync(() -> {
-            List<GoalEntity> unsyncedGoals = goalDao.getUnsyncedGoals();
+    protected CompletableFuture<Long> syncLocalToRemoteAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+                    List<GoalEntity> unsyncedGoals = goalDao.getUnsyncedGoals();
+                    List<CompletableFuture<Void>> syncFutures = new ArrayList<>();
 
-            for (GoalEntity goal : unsyncedGoals) {
-                goal.setSynced(true);
+                    for (GoalEntity goal : unsyncedGoals) {
+                        goal.setSynced(true);
 
-                String documentId = goal.getFirestoreId();
-                DocumentReference docRef;
+                        String documentId = goal.getFirestoreId();
+                        DocumentReference docRef;
 
-                if (documentId == null || documentId.isEmpty()) {
-                    docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
-                    goal.setFirestoreId(docRef.getId());
-                } else {
-                    docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
-                }
+                        if (documentId == null || documentId.isEmpty()) {
+                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                            goal.setFirestoreId(docRef.getId());
+                        } else {
+                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                        }
 
-                docRef.set(goal)
-                        .addOnSuccessListener(executorService, aVoid -> {
-                            goalDao.setSynced(goal.getId());
+                        CompletableFuture<Void> future = runFirestoreSet(docRef, goal)
+                                .thenRunAsync(() -> goalDao.setSynced(goal.getId()), executorService);
 
-                            Log.d(TAG, "Goal synced to remote: " + goal.getFirestoreId());
-                        })
-                        .addOnFailureListener(e -> {
-                            throw new RuntimeException("Error syncing goal to remote: " + e.getMessage(), e);
-                        });
-            }
-        }, executorService);
+                        syncFutures.add(future);
+                    }
+
+                    return syncFutures;
+                }, executorService)
+                .thenCompose(syncFutures -> CompletableFuture.allOf(syncFutures.toArray(new CompletableFuture[0])))
+                .thenApply(v -> goalDao.getLastSyncedTimestamp())
+                .exceptionally(e -> {
+                    Log.e(TAG, "Error syncing goals to remote", e);
+                    return 0L;
+                });
+    }
+
+    private CompletableFuture<Void> runFirestoreSet(DocumentReference docRef, GoalEntity goal) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        docRef.set(goal)
+                .addOnSuccessListener(executorService, aVoid -> future.complete(null))
+                .addOnFailureListener(e -> future.completeExceptionally(new RuntimeException("Error syncing goal to remote", e)));
+
+        return future;
     }
 
     @Override
     protected CompletableFuture<Void> syncRemoteToLocalAsync(long lastSyncedTimestamp) {
-        return CompletableFuture.runAsync(() -> {
-            FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
-                    .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
-                    .get()
-                    .addOnSuccessListener(executorService, querySnapshot -> {
-                        for (GoalEntity remoteGoal : querySnapshot.toObjects(GoalEntity.class)) {
-                            GoalEntity localGoal = goalDao.getByFirestoreId(remoteGoal.getFirestoreId());
-                            if (localGoal == null) {
-                                goalDao.insertOrUpdate(remoteGoal);
-                            } else {
-                                GoalEntity resolvedGoal = resolveConflict(localGoal, remoteGoal);
-                                goalDao.insertOrUpdate(resolvedGoal);
-                            }
+        return runFirestoreQuery(lastSyncedTimestamp)
+                .thenAcceptAsync(querySnapshot -> {
+                    for (GoalEntity remoteGoal : querySnapshot.toObjects(GoalEntity.class)) {
+                        GoalEntity localGoal = goalDao.getByFirestoreId(remoteGoal.getFirestoreId());
+                        if (localGoal == null) {
+                            goalDao.insertOrUpdate(remoteGoal);
+                        } else {
+                            GoalEntity resolvedGoal = resolveConflict(localGoal, remoteGoal);
+                            goalDao.insertOrUpdate(resolvedGoal);
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        throw new RuntimeException("Error syncing goals from remote: " + e.getMessage(), e);
-                    });
-        }, executorService);
+                    }
+                }, executorService)
+                .exceptionally(e -> {
+                    Log.e(TAG, "Error syncing goals from remote", e);
+                    return null;
+                });
+    }
+
+    private CompletableFuture<QuerySnapshot> runFirestoreQuery(long lastSyncedTimestamp) {
+        CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
+
+        FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
+                .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
+                .get()
+                .addOnSuccessListener(executorService, future::complete)
+                .addOnFailureListener(e -> future.completeExceptionally(new RuntimeException("Error fetching goals from remote", e)));
+
+        return future;
     }
 
     private GoalEntity resolveConflict(GoalEntity local, GoalEntity remote) {

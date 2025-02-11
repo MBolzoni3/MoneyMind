@@ -49,4 +49,7 @@ public interface BudgetDao {
         deleteById(id, System.currentTimeMillis());
     }
 
+    @Query("SELECT MAX(updatedAt) FROM budgets WHERE synced = 1")
+    Long getLastSyncedTimestamp();
+
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdapter.MonthViewHolder> {
@@ -64,6 +65,7 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
         }
 
         holder.monthTextView.setText(Utils.formatMonthYear(monthKey));
+        holder.monthHint.setText(ResourceHelper.getCurrentBalanceMessage(holder.itemView.getContext(), incomeTotal, expenseTotal));
     }
 
     @Override
@@ -71,12 +73,25 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
         return monthKeys.size();
     }
 
-    public void updateMap(Map<String, List<TransactionEntity>> newMap) {
-        transactionsListByMonth.putAll(newMap);
-        monthKeys.clear();
-        monthKeys.addAll(newMap.keySet());
-        Collections.reverse(monthKeys);
-        notifyDataSetChanged();
+    public int updateMap(Map<String, List<TransactionEntity>> newMap, int currentItem) {
+        int oldSize = monthKeys.size();
+
+        List<String> newKeys = new ArrayList<>(newMap.keySet());
+        Collections.reverse(newKeys);
+
+        newKeys.removeAll(monthKeys);
+        int insertedCount = newKeys.size();
+
+        if (insertedCount > 0) {
+            monthKeys.addAll(0, newKeys);
+            for (String key : newKeys) {
+                transactionsListByMonth.put(key, newMap.get(key));
+            }
+
+            notifyItemRangeInserted(0, insertedCount);
+        }
+
+        return insertedCount;
     }
 
     public int setFirstProgressBar(BigDecimal total) {
@@ -96,6 +111,7 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
 
     public static class MonthViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView monthTextView;
+        MaterialTextView monthHint;
         LinearProgressIndicator incomeProgressBar;
         LinearProgressIndicator expenseProgressBar;
         MaterialTextView incomeText;
@@ -104,6 +120,7 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
         public MonthViewHolder(View itemView) {
             super(itemView);
             monthTextView = itemView.findViewById(R.id.carousel_month);
+            monthHint = itemView.findViewById(R.id.carousel_month_hint);
             incomeProgressBar = itemView.findViewById(R.id.income_progress_bar);
             expenseProgressBar = itemView.findViewById(R.id.outflow_progress_bar);
             incomeText = itemView.findViewById(R.id.income_amount);

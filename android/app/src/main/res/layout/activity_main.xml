@@ -13,10 +13,11 @@
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/loading_indicator"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:indicatorSize="48dp"
-        app:trackThickness="4dp"
+        android:layout_width="@dimen/progress_indicator_size"
+        android:layout_height="@dimen/progress_indicator_size"
+        app:indicatorSize="@dimen/progress_indicator_size"
+        app:trackThickness="@dimen/progress_indicator_thickness"
+        app:indicatorColor="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

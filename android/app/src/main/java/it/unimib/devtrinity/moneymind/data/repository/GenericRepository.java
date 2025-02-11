@@ -1,5 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -16,40 +17,50 @@ public abstract class GenericRepository {
     private final String SYNC_KEY;
     private final String TAG;
 
-    public GenericRepository(Context context, String SYNC_KEY, String TAG) {
+    public GenericRepository(Application application, String SYNC_KEY, String TAG) {
         this.executorService = Executors.newSingleThreadExecutor();
-        this.sharedPreferences = SharedPreferencesHelper.getPreferences(context);
+        this.sharedPreferences = SharedPreferencesHelper.getPreferences(application);
         this.SYNC_KEY = SYNC_KEY;
         this.TAG = TAG;
     }
 
-    public void sync() {
-        sync(sharedPreferences.getLong(SYNC_KEY, 0));
+    public CompletableFuture<Void> sync() {
+        return sync(sharedPreferences.getLong(SYNC_KEY, 0));
     }
 
-    public void sync(long lastSyncedTimestamp) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                syncLocalToRemoteAsync()
-                        .thenCompose(v -> syncRemoteToLocalAsync(lastSyncedTimestamp))
-                        .thenRun(() -> sharedPreferences.edit().putLong(SYNC_KEY, System.currentTimeMillis()).apply())
-                        .exceptionally(e -> {
-                            Log.e(TAG, "Error syncing: " + e.getMessage(), e);
-                            return null;
-                        });
-            } catch (Exception e) {
-                Log.e(TAG, "Error syncing: " + e.getMessage(), e);
-            }
-        }, executorService);
+    public CompletableFuture<Void> sync(long lastSyncedTimestamp) {
+        return syncLocalToRemoteAsync()
+                .thenCompose(lastTimestampRoom -> {
+                    long finalLastSyncedTimestamp = resolveLastSyncedTimestamp(lastTimestampRoom, lastSyncedTimestamp);
+                    return syncRemoteToLocalAsync(finalLastSyncedTimestamp)
+                            .thenRun(() -> {
+                                sharedPreferences.edit().putLong(SYNC_KEY, finalLastSyncedTimestamp).apply();
+                            });
+                })
+                .whenComplete((v, e) -> {
+                    if (e != null) {
+                        Log.e(TAG, "Error syncing: " + e.getMessage(), e);
+                    }
+                });
     }
 
-    protected CompletableFuture<Void> syncLocalToRemoteAsync() {
-        return CompletableFuture.runAsync(() -> {
-        }, executorService);
+    protected CompletableFuture<Long> syncLocalToRemoteAsync() {
+        return CompletableFuture.completedFuture(null);
     }
 
     protected CompletableFuture<Void> syncRemoteToLocalAsync(long lastSyncedTimestamp) {
-        return CompletableFuture.runAsync(() -> {
-        }, executorService);
+        return CompletableFuture.completedFuture(null);
     }
+
+    private long resolveLastSyncedTimestamp(Long roomTimestamp, long sharedTimestamp) {
+        if (roomTimestamp == null || roomTimestamp == 0L) {
+            return sharedTimestamp;
+        }
+
+        if (sharedTimestamp == 0L) {
+            return roomTimestamp;
+        }
+        return Math.max(roomTimestamp, sharedTimestamp);
+    }
+
 }

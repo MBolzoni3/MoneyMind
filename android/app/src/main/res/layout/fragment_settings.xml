@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="@dimen/spacing_medium">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_theme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_small"
         android:text="@string/settings_theme_title"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,7 +20,8 @@
         android:id="@+id/theme_toggle_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:paddingHorizontal="@dimen/spacing_small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_theme"
@@ -26,67 +29,87 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_light"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/settings_theme_light"
+            app:cornerRadius="@dimen/material_button_corner_radius"
             app:icon="@drawable/ic_light_mode"
-            app:iconGravity="textStart"
-            app:cornerRadius="12dp"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
+            app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_dark"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/settings_theme_dark"
+            app:cornerRadius="@dimen/material_button_corner_radius"
             app:icon="@drawable/ic_dark_mode"
-            app:iconGravity="textStart"
-            app:cornerRadius="12dp"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
+            app:iconGravity="textStart" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_auto"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/settings_theme_auto"
+            app:cornerRadius="@dimen/material_button_corner_radius"
             app:icon="@drawable/ic_auto_mode"
-            app:iconGravity="textStart"
-            app:cornerRadius="12dp"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
+            app:iconGravity="textStart" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switch_notifications"
+    <LinearLayout
+        android:id="@+id/api_disclaimer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:paddingVertical="12dp"
-        android:text="@string/settings_notifications"
+        android:layout_marginHorizontal="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_extra_large"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/theme_toggle_group"
-        android:visibility="gone" />
+        app:layout_constraintTop_toBottomOf="@id/theme_toggle_group">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="@dimen/icon_extra_small"
+            android:layout_height="@dimen/icon_extra_small"
+            android:layout_marginEnd="@dimen/icon_margin_end"
+            android:layout_marginTop="@dimen/spacing_extra_small"
+            android:src="@drawable/ic_info"
+            android:tint="?attr/colorTertiary" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/disclaimer_text"
+            android:textAlignment="textStart"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurface" />
+    </LinearLayout>
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginHorizontal="@dimen/spacing_extra_large"
+        android:layout_marginTop="@dimen/spacing_extra_large"
         android:text="@string/settings_logout"
         app:backgroundTint="?attr/colorError"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switch_notifications" />
+        app:layout_constraintTop_toBottomOf="@id/api_disclaimer" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="@dimen/spacing_large"
         android:text="@string/settings_version"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         app:layout_constraintBottom_toBottomOf="parent"

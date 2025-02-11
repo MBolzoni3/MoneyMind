@@ -1,6 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
-import android.content.Context;
+import android.app.Application;
 
 import it.unimib.devtrinity.moneymind.data.remote.ExchangeDataSource;
 import it.unimib.devtrinity.moneymind.data.remote.RetrofitClient;
@@ -8,6 +8,7 @@ import it.unimib.devtrinity.moneymind.data.remote.RetrofitClient;
 public class ServiceLocator {
     private static volatile ServiceLocator instance;
 
+    private DatabaseRepository databaseRepository;
     private BudgetRepository budgetRepository;
     private CategoryRepository categoryRepository;
     private GoalRepository goalRepository;
@@ -16,6 +17,7 @@ public class ServiceLocator {
     private UserRepository userRepository;
     private ExchangeRepository exchangeRepository;
     private ExchangeDataSource exchangeDataSource;
+
 
     public static ServiceLocator getInstance() {
         if (instance == null) {
@@ -28,41 +30,49 @@ public class ServiceLocator {
         return instance;
     }
 
-    public BudgetRepository getBudgetRepository(Context context) {
+    public DatabaseRepository getDatabaseRepository(Application application) {
+        if (databaseRepository == null) {
+            databaseRepository = new DatabaseRepository(application);
+        }
+
+        return databaseRepository;
+    }
+
+    public BudgetRepository getBudgetRepository(Application application) {
         if (budgetRepository == null) {
-            budgetRepository = new BudgetRepository(context);
+            budgetRepository = new BudgetRepository(application);
         }
 
         return budgetRepository;
     }
 
-    public CategoryRepository getCategoryRepository(Context context) {
+    public CategoryRepository getCategoryRepository(Application application) {
         if (categoryRepository == null) {
-            categoryRepository = new CategoryRepository(context);
+            categoryRepository = new CategoryRepository(application);
         }
 
         return categoryRepository;
     }
 
-    public GoalRepository getGoalRepository(Context context) {
+    public GoalRepository getGoalRepository(Application application) {
         if (goalRepository == null) {
-            goalRepository = new GoalRepository(context);
+            goalRepository = new GoalRepository(application);
         }
 
         return goalRepository;
     }
 
-    public RecurringTransactionRepository getRecurringTransactionRepository(Context context) {
+    public RecurringTransactionRepository getRecurringTransactionRepository(Application application) {
         if (recurringTransactionRepository == null) {
-            recurringTransactionRepository = new RecurringTransactionRepository(context);
+            recurringTransactionRepository = new RecurringTransactionRepository(application);
         }
 
         return recurringTransactionRepository;
     }
 
-    public TransactionRepository getTransactionRepository(Context context) {
+    public TransactionRepository getTransactionRepository(Application application) {
         if (transactionRepository == null) {
-            transactionRepository = new TransactionRepository(context);
+            transactionRepository = new TransactionRepository(application);
         }
 
         return transactionRepository;
@@ -76,17 +86,17 @@ public class ServiceLocator {
         return userRepository;
     }
 
-    public ExchangeRepository getExchangeRepository(Context context) {
+    public ExchangeRepository getExchangeRepository(Application application) {
         if (exchangeRepository == null) {
-            exchangeRepository = new ExchangeRepository(getExchangeDataSource(context));
+            exchangeRepository = new ExchangeRepository(application, getExchangeDataSource());
         }
 
         return exchangeRepository;
     }
 
-    private ExchangeDataSource getExchangeDataSource(Context context) {
+    private ExchangeDataSource getExchangeDataSource() {
         if (exchangeDataSource == null) {
-            exchangeDataSource = new ExchangeDataSource(RetrofitClient.getService(context));
+            exchangeDataSource = new ExchangeDataSource(RetrofitClient.getService());
         }
 
         return exchangeDataSource;

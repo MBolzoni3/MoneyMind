@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,14 +25,18 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.MonthCarouselAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionHomeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.HomeViewModelFactory;
-import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class HomeFragment extends Fragment implements SelectionModeListener {
 
     private HomeViewModel viewModel;
     private ViewPager2 monthsViewPager;
     private MonthCarouselAdapter monthCarouselAdapter;
-
+    private final Observer<Integer> pageObserver = savedPage -> {
+        if (monthCarouselAdapter != null) {
+            int pageToLoad = (savedPage != null && savedPage >= 0) ? savedPage : monthCarouselAdapter.getItemCount() - 1;
+            monthsViewPager.setCurrentItem(pageToLoad, false);
+        }
+    };
 
     @Nullable
     @Override
@@ -43,7 +48,7 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireContext());
+        TransactionRepository transactionRepository = ServiceLocator.getInstance().getTransactionRepository(requireActivity().getApplication());
         HomeViewModelFactory factory = new HomeViewModelFactory(transactionRepository);
         viewModel = new ViewModelProvider(this, factory).get(HomeViewModel.class);
 
@@ -78,49 +83,16 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
             }
         });
 
-        monthsViewPager.setPageTransformer((page, position) -> {
-            float MIN_SCALE = 0.85f;
-            float MIN_ALPHA = 0.5f;
-
-            int pageWidth = page.getWidth();
-            int pageHeight = page.getHeight();
-
-            if (position < -1) {
-                page.setAlpha(0f);
-            } else if (position <= 1) {
-                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
-                float vertMargin = pageHeight * (1 - scaleFactor) / 2;
-                float horzMargin = pageWidth * (1 - scaleFactor) / 2;
-                if (position < 0) {
-                    page.setTranslationX(horzMargin - vertMargin / 2);
-                } else {
-                    page.setTranslationX(-horzMargin + vertMargin / 2);
-                }
-
-                page.setScaleX(scaleFactor);
-                page.setScaleY(scaleFactor);
-                page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
-            } else {
-                page.setAlpha(0f);
-            }
-        });
-
         viewModel.getTransactionsByMonth().observe(getViewLifecycleOwner(), transactionsByMonth -> {
-            int oldSize = monthCarouselAdapter.getItemCount();
             int oldPosition = monthsViewPager.getCurrentItem();
 
-            monthCarouselAdapter.updateMap(transactionsByMonth);
-
-            int newSize = monthCarouselAdapter.getItemCount();
-            if (oldSize > 0 && oldPosition == 0 && newSize > oldSize) {
-                int insertedCount = newSize - oldSize;
-                monthsViewPager.setCurrentItem(oldPosition + insertedCount, false);
+            int insertedCount = monthCarouselAdapter.updateMap(transactionsByMonth, oldPosition);
+            if (insertedCount > 0) {
+                monthsViewPager.post(() -> monthsViewPager.setCurrentItem(oldPosition + insertedCount, false));
             }
 
-            viewModel.getCurrentPage().observe(getViewLifecycleOwner(), savedPage -> {
-                int pageToLoad = (savedPage != null && savedPage >= 0) ? savedPage : monthCarouselAdapter.getItemCount() - 1;
-                monthsViewPager.setCurrentItem(pageToLoad, false);
-            });
+            viewModel.getCurrentPage().removeObserver(pageObserver);
+            viewModel.getCurrentPage().observe(getViewLifecycleOwner(), pageObserver);
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.last_transactions_recycler);
@@ -128,7 +100,10 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionAdapter);
 
-        viewModel.getLastTransactions().observe(getViewLifecycleOwner(), transactionAdapter::updateList);
+        viewModel.getLastTransactions().observe(getViewLifecycleOwner(), newList -> {
+            transactionAdapter.updateList(newList);
+            view.findViewById(R.id.emptyStateLayout).setVisibility(newList.isEmpty() ? View.VISIBLE : View.GONE);
+        });
 
         ExtendedFloatingActionButton addTransactionButton = view.findViewById(R.id.fab_add_transaction);
         addTransactionButton.setOnClickListener(v -> onEnterEditMode(new AddTransactionFragment(this)));
@@ -136,9 +111,9 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
 
     @Override
     public void onDestroyView() {
-        viewModel.getCurrentPage().removeObservers(getViewLifecycleOwner());
-        viewModel.setCurrentPage(monthsViewPager.getCurrentItem());
         super.onDestroyView();
+        viewModel.getCurrentPage().removeObserver(pageObserver);
+        viewModel.setCurrentPage(monthsViewPager.getCurrentItem());
     }
 
     @Override
@@ -166,17 +141,4 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
 
     }
 
-    private String getWelcomeMessage() {
-        String displayName = FirebaseHelper.getInstance().getCurrentUser().getDisplayName();
-        int choice = (int) (Math.random() * 3);
-
-        switch (choice) {
-            case 0:
-                return "Ehila, " + displayName + "!";
-            case 1:
-                return "Che bello rivederti, " + displayName + "!";
-            default:
-                return "Buongiorno, " + displayName + "!";
-        }
-    }
 }

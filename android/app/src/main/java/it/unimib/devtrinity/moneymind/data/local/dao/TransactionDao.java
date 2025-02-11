@@ -81,4 +81,7 @@ public interface TransactionDao {
             "LIMIT 3")
     LiveData<List<TransactionEntityWithCategory>> getLastTransactions();
 
+    @Query("SELECT MAX(updatedAt) FROM transactions WHERE synced = 1")
+    Long getLastSyncedTimestamp();
+
 }

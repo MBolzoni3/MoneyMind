@@ -12,11 +12,13 @@ import it.unimib.devtrinity.moneymind.data.local.converter.RecurrenceTypeConvert
 import it.unimib.devtrinity.moneymind.data.local.converter.TimestampConverter;
 import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
 import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.ExchangeDao;
 import it.unimib.devtrinity.moneymind.data.local.dao.GoalDao;
 import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.ExchangeEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
@@ -26,7 +28,8 @@ import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
         CategoryEntity.class,
         GoalEntity.class,
         TransactionEntity.class,
-        RecurringTransactionEntity.class
+        RecurringTransactionEntity.class,
+        ExchangeEntity.class
 }, version = DATABASE_VERSION, exportSchema = false)
 @TypeConverters({
         TimestampConverter.class,
@@ -45,6 +48,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract TransactionDao transactionDao();
 
     public abstract RecurringTransactionDao recurringTransactionDao();
+
+    public abstract ExchangeDao exchangeDao();
 
 }
 

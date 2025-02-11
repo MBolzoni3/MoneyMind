@@ -1,11 +1,16 @@
 package it.unimib.devtrinity.moneymind.data.sync;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
@@ -28,28 +33,36 @@ public class SyncWorker extends Worker {
     public SyncWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
 
-        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(context);
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(context);
-        goalRepository = ServiceLocator.getInstance().getGoalRepository(context);
-        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(context);
-        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(context);
+        Application application = (Application) context.getApplicationContext();
+
+        budgetRepository = ServiceLocator.getInstance().getBudgetRepository(application);
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(application);
+        goalRepository = ServiceLocator.getInstance().getGoalRepository(application);
+        recurringTransactionRepository = ServiceLocator.getInstance().getRecurringTransactionRepository(application);
+        transactionRepository = ServiceLocator.getInstance().getTransactionRepository(application);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        Log.d(TAG, "Starting sync work");
+        try {
+            List<CompletableFuture<Void>> syncFutures = new ArrayList<>();
+            syncFutures.add(categoryRepository.sync());
 
-        categoryRepository.sync();
-        if (FirebaseHelper.getInstance().isUserLoggedIn()) {
-            budgetRepository.sync();
-            goalRepository.sync();
-            recurringTransactionRepository.sync();
-            transactionRepository.sync();
+            if (FirebaseHelper.getInstance().isUserLoggedIn()) {
+                syncFutures.add(budgetRepository.sync());
+                syncFutures.add(goalRepository.sync());
+                syncFutures.add(recurringTransactionRepository.sync());
+                syncFutures.add(transactionRepository.sync());
+            }
+
+            CompletableFuture.allOf(syncFutures.toArray(new CompletableFuture[0])).join();
+
+            return Result.success();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in worker sync: " + e.getMessage(), e);
+            return Result.failure();
         }
-
-        Log.d(TAG, "Finished sync work");
-        return Result.success();
     }
 
 }

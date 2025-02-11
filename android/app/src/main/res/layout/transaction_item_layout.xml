@@ -3,12 +3,11 @@
     android:id="@+id/transaction_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
+    android:layout_margin="@dimen/spacing_extra_small"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
     app:strokeWidth="0dp"
-    app:strokeColor="?attr/colorOutline"
     android:checkable="true"
     app:checkedIcon="@drawable/ic_check_circle"
     app:checkedIconTint="@android:color/transparent">
@@ -17,15 +16,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="@dimen/spacing_medium">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/category_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/icon_small"
+            android:layout_height="@dimen/icon_small"
             android:layout_gravity="center"
             android:src="@drawable/ic_money_bag"
-            android:contentDescription="Category Icon"
+            android:contentDescription="@string/category_icon"
             app:tint="?attr/colorOnSurfaceVariant" />
 
         <LinearLayout
@@ -33,22 +32,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:paddingStart="@dimen/spacing_small"
+            android:paddingEnd="@dimen/spacing_small">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/transaction_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nome Transazione"
+                android:text="@string/transaction_name"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="?attr/colorOnSurface" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/transaction_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01/01/2025"
+                android:text="@string/not_available"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
@@ -59,21 +58,21 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/transaction_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="100.00 €"
+                android:text="@string/not_available"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:layout_marginEnd="4dp" />
+                android:layout_marginEnd="@dimen/icon_margin_end_extra_small" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/transaction_type_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_extra_small"
+                android:layout_height="@dimen/icon_extra_small"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_trending_up"
-                android:contentDescription="type_icon"
+                android:contentDescription="@string/type_icon"
                 app:tint="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 

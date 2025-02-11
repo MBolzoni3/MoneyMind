@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
 
-@Entity(tableName = "categories")
+import it.unimib.devtrinity.moneymind.constant.Constants;
+
+@Entity(tableName = Constants.CATEGORIES_TABLE_NAME)
 public class CategoryEntity {
     @PrimaryKey
     @NonNull

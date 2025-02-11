@@ -62,6 +62,6 @@ dependencies {
 
     //Retrofit
     implementation(libs.retrofit2.retrofit)
-    implementation(libs.converter.simplexml)
+    implementation(libs.retrofit2.converter.gson)
 
 }

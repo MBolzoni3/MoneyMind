@@ -1,23 +1,20 @@
 package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
+import android.app.Application;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
@@ -52,15 +49,6 @@ public class AddGoalFragment extends Fragment {
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
 
-    TextInputLayout nameFieldLayout;
-    TextInputLayout targetAmountFieldLayout;
-    TextInputLayout savedAmountFieldLayout;
-    TextInputLayout startDateFieldLayout;
-    TextInputLayout endDateFieldLayout;
-    TextInputLayout categoryFieldLayout;
-
-
-
     public AddGoalFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
     }
@@ -93,22 +81,15 @@ public class AddGoalFragment extends Fragment {
                 }
         );
 
-        goalRepository = ServiceLocator.getInstance().getGoalRepository(requireContext());
-        categoryRepository = ServiceLocator.getInstance().getCategoryRepository(requireContext());
+        goalRepository = ServiceLocator.getInstance().getGoalRepository((Application) requireContext());
+        categoryRepository = ServiceLocator.getInstance().getCategoryRepository((Application) requireContext());
 
-        AddGoalViewModelFactory factory = new AddGoalViewModelFactory(categoryRepository);
+        AddGoalViewModelFactory factory = new AddGoalViewModelFactory(goalRepository, categoryRepository);
         AddGoalViewModel viewModel = new ViewModelProvider(this, factory).get(AddGoalViewModel.class);
 
         nameField = view.findViewById(R.id.edit_goal_name);
         targetAmountField = view.findViewById(R.id.edit_goal_target_amount);
         savedAmountField = view.findViewById(R.id.edit_goal_saved_amount);
-
-        nameFieldLayout = view.findViewById(R.id.input_goal_name);
-        targetAmountFieldLayout = view.findViewById(R.id.input_goal_target_amount);
-        savedAmountFieldLayout = view.findViewById(R.id.input_goal_saved_amount);
-        startDateFieldLayout = view.findViewById(R.id.input_start_date);
-        endDateFieldLayout = view.findViewById(R.id.input_end_date);
-        categoryFieldLayout = view.findViewById(R.id.input_goal_category);
 
         categoryDropdown = view.findViewById(R.id.edit_goal_category);
         viewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
@@ -143,78 +124,15 @@ public class AddGoalFragment extends Fragment {
         });
 
         endDateField.setOnClickListener(v -> {
-            Utils.showEndDatePicker(endDateField::setText, this, startDateField);
+            Utils.showDatePicker(endDateField::setText, this);
         });
 
         compileFields();
     }
 
     public void onSaveButtonClick() {
-        if (validateField() && validateAmounts() && validateName(nameField, nameFieldLayout)) {
-            saveGoal();
-            navigateBack();
-        }
-    }
-
-    private boolean validateField() {
-        if (isEmptyField(nameField, nameFieldLayout, "Il campo relativo al nome del budget non può essere vuoto")) {
-            return false;
-        }
-        if (isEmptyField(targetAmountField, targetAmountFieldLayout, "Il campo relativo all'importo target non può essere vuoto")) {
-            return false;
-        }
-        if (isEmptyField(savedAmountField, savedAmountFieldLayout, "Il campo relativo all'importo risparmiato non può essere vuoto")) {
-            return false;
-        }
-        if (selectedCategory == null) {
-            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            Toast.makeText(requireContext(), "Il campo categoria non può essere vuoto", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (isEmptyField(startDateField, startDateFieldLayout, "Il campo relativo alla data di inizio non può essere vuoto")) {
-            return false;
-        }
-        if (isEmptyField(endDateField, endDateFieldLayout, "Il campo relativo alla data di fine non può essere vuoto")) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
-
-        if (TextUtils.isEmpty(field.getText())) {
-            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            Toast.makeText(requireContext(), fieldError, Toast.LENGTH_SHORT).show();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean validateAmounts(){
-        BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
-        BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
-
-        if(targetAmount.compareTo(savedAmount) <= 0){
-            Toast.makeText(requireContext(), "L'importo target deve essere maggiore dell'importo risparmiato", Toast.LENGTH_SHORT).show();
-            targetAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            savedAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            return false;
-        } else{
-            return true;
-        }
-    }
-
-    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
-        String name = field.getText().toString();
-        if (!name.matches("[a-zA-Z]+")) {
-            fieldLayout.setBoxStrokeColor(ContextCompat.getColor(requireContext(), R.color.md_theme_error));
-            fieldLayout.setHintTextColor(ContextCompat.getColorStateList(requireContext(), R.color.md_theme_error));
-            Toast.makeText(requireContext(), "Il nome inserito deve contenere solo lettere", Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            return true;
-        }
+        saveGoal();
+        navigateBack();
     }
 
     private void compileFields() {

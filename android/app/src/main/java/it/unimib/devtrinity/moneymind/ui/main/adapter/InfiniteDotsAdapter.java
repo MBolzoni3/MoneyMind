@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.R;
 
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class InfiniteDotsAdapter extends RecyclerView.Adapter<InfiniteDotsAdapter.DotViewHolder> {
@@ -70,8 +71,8 @@ public class InfiniteDotsAdapter extends RecyclerView.Adapter<InfiniteDotsAdapte
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.OVAL);
         int color = isSelected ?
-                Utils.getThemeColor(context, R.attr.colorPrimary) :
-                Utils.getThemeColor(context, R.attr.colorSurfaceContainer);
+                ResourceHelper.getThemeColor(context, R.attr.colorPrimary) :
+                ResourceHelper.getThemeColor(context, R.attr.colorSurfaceContainer);
         drawable.setColor(color);
         return drawable;
     }

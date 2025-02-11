@@ -28,7 +28,7 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY `order`")
     LiveData<List<CategoryEntity>> selectAll();
 
-    @Query("SELECT updatedAt FROM categories ORDER BY updatedAt DESC LIMIT 1")
-    Timestamp getLastSyncedTimestamp();
+    @Query("SELECT MAX(updatedAt) FROM categories")
+    Long getLastSyncedTimestamp();
 
 }

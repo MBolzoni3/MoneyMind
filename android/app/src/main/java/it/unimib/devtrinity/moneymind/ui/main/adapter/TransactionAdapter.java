@@ -24,6 +24,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEnti
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.AddTransactionFragment;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -137,7 +138,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void updateSelectionState(TransactionViewHolder holder, int position) {
         boolean isSelected = selectedPositions.contains(position);
-        holder.cardView.setCardBackgroundColor(Utils.getThemeColor(
+        holder.cardView.setCardBackgroundColor(ResourceHelper.getThemeColor(
                 holder.itemView.getContext(),
                 isSelected ? com.google.android.material.R.attr.colorSurfaceContainerHighest
                         : com.google.android.material.R.attr.colorSurfaceContainer
@@ -216,10 +217,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void bind(TransactionEntityWithCategory transaction) {
             Context context = itemView.getContext();
 
-            categoryIcon.setImageResource(Utils.getCategoryIcon(transaction.getCategory()));
+            categoryIcon.setImageResource(ResourceHelper.getCategoryIcon(transaction.getCategory()));
             name.setText(transaction.getTransaction().getName());
             amount.setText(Utils.formatTransactionAmount(transaction.getTransaction().getAmount(), transaction.getTransaction().getType()));
-            typeIcon.setImageResource(Utils.getTypeIcon(transaction.getTransaction().getType()));
+            typeIcon.setImageResource(ResourceHelper.getTypeIcon(transaction.getTransaction().getType()));
 
             if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                 RecurringTransactionEntity recurringTransaction = (RecurringTransactionEntity) transaction.getTransaction();
@@ -229,8 +230,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
             int typeColor = transaction.getTransaction().getType().equals(MovementTypeEnum.INCOME)
-                    ? Utils.getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
-                    : Utils.getThemeColor(context, com.google.android.material.R.attr.colorError);
+                    ? ResourceHelper.getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
+                    : ResourceHelper.getThemeColor(context, com.google.android.material.R.attr.colorError);
 
             typeIcon.setColorFilter(typeColor);
         }
