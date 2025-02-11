@@ -91,4 +91,10 @@
     <string name="genuary_2025">Jenuary 2025</string>
     <string name="Good_bilance">Budget under control! Keep it up.</string>
     <string name="not_available">Not available</string>
+    <string name="last_movements">Last movements</string>
+    <string name="goals">Goals</string>
+    <string name="budgets">Budget</string>
+    <string name="movements">Movements</string>
+    <string name="currency_converter">Currency Converter</string>
+    <string name="delete">Delete</string>
 </resources>

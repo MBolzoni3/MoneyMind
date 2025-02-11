@@ -39,7 +39,7 @@
                     android:id="@+id/carousel_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/genuary_2025"
+                    android:text="@string/not_available"
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                 <com.google.android.material.textview.MaterialTextView

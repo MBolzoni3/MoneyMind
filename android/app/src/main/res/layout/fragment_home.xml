@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/spacing_small"
-                android:text="Ultimi movimenti"
+                android:text="@string/last_movements"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                 android:textColor="?attr/colorOnSurface" />
 

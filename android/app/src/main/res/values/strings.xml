@@ -124,4 +124,11 @@
     <string name="genuary_2025">Gennaio 2025</string>
     <string name="Good_bilance">Bilancio sotto controllo! Continua così.</string>
     <string name="not_available">Non disponibile</string>
+    <string name="last_movements">Ultimi movimenti</string>
+    <string name="goals">Obiettivi</string>
+    <string name="budgets">Budget</string>
+    <string name="movements">Movimenti</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="currency_converter">Convertitore Valuta</string>
+    <string name="delete">Elimina</string>
 </resources>
