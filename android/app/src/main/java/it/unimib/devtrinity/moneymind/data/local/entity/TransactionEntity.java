@@ -11,10 +11,11 @@ import com.google.firebase.firestore.PropertyName;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
-@Entity(tableName = "transactions")
+@Entity(tableName = Constants.TRANSACTIONS_TABLE_NAME)
 public class TransactionEntity extends FirestoreEntity {
 
     @Exclude

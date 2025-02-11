@@ -11,9 +11,10 @@ import com.google.firebase.firestore.PropertyName;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
-@Entity(tableName = "budgets")
+@Entity(tableName = Constants.BUDGETS_TABLE_NAME)
 public class BudgetEntity extends FirestoreEntity {
 
     @Exclude

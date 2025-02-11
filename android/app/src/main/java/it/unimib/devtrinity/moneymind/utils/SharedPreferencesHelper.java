@@ -10,6 +10,14 @@ import it.unimib.devtrinity.moneymind.constant.Constants;
 
 public class SharedPreferencesHelper {
 
+    private static final String[] keysToRemove = {
+            Constants.BUDGETS_LAST_SYNC_KEY,
+            Constants.GOALS_LAST_SYNC_KEY,
+            Constants.TRANSACTIONS_LAST_SYNC_KEY,
+            Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY,
+            Constants.CATEGORIES_LAST_SYNC_KEY
+    };
+
     public static SharedPreferences getPreferences(Application application) {
         return application.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
     }
@@ -26,7 +34,13 @@ public class SharedPreferencesHelper {
 
     public static void clearSharedPrefs(Application application) {
         SharedPreferences prefs = getPreferences(application);
-        prefs.edit().clear().apply();
+        SharedPreferences.Editor editor = prefs.edit();
+
+        for (String key : keysToRemove) {
+            editor.remove(key);
+        }
+
+        editor.apply();
     }
 
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
@@ -28,7 +29,7 @@ public class CategoryRepository extends GenericRepository {
     private final CategoryDao categoryDao;
 
     public CategoryRepository(Application application) {
-        super(application, null, TAG);
+        super(application, Constants.CATEGORIES_LAST_SYNC_KEY, TAG);
         this.categoryDao = DatabaseClient.getInstance(application).categoryDao();
     }
 

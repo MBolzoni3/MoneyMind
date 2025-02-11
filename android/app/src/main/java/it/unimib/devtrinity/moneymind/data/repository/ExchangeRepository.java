@@ -40,7 +40,10 @@ public class ExchangeRepository {
     }
 
     public LiveData<List<ExchangeEntity>> getExchangeRates(Date date) {
+        exchangeRatesLiveData.removeSource(exchangeRatesLiveData);
+
         LiveData<List<ExchangeEntity>> localData = exchangeDao.getRatesByClosestDate(date.getTime());
+
         exchangeRatesLiveData.addSource(localData, rates -> {
             if (rates != null && !rates.isEmpty()) {
                 ExchangeEntity latestRate = rates.get(0);
@@ -58,6 +61,7 @@ public class ExchangeRepository {
 
         return exchangeRatesLiveData;
     }
+
 
     private void fetchFromApiAndSave(Date date) {
         exchangeDataSource.fetchExchangeRates(date, new Callback<>() {

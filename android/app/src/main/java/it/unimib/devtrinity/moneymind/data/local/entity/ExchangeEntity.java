@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity(tableName = "exchange_rates")
+import it.unimib.devtrinity.moneymind.constant.Constants;
+
+@Entity(tableName = Constants.EXCHANGE_RATES_TABLE_NAME)
 public class ExchangeEntity {
 
     @PrimaryKey(autoGenerate = true)

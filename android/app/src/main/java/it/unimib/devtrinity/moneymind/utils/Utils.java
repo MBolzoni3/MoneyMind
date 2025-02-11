@@ -171,11 +171,17 @@ public class Utils {
         TimeZone cetTimeZone = TimeZone.getTimeZone("Europe/Paris");
         Calendar calendar = Calendar.getInstance(cetTimeZone);
         calendar.setTimeZone(cetTimeZone);
-
         calendar.setTime(latestStoredDate);
 
-        while (HolidayHelper.isWeekend(calendar) || HolidayHelper.isBceHoliday(calendar)) {
+        int safeCycle = 0;
+        while (safeCycle < 20 && (HolidayHelper.isWeekend(calendar) || HolidayHelper.isBceHoliday(calendar))) {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
+            safeCycle++;
+        }
+
+        if(safeCycle >= 20){
+            Log.e("ExchangeRepository", "Errore: impossibile trovare un giorno lavorativo valido dopo 20 tentativi.");
+            return true;
         }
 
         calendar.set(Calendar.HOUR_OF_DAY, 16);
@@ -185,7 +191,10 @@ public class Utils {
 
         long lastPossibleUpdate = calendar.getTimeInMillis();
 
-        return latestStoredDate.getTime() < lastPossibleUpdate;
+        Calendar now = Calendar.getInstance(cetTimeZone);
+        now.setTimeZone(cetTimeZone);
+
+        return now.getTimeInMillis() > lastPossibleUpdate;
     }
 
 }

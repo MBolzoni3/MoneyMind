@@ -8,6 +8,7 @@ import it.unimib.devtrinity.moneymind.data.remote.RetrofitClient;
 public class ServiceLocator {
     private static volatile ServiceLocator instance;
 
+    private DatabaseRepository databaseRepository;
     private BudgetRepository budgetRepository;
     private CategoryRepository categoryRepository;
     private GoalRepository goalRepository;
@@ -16,6 +17,7 @@ public class ServiceLocator {
     private UserRepository userRepository;
     private ExchangeRepository exchangeRepository;
     private ExchangeDataSource exchangeDataSource;
+
 
     public static ServiceLocator getInstance() {
         if (instance == null) {
@@ -26,6 +28,14 @@ public class ServiceLocator {
             }
         }
         return instance;
+    }
+
+    public DatabaseRepository getDatabaseRepository(Application application) {
+        if (databaseRepository == null) {
+            databaseRepository = new DatabaseRepository(application);
+        }
+
+        return databaseRepository;
     }
 
     public BudgetRepository getBudgetRepository(Application application) {

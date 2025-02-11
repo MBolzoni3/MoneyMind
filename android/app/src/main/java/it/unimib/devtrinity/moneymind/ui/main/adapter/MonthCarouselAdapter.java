@@ -73,12 +73,25 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
         return monthKeys.size();
     }
 
-    public void updateMap(Map<String, List<TransactionEntity>> newMap) {
-        transactionsListByMonth.putAll(newMap);
-        monthKeys.clear();
-        monthKeys.addAll(newMap.keySet());
-        Collections.reverse(monthKeys);
-        notifyDataSetChanged();
+    public int updateMap(Map<String, List<TransactionEntity>> newMap, int currentItem) {
+        int oldSize = monthKeys.size();
+
+        List<String> newKeys = new ArrayList<>(newMap.keySet());
+        Collections.reverse(newKeys);
+
+        newKeys.removeAll(monthKeys);
+        int insertedCount = newKeys.size();
+
+        if (insertedCount > 0) {
+            monthKeys.addAll(0, newKeys);
+            for (String key : newKeys) {
+                transactionsListByMonth.put(key, newMap.get(key));
+            }
+
+            notifyItemRangeInserted(0, insertedCount);
+        }
+
+        return insertedCount;
     }
 
     public int setFirstProgressBar(BigDecimal total) {

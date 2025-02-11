@@ -11,10 +11,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 
-@Entity(tableName = "recurring_transactions")
+@Entity(tableName = Constants.RECURRING_TRANSACTIONS_TABLE_NAME)
 public class RecurringTransactionEntity extends TransactionEntity {
 
     private RecurrenceTypeEnum recurrenceType;
