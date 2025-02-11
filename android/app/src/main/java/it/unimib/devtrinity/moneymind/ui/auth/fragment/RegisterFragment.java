@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
-import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.LoginViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;

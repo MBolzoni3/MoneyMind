@@ -1,9 +1,5 @@
 package it.unimib.devtrinity.moneymind.constant;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public class Constants {
 
     private Constants() {

@@ -8,7 +8,6 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
@@ -59,8 +58,8 @@ public class ResourceHelper {
     }
 
     public static String getBudgetMessage(Context context, BigDecimal spent, BigDecimal budget) {
-        if(spent == null) spent = BigDecimal.ZERO;
-        if(budget == null) budget = BigDecimal.ZERO;
+        if (spent == null) spent = BigDecimal.ZERO;
+        if (budget == null) budget = BigDecimal.ZERO;
 
         String spentFormatted = Utils.formatTransactionAmount(spent);
         String budgetFormatted = Utils.formatTransactionAmount(budget);
@@ -77,8 +76,8 @@ public class ResourceHelper {
     }
 
     public static String getGoalMessage(Context context, BigDecimal saved, BigDecimal goal) {
-        if(saved == null) saved = BigDecimal.ZERO;
-        if(goal == null) goal = BigDecimal.ZERO;
+        if (saved == null) saved = BigDecimal.ZERO;
+        if (goal == null) goal = BigDecimal.ZERO;
 
         String savedFormatted = Utils.formatTransactionAmount(saved);
         String goalFormatted = Utils.formatTransactionAmount(goal);
@@ -106,7 +105,7 @@ public class ResourceHelper {
 
         BigDecimal balance = incomes.subtract(expenses);
 
-        if(expenses.compareTo(BigDecimal.ZERO) == 0 && incomes.compareTo(BigDecimal.ZERO) == 0) {
+        if (expenses.compareTo(BigDecimal.ZERO) == 0 && incomes.compareTo(BigDecimal.ZERO) == 0) {
             return context.getString(R.string.balance_no_activity);
         }
 

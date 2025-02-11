@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.R;
 
 import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class InfiniteDotsAdapter extends RecyclerView.Adapter<InfiniteDotsAdapter.DotViewHolder> {
     private static final int DOT_COUNT = 3;

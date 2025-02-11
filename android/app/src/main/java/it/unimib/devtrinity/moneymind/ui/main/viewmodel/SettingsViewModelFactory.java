@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import it.unimib.devtrinity.moneymind.data.repository.DatabaseRepository;
-import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
-import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class SettingsViewModelFactory implements ViewModelProvider.Factory {
 

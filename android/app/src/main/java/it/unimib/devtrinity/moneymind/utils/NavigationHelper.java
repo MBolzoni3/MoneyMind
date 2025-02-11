@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.utils;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 

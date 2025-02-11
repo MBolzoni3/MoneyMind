@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 

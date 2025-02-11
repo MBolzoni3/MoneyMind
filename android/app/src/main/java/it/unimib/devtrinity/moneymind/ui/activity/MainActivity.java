@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.ui.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -17,7 +16,6 @@ import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 import it.unimib.devtrinity.moneymind.utils.SyncHelper;
-import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 

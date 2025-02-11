@@ -36,7 +36,7 @@ public class DatabaseRepository {
         return CompletableFuture.runAsync(() -> {
             database.runInTransaction(() -> {
                 for (String table : tableNames) {
-                    try (SupportSQLiteStatement statement = database.compileStatement("DELETE FROM " + table)){
+                    try (SupportSQLiteStatement statement = database.compileStatement("DELETE FROM " + table)) {
                         statement.execute();
                     } catch (IOException e) {
                         throw new RuntimeException(e);

@@ -24,7 +24,6 @@ import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.ui.SelectionModeListener;
 import it.unimib.devtrinity.moneymind.ui.main.fragment.AddGoalFragment;
 import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
-import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder> {
 

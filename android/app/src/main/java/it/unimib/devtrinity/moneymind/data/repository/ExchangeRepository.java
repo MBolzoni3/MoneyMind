@@ -1,7 +1,6 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -46,7 +45,7 @@ public class ExchangeRepository {
 
         exchangeRatesLiveData.addSource(localData, rates -> {
             if (rates != null && !rates.isEmpty()) {
-                 ExchangeEntity latestRate = rates.get(0);
+                ExchangeEntity latestRate = rates.get(0);
                 Date latestStoredDate = latestRate.getDate();
 
                 if (Utils.isDataOutdated(latestStoredDate)) {
