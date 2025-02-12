@@ -2,15 +2,18 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -72,6 +75,8 @@ public class AddTransactionFragment extends Fragment {
     private TextInputEditText recurrenceInterval;
     private TextInputEditText endDateField;
 
+    private TextInputLayout nameFieldLayout, amountFieldLayout, categoryFieldLayout;
+
     private View thisView;
 
     private boolean autoCompile;
@@ -117,9 +122,25 @@ public class AddTransactionFragment extends Fragment {
         viewModel = new ViewModelProvider(this, factory).get(AddTransactionViewModel.class);
 
         nameField = view.findViewById(R.id.edit_transaction_name);
+        nameFieldLayout = view.findViewById(R.id.input_transaction_name);
 
         amountField = view.findViewById(R.id.edit_transaction_amount);
         amountField.addTextChangedListener(amountFieldTextWatcher);
+        amountFieldLayout = view.findViewById(R.id.input_transaction_amount);
+        amountField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                triggerConvertedAmount();
+            }
+        });
 
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
@@ -159,7 +180,7 @@ public class AddTransactionFragment extends Fragment {
                 }
             }
         });
-        dateField.setOnClickListener(v -> Utils.showDatePicker(dateField::setText, this));
+        dateField.setOnClickListener(v -> Utils.showNonFutureDatePicker(dateField::setText, this));
 
         setupCurrencyDropdown(view);
         setupTransactionTypeDropdown(view);
@@ -200,6 +221,8 @@ public class AddTransactionFragment extends Fragment {
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
         autoCompile = true;
+        categoryFieldLayout = view.findViewById(R.id.input_category);
+
         compileTransaction();
         autoCompile = false;
 
@@ -224,8 +247,61 @@ public class AddTransactionFragment extends Fragment {
     };
 
     public void onSaveButtonClick() {
-        saveTransaction();
-        navigateBack();
+        if (validateFields()){
+            saveTransaction();
+            navigateBack();
+        }
+    }
+
+    private boolean validateFields() {
+
+        if (isEmptyField(nameField, nameFieldLayout, getString(R.string.empty_name_error))){
+            return false;
+        } else if (!validateName(nameField, nameFieldLayout)){
+            return false;
+        } else {
+            nameFieldLayout.setError(null);
+            nameFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(amountField, amountFieldLayout, getString(R.string.empty_amount_error))) {
+            return false;
+        } else {
+            amountFieldLayout.setError(null);
+            amountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (selectedCategory == null){
+            categoryFieldLayout.setError(getString(R.string.empty_category_error));
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            categoryFieldLayout.setError(null);
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        return true;
+    }
+
+    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
+        String name = field.getText().toString();
+        if (!name.matches("[a-zA-Z]+")) {
+            fieldLayout.setError(getString(R.string.invalid_name_error));
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
+        if (TextUtils.isEmpty(field.getText())) {
+            fieldLayout.setError(fieldError);
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void setupCurrencyDropdown(View view) {

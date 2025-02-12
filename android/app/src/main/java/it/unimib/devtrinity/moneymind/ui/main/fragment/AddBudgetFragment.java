@@ -2,21 +2,26 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
@@ -45,6 +50,8 @@ public class AddBudgetFragment extends Fragment {
     private CategoryEntity selectedCategory;
     private TextInputEditText startDateField;
     private TextInputEditText endDateField;
+
+    private TextInputLayout nameFieldLayout, amountFieldLayout, startDateFieldLayout, endDateFieldLayout, categoryFieldLayout;
 
     private View thisView;
 
@@ -87,6 +94,12 @@ public class AddBudgetFragment extends Fragment {
         AddBudgetViewModelFactory factory = new AddBudgetViewModelFactory(budgetRepository, categoryRepository);
         viewModel = new ViewModelProvider(this, factory).get(AddBudgetViewModel.class);
 
+        nameFieldLayout = view.findViewById(R.id.input_budget_name);
+        amountFieldLayout = view.findViewById(R.id.input_budget_amount);
+        startDateFieldLayout = view.findViewById(R.id.input_start_date);
+        endDateFieldLayout = view.findViewById(R.id.input_end_date);
+        categoryFieldLayout = view.findViewById(R.id.input_budget_category);
+
         nameField = view.findViewById(R.id.edit_budget_name);
         amountField = view.findViewById(R.id.edit_budget_amount);
 
@@ -123,15 +136,18 @@ public class AddBudgetFragment extends Fragment {
         });
 
         endDateField.setOnClickListener(v -> {
-            Utils.showDatePicker(endDateField::setText, this);
+            Utils.showEndDatePicker(endDateField::setText, this, startDateField);
         });
 
         compileFields();
     }
 
     public void onSaveButtonClick() {
-        saveBudget();
-        navigateBack();
+        if(validateFields()){
+            saveBudget();
+            navigateBack();
+        }
+
     }
 
     private void compileFields() {
@@ -141,6 +157,71 @@ public class AddBudgetFragment extends Fragment {
         amountField.setText(currentBudget.getAmount().toString());
         startDateField.setText(Utils.dateToString(currentBudget.getStartDate()));
         endDateField.setText(Utils.dateToString(currentBudget.getEndDate()));
+    }
+
+    private boolean validateFields() {
+
+        if (isEmptyField(nameField, nameFieldLayout, getString(R.string.empty_name_error))) {
+            return false;
+        } else if (!validateName(nameField, nameFieldLayout)) {
+            return false;
+        } else {
+            nameFieldLayout.setError(null);
+            nameFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(amountField, amountFieldLayout, getString(R.string.empty_amount_error))) {
+            return false;
+        } else {
+            amountFieldLayout.setError(null);
+            amountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (selectedCategory == null) {
+            categoryFieldLayout.setError(getString(R.string.empty_category_error));
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            categoryFieldLayout.setError(null);
+            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(startDateField, startDateFieldLayout, getString(R.string.empty_startdate_error))) {
+            return false;
+        } else {
+            startDateFieldLayout.setError(null);
+            startDateFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if (isEmptyField(endDateField, endDateFieldLayout, getString(R.string.empty_enddate_error))) {
+            return false;
+        } else {
+            endDateFieldLayout.setError(null);
+            endDateFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        return true;
+    }
+
+    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
+        String name = Objects.requireNonNull(field.getText()).toString();
+        if (!name.matches("[a-zA-Z]+")) {
+            fieldLayout.setError(getString(R.string.invalid_name_error));
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
+        if (TextUtils.isEmpty(field.getText())) {
+            fieldLayout.setError(fieldError);
+            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void navigateBack() {
@@ -183,4 +264,3 @@ public class AddBudgetFragment extends Fragment {
 
 
 }
-
