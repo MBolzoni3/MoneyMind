@@ -46,10 +46,16 @@ public class RecurringTransactionWorker extends Worker {
         try {
             List<RecurringTransactionEntity> transactionsToGenerate = recurringTransactionRepository.getRecurringTransactionsToGenerate();
             for(RecurringTransactionEntity transactionToGenerate : transactionsToGenerate){
+                BigDecimal realAmount = exchangeRepository.getInverseConvertedAmount(
+                        transactionToGenerate.getAmount(),
+                        transactionToGenerate.getCurrency(),
+                        transactionToGenerate.getDate()
+                );
+
                 List<Date> datesToGenerate = Utils.getAllMissingGenerationDates(transactionToGenerate);
                 for(Date generationDate : datesToGenerate) {
                     BigDecimal convertedAmount = exchangeRepository.getConvertedAmount(
-                            transactionToGenerate.getAmount(),
+                            realAmount,
                             transactionToGenerate.getCurrency(),
                             generationDate
                     );

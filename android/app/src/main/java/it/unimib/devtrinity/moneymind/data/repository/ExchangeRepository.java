@@ -137,6 +137,26 @@ public class ExchangeRepository {
         return amount;
     }
 
+    public BigDecimal getInverseConvertedAmount(BigDecimal amount, String currency, Date date){
+        if(amount == null || amount.compareTo(BigDecimal.ZERO) == 0) return amount;
+        if(currency.equals("EUR")) return amount;
+
+        List<ExchangeEntity> rates = getExchangeRatesSync(date);
+        for (ExchangeEntity entity : rates) {
+            if (entity.currency.equals(currency)) {
+                BigDecimal rate = entity.rate;
+                if (rate.compareTo(BigDecimal.ZERO) == 0) {
+                    return BigDecimal.ZERO;
+                }
+
+                BigDecimal converted = amount.multiply(rate, MathContext.DECIMAL128);
+                return converted.setScale(4, RoundingMode.HALF_EVEN);
+            }
+        }
+
+        return amount;
+    }
+
     private static List<ExchangeEntity> toEntities(ExchangeResponse response) {
         List<ExchangeEntity> entities = new ArrayList<>();
 
