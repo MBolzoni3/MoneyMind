@@ -1,6 +1,8 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -89,10 +91,10 @@ public class TransactionRepository extends GenericRepository {
         executorService.execute(() -> {
             try {
                 transactionDao.insertOrUpdate(transaction);
-                callback.onSuccess(true);
+                new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(true));
             } catch (Exception e) {
                 Log.e(TAG, "Error inserting transaction: " + e.getMessage(), e);
-                callback.onFailure(e.getMessage());
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure(e.getMessage()));
             }
         });
     }

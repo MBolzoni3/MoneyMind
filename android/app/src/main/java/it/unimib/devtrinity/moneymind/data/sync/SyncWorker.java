@@ -18,6 +18,8 @@ import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class SyncWorker extends Worker {
@@ -46,6 +48,10 @@ public class SyncWorker extends Worker {
     @Override
     public Result doWork() {
         try {
+            if(!Utils.isInternetAvailable(getApplicationContext())){
+                return Result.failure();
+            }
+
             List<CompletableFuture<Void>> syncFutures = new ArrayList<>();
             syncFutures.add(categoryRepository.sync());
 

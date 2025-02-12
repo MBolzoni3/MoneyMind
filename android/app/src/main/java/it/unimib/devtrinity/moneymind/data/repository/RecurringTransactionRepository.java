@@ -1,6 +1,8 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -60,10 +62,10 @@ public class RecurringTransactionRepository extends GenericRepository {
         executorService.execute(() -> {
             try {
                 recurringTransactionDao.insertOrUpdate(transaction);
-                callback.onSuccess(true);
+                new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(true));
             } catch (Exception e) {
                 Log.e(TAG, "Error inserting recurring transaction: " + e.getMessage(), e);
-                callback.onFailure(e.getMessage());
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure(e.getMessage()));
             }
         });
     }

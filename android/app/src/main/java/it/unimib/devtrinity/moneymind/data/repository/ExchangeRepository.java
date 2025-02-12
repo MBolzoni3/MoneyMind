@@ -30,6 +30,7 @@ public class ExchangeRepository {
     private final ExchangeDao exchangeDao;
     private final ExecutorService executorService;
 
+    private LiveData<List<ExchangeEntity>> currentRates;
     private final MediatorLiveData<List<ExchangeEntity>> exchangeRatesLiveData = new MediatorLiveData<>();
 
     public ExchangeRepository(Application application, ExchangeDataSource exchangeDataSource) {
@@ -39,28 +40,24 @@ public class ExchangeRepository {
     }
 
     public LiveData<List<ExchangeEntity>> getExchangeRates(Date date) {
-        exchangeRatesLiveData.removeSource(exchangeRatesLiveData);
+        Date validDate = Utils.getDataBceValid(date);
 
-        LiveData<List<ExchangeEntity>> localData = exchangeDao.getRatesByClosestDate(date.getTime());
+        if (currentRates != null) {
+            exchangeRatesLiveData.removeSource(currentRates);
+        }
 
-        exchangeRatesLiveData.addSource(localData, rates -> {
+        currentRates = exchangeDao.getRatesByDate(validDate.getTime());
+
+        exchangeRatesLiveData.addSource(currentRates, rates -> {
             if (rates != null && !rates.isEmpty()) {
-                 ExchangeEntity latestRate = rates.get(0);
-                Date latestStoredDate = latestRate.getDate();
-
-                if (Utils.isDataOutdated(latestStoredDate)) {
-                    fetchFromApiAndSave(date);
-                } else {
-                    exchangeRatesLiveData.setValue(rates);
-                }
+                exchangeRatesLiveData.setValue(rates);
             } else {
-                fetchFromApiAndSave(date);
+                fetchFromApiAndSave(validDate);
             }
         });
 
         return exchangeRatesLiveData;
     }
-
 
     private void fetchFromApiAndSave(Date date) {
         exchangeDataSource.fetchExchangeRates(date, new Callback<>() {
@@ -83,7 +80,7 @@ public class ExchangeRepository {
                             exchangeDao.insertAll(newEntities);
                         }
 
-                        List<ExchangeEntity> latestRates = exchangeDao.getRatesByClosestDateSync(date.getTime());
+                        List<ExchangeEntity> latestRates = exchangeDao.getRatesByDateSync(date.getTime());
                         exchangeRatesLiveData.postValue(latestRates);
                     });
                 } else {

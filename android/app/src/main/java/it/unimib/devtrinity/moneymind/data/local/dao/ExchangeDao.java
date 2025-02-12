@@ -16,11 +16,11 @@ public interface ExchangeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<ExchangeEntity> rates);
 
-    @Query("SELECT * FROM exchange_rates WHERE date = (SELECT MAX(date) FROM exchange_rates WHERE date <= :timestamp)")
-    LiveData<List<ExchangeEntity>> getRatesByClosestDate(long timestamp);
+    @Query("SELECT * FROM exchange_rates WHERE DATE(date / 1000, 'unixepoch', 'localtime') = DATE(:timestamp / 1000, 'unixepoch', 'localtime')")
+    LiveData<List<ExchangeEntity>> getRatesByDate(long timestamp);
 
-    @Query("SELECT * FROM exchange_rates WHERE date = (SELECT MAX(date) FROM exchange_rates WHERE date <= :timestamp)")
-    List<ExchangeEntity> getRatesByClosestDateSync(long timestamp);
+    @Query("SELECT * FROM exchange_rates WHERE DATE(date / 1000, 'unixepoch', 'localtime') = DATE(:timestamp / 1000, 'unixepoch', 'localtime')")
+    List<ExchangeEntity> getRatesByDateSync(long timestamp);
 
     @Query("SELECT DISTINCT date FROM exchange_rates")
     List<Date> getAvailableDates();

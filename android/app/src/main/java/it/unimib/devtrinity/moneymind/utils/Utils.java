@@ -1,6 +1,9 @@
 package it.unimib.devtrinity.moneymind.utils;
 
+import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -169,11 +172,16 @@ public class Utils {
         return calendar.getTime();
     }
 
-    public static boolean isDataOutdated(Date latestStoredDate) {
+    public static Date getDataBceValid(Date date){
         TimeZone cetTimeZone = TimeZone.getTimeZone("Europe/Paris");
         Calendar calendar = Calendar.getInstance(cetTimeZone);
         calendar.setTimeZone(cetTimeZone);
-        calendar.setTime(latestStoredDate);
+        calendar.setTime(date);
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        if (hour < 16) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        }
 
         int safeCycle = 0;
         while (safeCycle < 20 && (HolidayHelper.isWeekend(calendar) || HolidayHelper.isBceHoliday(calendar))) {
@@ -183,20 +191,10 @@ public class Utils {
 
         if(safeCycle >= 20){
             Log.e("ExchangeRepository", "Errore: impossibile trovare un giorno lavorativo valido dopo 20 tentativi.");
-            return true;
+            return date;
         }
 
-        calendar.set(Calendar.HOUR_OF_DAY, 16);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        long lastPossibleUpdate = calendar.getTimeInMillis();
-
-        Calendar now = Calendar.getInstance(cetTimeZone);
-        now.setTimeZone(cetTimeZone);
-
-        return now.getTimeInMillis() > lastPossibleUpdate;
+        return calendar.getTime();
     }
 
     public static void closeKeyboard(Context context, View view) {
@@ -204,6 +202,17 @@ public class Utils {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public static boolean isInternetAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            return capabilities != null &&
+                    (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+        }
+        return false;
     }
 
 }

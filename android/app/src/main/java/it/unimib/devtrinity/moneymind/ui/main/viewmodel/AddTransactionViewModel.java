@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -92,11 +93,11 @@ public class AddTransactionViewModel extends ViewModel {
         LiveData<List<ExchangeEntity>> liveData = exchangeRepository.getExchangeRates(date);
 
         liveData.observeForever(rates -> {
+            List<String> newCurrencies = new ArrayList<>();
+            newCurrencies.add("EUR");
+
             if (rates != null && !rates.isEmpty()) {
                 exchangeRates.setValue(rates);
-
-                List<String> newCurrencies = new ArrayList<>();
-                newCurrencies.add("EUR");
 
                 for (ExchangeEntity entity : rates) {
                     if (!newCurrencies.contains(entity.currency)) {
@@ -104,10 +105,13 @@ public class AddTransactionViewModel extends ViewModel {
                     }
                 }
 
-                currencies.setValue(Utils.getCurrencyDropdownItems(newCurrencies));
-
                 callback.onSuccess(null);
+            } else {
+                exchangeRates.setValue(Collections.emptyList());
+                callback.onFailure("No exchange rates found for the selected date."); // TODO move this to strings
             }
+
+            currencies.setValue(Utils.getCurrencyDropdownItems(newCurrencies));
         });
     }
 
@@ -140,6 +144,33 @@ public class AddTransactionViewModel extends ViewModel {
         }
 
         convertedAmount.setValue(amount);
+    }
+
+    public BigDecimal reverseConversion(BigDecimal amount, String selectedCurrency){
+        if (amount == null || selectedCurrency == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+
+        if (selectedCurrency.equals("EUR")) {
+            return amount;
+        }
+
+        List<ExchangeEntity> rates = exchangeRates.getValue();
+        if (rates != null) {
+            for (ExchangeEntity entity : rates) {
+                if (entity.currency.equals(selectedCurrency)) {
+                    BigDecimal rate = entity.rate;
+                    if (rate.compareTo(BigDecimal.ZERO) == 0) {
+                        return BigDecimal.ZERO;
+                    }
+
+                    BigDecimal converted = amount.multiply(rate, MathContext.DECIMAL128);
+                    return converted.setScale(4, RoundingMode.HALF_EVEN);
+                }
+            }
+        }
+
+        return amount;
     }
 
 }

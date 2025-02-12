@@ -7,6 +7,9 @@ import android.util.Log;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 
@@ -28,6 +31,46 @@ public abstract class GenericRepository {
     }
 
     public CompletableFuture<Void> sync(long lastSyncedTimestamp) {
+        return CompletableFuture.supplyAsync(() -> {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Void> future = executor.submit(() -> {
+                syncLocalToRemoteAsync().get();
+                return null;
+            });
+
+            try {
+                future.get(15, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                throw new RuntimeException("Timeout during syncLocalToRemoteAsync", e);
+            } catch (Exception e) {
+                throw new RuntimeException("Error during sync", e);
+            } finally {
+                executor.shutdown();
+            }
+
+            return null;
+        }).thenCompose(v -> CompletableFuture.supplyAsync(() -> {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Void> future = executor.submit(() -> {
+                syncRemoteToLocalAsync(lastSyncedTimestamp).get();
+                return null;
+            });
+
+            try {
+                future.get(15, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                throw new RuntimeException("Timeout during syncRemoteToLocalAsync", e);
+            } catch (Exception e) {
+                throw new RuntimeException("Error during sync", e);
+            } finally {
+                executor.shutdown();
+            }
+
+            return null;
+        }));
+    }
+
+    /*public CompletableFuture<Void> sync(long lastSyncedTimestamp) {
         return syncLocalToRemoteAsync()
                 .thenCompose(lastTimestampRoom -> {
                     long finalLastSyncedTimestamp = resolveLastSyncedTimestamp(lastTimestampRoom, lastSyncedTimestamp);
@@ -41,7 +84,7 @@ public abstract class GenericRepository {
                         Log.e(TAG, "Error syncing: " + e.getMessage(), e);
                     }
                 });
-    }
+    }*/
 
     protected CompletableFuture<Long> syncLocalToRemoteAsync() {
         return CompletableFuture.completedFuture(null);

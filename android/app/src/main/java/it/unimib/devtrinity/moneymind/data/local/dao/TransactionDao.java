@@ -37,7 +37,11 @@ public interface TransactionDao {
         deleteById(id, System.currentTimeMillis());
     }
 
-    @Query("SELECT SUM(amount) FROM transactions WHERE categoryId = :categoryId AND date >= :startDate AND date <= :endDate")
+    @Query("SELECT SUM(amount) FROM transactions " +
+            "WHERE categoryId = :categoryId " +
+            "AND date >= :startDate AND date <= :endDate " +
+            "AND type = 'EXPENSE' " +
+            "AND deleted = 0")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
     @Query("SELECT * FROM transactions WHERE deleted = 0 ORDER BY date ASC")

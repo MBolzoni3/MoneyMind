@@ -88,15 +88,15 @@ public class ServiceLocator {
 
     public ExchangeRepository getExchangeRepository(Application application) {
         if (exchangeRepository == null) {
-            exchangeRepository = new ExchangeRepository(application, getExchangeDataSource());
+            exchangeRepository = new ExchangeRepository(application, getExchangeDataSource(application));
         }
 
         return exchangeRepository;
     }
 
-    private ExchangeDataSource getExchangeDataSource() {
+    private ExchangeDataSource getExchangeDataSource(Application application) {
         if (exchangeDataSource == null) {
-            exchangeDataSource = new ExchangeDataSource(RetrofitClient.getService());
+            exchangeDataSource = new ExchangeDataSource(RetrofitClient.getService(application));
         }
 
         return exchangeDataSource;

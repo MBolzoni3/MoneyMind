@@ -74,6 +74,8 @@ public class AddTransactionFragment extends Fragment {
 
     private View thisView;
 
+    private boolean autoCompile;
+
     public AddTransactionFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
     }
@@ -117,20 +119,7 @@ public class AddTransactionFragment extends Fragment {
         nameField = view.findViewById(R.id.edit_transaction_name);
 
         amountField = view.findViewById(R.id.edit_transaction_amount);
-        amountField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                triggerConvertedAmount();
-            }
-        });
+        amountField.addTextChangedListener(amountFieldTextWatcher);
 
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
@@ -164,7 +153,7 @@ public class AddTransactionFragment extends Fragment {
 
                         @Override
                         public void onFailure(String errorMessage) {
-                            Utils.makeSnackBar(view, errorMessage);
+                            Utils.makeSnackBar(view.getRootView(), errorMessage);
                         }
                     });
                 }
@@ -210,11 +199,29 @@ public class AddTransactionFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
+        autoCompile = true;
         compileTransaction();
+        autoCompile = false;
+
         if (dateField.getText().toString().trim().isEmpty()) {
             dateField.setText(Utils.dateToString(new Date()));
         }
     }
+
+    private final TextWatcher amountFieldTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            triggerConvertedAmount();
+        }
+    };
 
     public void onSaveButtonClick() {
         saveTransaction();
@@ -244,6 +251,7 @@ public class AddTransactionFragment extends Fragment {
             }
 
             selectedCurrency = getCurrencyFromDropdownValue();
+            triggerConvertedAmount();
         });
 
         currencyDropdown.setOnItemClickListener((parent, view1, position, id) -> {
@@ -308,10 +316,28 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private void triggerConvertedAmount() {
+        if(autoCompile) return;
+        if(selectedCurrency == null) return;
+
+        if(!selectedCurrency.equals("EUR")) {
+            BigDecimal convertedEur = viewModel.reverseConversion(
+                    Utils.safeParseBigDecimal(convertedAmountField.getText().toString(), BigDecimal.ZERO),
+                    selectedCurrency
+            );
+            amountField.removeTextChangedListener(amountFieldTextWatcher);
+            amountField.setText(Utils.formatConvertedAmount(convertedEur));
+            amountField.addTextChangedListener(amountFieldTextWatcher);
+            return;
+        }
+
         viewModel.calculateConversion(
                 Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
                 selectedCurrency
         );
+    }
+
+    private void triggerFirstConversion(){
+
     }
 
     private void navigateBack() {
@@ -324,7 +350,15 @@ public class AddTransactionFragment extends Fragment {
         if (currentTransaction == null) return;
 
         nameField.setText(currentTransaction.getName());
-        amountField.setText(currentTransaction.getAmount().toString());
+
+        if(currentTransaction.getCurrency().equals("EUR")){
+            amountField.setText(currentTransaction.getAmount().toString());
+        } else {
+            convertedAmountField.setEnabled(true);
+            convertedAmountField.setText(currentTransaction.getAmount().toString());
+            convertedAmountField.setEnabled(false);
+        }
+
         dateField.setText(Utils.dateToString(currentTransaction.getDate()));
         notesField.setText(currentTransaction.getNotes());
 
