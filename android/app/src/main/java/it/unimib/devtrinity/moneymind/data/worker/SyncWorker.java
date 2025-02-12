@@ -1,4 +1,4 @@
-package it.unimib.devtrinity.moneymind.data.sync;
+package it.unimib.devtrinity.moneymind.data.worker;
 
 import android.app.Application;
 import android.content.Context;
@@ -18,7 +18,6 @@ import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionRepository;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
-import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 

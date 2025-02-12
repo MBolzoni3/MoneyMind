@@ -1,5 +1,7 @@
 package it.unimib.devtrinity.moneymind.ui.main.viewmodel;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -22,6 +24,7 @@ import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionReposi
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.Utils;
+import it.unimib.devtrinity.moneymind.utils.WorkerHelper;
 
 public class AddTransactionViewModel extends ViewModel {
 
@@ -72,13 +75,13 @@ public class AddTransactionViewModel extends ViewModel {
         );
     }
 
-    public void insertRecurringTransaction(RecurringTransactionEntity transaction, GenericCallback<Void> callback) {
+    public void insertRecurringTransaction(RecurringTransactionEntity transaction, Context context, GenericCallback<Void> callback) {
         recurringTransactionRepository.insertTransaction(
                 transaction,
                 new GenericCallback<>() {
                     @Override
                     public void onSuccess(Boolean result) {
-                        callback.onSuccess(null);
+                        WorkerHelper.triggerManualRecurring(context).thenRun(() -> callback.onSuccess(null));
                     }
 
                     @Override

@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import it.unimib.devtrinity.moneymind.utils.SyncHelper;
+import it.unimib.devtrinity.moneymind.utils.WorkerHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainActivityViewModel extends ViewModel {
@@ -23,7 +23,11 @@ public class MainActivityViewModel extends ViewModel {
 
     public void checkUserState(Context context) {
         if (FirebaseHelper.getInstance().isUserLoggedIn()) {
-            SyncHelper.triggerManualSync(context).thenRun(() -> navigateToMain.postValue(true));
+            WorkerHelper.triggerManualSync(context)
+                    .thenRun(() -> {
+                        WorkerHelper.triggerManualRecurring(context)
+                                .thenRun(() -> navigateToMain.postValue(true));
+                    });
         } else {
             showLogin.postValue(true);
         }

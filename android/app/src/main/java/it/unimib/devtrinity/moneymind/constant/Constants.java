@@ -15,9 +15,12 @@ public class Constants {
     public static final String CATEGORIES_TABLE_NAME = "categories";
     public static final String EXCHANGE_RATES_TABLE_NAME = "exchange_rates";
 
-    public static final String UNIQUE_WORK_NAME = "sync_work";
-    public static final String MANUAL_WORK_NAME = "manual_sync_work";
-    public static final int REPEAT_INTERVAL_MIN = 30;
+    public static final String UNIQUE_WORK_SYNC_NAME = "sync_work";
+    public static final String MANUAL_WORK_SYNC_NAME = "manual_sync_work";
+    public static final int REPEAT_INTERVAL_SYNC_MIN = 30;
+    public static final String UNIQUE_WORK_RECURRING_NAME = "recurring_work";
+    public static final String MANUAL_WORK_RECURRING_NAME = "manual_recurring_work";
+    public static final int REPEAT_INTERVAL_RECURRING_HOURS = 4;
 
     public static final String SHARED_PREFS_NAME = "moneymind_preferences";
     public static final String TRANSACTIONS_LAST_SYNC_KEY = "transactions_last_sync";

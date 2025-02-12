@@ -79,6 +79,7 @@ public class AddTransactionFragment extends Fragment {
     private View thisView;
 
     private boolean autoCompile;
+    private boolean oneTime;
 
     public AddTransactionFragment(SelectionModeListener selectionModeListener) {
         this.selectionModeListener = selectionModeListener;
@@ -103,6 +104,7 @@ public class AddTransactionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         thisView = view;
+        oneTime = true;
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -366,7 +368,8 @@ public class AddTransactionFragment extends Fragment {
         if(autoCompile) return;
         if(selectedCurrency == null) return;
 
-        if(!selectedCurrency.equals("EUR")) {
+        if(oneTime && !selectedCurrency.equals("EUR")) {
+            oneTime = false;
             BigDecimal convertedEur = viewModel.reverseConversion(
                     Utils.safeParseBigDecimal(convertedAmountField.getText().toString(), BigDecimal.ZERO),
                     selectedCurrency
@@ -377,6 +380,7 @@ public class AddTransactionFragment extends Fragment {
             return;
         }
 
+        oneTime = false;
         viewModel.calculateConversion(
                 Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
                 selectedCurrency
@@ -501,7 +505,7 @@ public class AddTransactionFragment extends Fragment {
                 }
             });
         } else {
-            viewModel.insertRecurringTransaction((RecurringTransactionEntity) transaction, new GenericCallback<>() {
+            viewModel.insertRecurringTransaction((RecurringTransactionEntity) transaction, requireContext(), new GenericCallback<>() {
 
                 @Override
                 public void onSuccess(Void result) {

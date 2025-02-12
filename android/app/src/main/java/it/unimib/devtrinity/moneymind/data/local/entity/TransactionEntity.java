@@ -57,6 +57,18 @@ public class TransactionEntity extends FirestoreEntity {
         this.notes = notes;
     }
 
+    @Ignore
+    public TransactionEntity(RecurringTransactionEntity recurringTransaction){
+        super(false, Timestamp.now(), Timestamp.now(), recurringTransaction.userId, null, false);
+        this.name = recurringTransaction.name;
+        this.type = recurringTransaction.type;
+        this.amount = recurringTransaction.amount;
+        this.currency = recurringTransaction.currency;
+        this.date = recurringTransaction.date;
+        this.categoryId = recurringTransaction.categoryId;
+        this.notes = recurringTransaction.notes + " (auto generated)";
+    }
+
     public int getId() {
         return id;
     }

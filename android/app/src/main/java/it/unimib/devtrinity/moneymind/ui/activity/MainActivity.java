@@ -15,7 +15,7 @@ import it.unimib.devtrinity.moneymind.ui.activity.viewmodel.MainActivityViewMode
 import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
 import it.unimib.devtrinity.moneymind.utils.NavigationHelper;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
-import it.unimib.devtrinity.moneymind.utils.SyncHelper;
+import it.unimib.devtrinity.moneymind.utils.WorkerHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
         mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         FirebaseApp.initializeApp(this);
-        SyncHelper.scheduleSyncJob(this);
+        WorkerHelper.scheduleSyncJob(this);
+        WorkerHelper.scheduleRecurringJob(this);
 
         mainActivityViewModel.getNavigateToMain().observe(this, navigate -> {
             if (navigate) {

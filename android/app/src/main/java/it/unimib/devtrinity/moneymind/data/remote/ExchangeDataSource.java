@@ -44,5 +44,24 @@ public class ExchangeDataSource {
             }
         });
     }
+
+    public ExchangeResponse fetchExchangeRatesSync(Date date) throws IOException {
+        if (date == null) {
+            date = new Date();
+        }
+
+        String startDate = Utils.dateToStringApi(Utils.getDateNDaysAgo(date, 5));
+        String endDate = Utils.dateToStringApi(date);
+
+        Call<ExchangeResponse> call = apiService.getExchangeRates(startDate, endDate, "jsondata");
+        Response<ExchangeResponse> response = call.execute();
+
+        if (response.isSuccessful() && response.body() != null) {
+            return response.body();
+        } else {
+            throw new IOException("Errore nella risposta API");
+        }
+    }
+
 }
 

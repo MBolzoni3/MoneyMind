@@ -88,7 +88,7 @@ public class NavigationHelper {
     }
 
     public static CompletableFuture<Void> logout(Activity activity, DatabaseRepository databaseRepository) {
-        return SyncHelper.triggerManualSync(activity)
+        return WorkerHelper.triggerManualSync(activity)
                 .thenRun(() -> FirebaseHelper.getInstance().logoutUser())
                 .thenRun(() -> SharedPreferencesHelper.clearSharedPrefs(activity.getApplication()))
                 .thenCompose(v -> databaseRepository.clearUserTables());

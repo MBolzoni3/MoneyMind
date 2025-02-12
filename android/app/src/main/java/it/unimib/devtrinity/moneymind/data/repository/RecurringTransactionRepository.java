@@ -12,6 +12,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -22,6 +23,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEnti
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class RecurringTransactionRepository extends GenericRepository {
@@ -33,6 +35,22 @@ public class RecurringTransactionRepository extends GenericRepository {
     public RecurringTransactionRepository(Application application) {
         super(application, Constants.RECURRING_TRANSACTIONS_LAST_SYNC_KEY, TAG);
         this.recurringTransactionDao = DatabaseClient.getInstance(application).recurringTransactionDao();
+    }
+
+    public List<RecurringTransactionEntity> getRecurringTransactionsToGenerate() {
+        List<RecurringTransactionEntity> transactionsToGenerate = new ArrayList<>();
+
+        for (RecurringTransactionEntity rt : recurringTransactionDao.getActiveRecurringTransactions()) {
+            if (Utils.shouldGenerateTransaction(rt)) {
+                transactionsToGenerate.add(rt);
+            }
+        }
+
+        return transactionsToGenerate;
+    }
+
+    public void setLastGeneratedDate(int id, Date generatedDate){
+        recurringTransactionDao.setLastGeneratedDate(id, generatedDate.getTime());
     }
 
     public LiveData<List<TransactionEntityWithCategory>> getRecurringTransactions() {

@@ -1,13 +1,18 @@
 package it.unimib.devtrinity.moneymind.data.repository;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -95,7 +100,44 @@ public class ExchangeRepository {
         });
     }
 
-    public static List<ExchangeEntity> toEntities(ExchangeResponse response) {
+    private List<ExchangeEntity> getExchangeRatesSync(Date date){
+        Date validDate = Utils.getDataBceValid(date);
+
+        List<ExchangeEntity> ratesRoom = exchangeDao.getRatesByDateSync(validDate.getTime());
+        if(ratesRoom != null && !ratesRoom.isEmpty()){
+            return ratesRoom;
+        }
+
+        try {
+            return toEntities(exchangeDataSource.fetchExchangeRatesSync(date));
+        } catch (IOException e){
+            Log.e("ExchangeRepository", e.getMessage(), e);
+        }
+
+        return Collections.emptyList();
+    }
+
+    public BigDecimal getConvertedAmount(BigDecimal amount, String currency, Date date){
+        if(amount == null || amount.compareTo(BigDecimal.ZERO) == 0) return amount;
+        if(currency.equals("EUR")) return amount;
+
+        List<ExchangeEntity> rates = getExchangeRatesSync(date);
+        for (ExchangeEntity entity : rates) {
+            if (entity.currency.equals(currency)) {
+                BigDecimal rate = entity.rate;
+                if (rate.compareTo(BigDecimal.ZERO) == 0) {
+                    return BigDecimal.ZERO;
+                }
+
+                BigDecimal converted = amount.divide(rate, MathContext.DECIMAL128);
+                return converted.setScale(4, RoundingMode.HALF_EVEN);
+            }
+        }
+
+        return amount;
+    }
+
+    private static List<ExchangeEntity> toEntities(ExchangeResponse response) {
         List<ExchangeEntity> entities = new ArrayList<>();
 
         if (response == null || response.dataSets == null || response.structure == null) {

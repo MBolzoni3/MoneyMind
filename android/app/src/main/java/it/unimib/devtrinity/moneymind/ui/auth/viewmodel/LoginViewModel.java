@@ -10,7 +10,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.User;
 import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
-import it.unimib.devtrinity.moneymind.utils.SyncHelper;
+import it.unimib.devtrinity.moneymind.utils.WorkerHelper;
 
 public class LoginViewModel extends ViewModel {
 
@@ -31,9 +31,11 @@ public class LoginViewModel extends ViewModel {
         userRepository.authenticate(email, password, new GenericCallback<>() {
             @Override
             public void onSuccess(User user) {
-                SyncHelper.triggerManualSync(context).thenRun(() -> {
-                    loginState.setValue(new GenericState.Success<>(user.getEmail()));
-                });
+                WorkerHelper.triggerManualSync(context)
+                        .thenRun(() -> {
+                            WorkerHelper.triggerManualRecurring(context)
+                                    .thenRun(() -> loginState.setValue(new GenericState.Success<>(user.getEmail())));
+                        });
             }
 
             @Override

@@ -36,6 +36,8 @@ import java.util.TimeZone;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
+import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.ui.OnDateSelectedListener;
 
 public class Utils {
@@ -263,6 +265,67 @@ public class Utils {
                             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
         }
         return false;
+    }
+
+    public static List<Date> getAllMissingGenerationDates(RecurringTransactionEntity rt) {
+        List<Date> missingDates = new ArrayList<>();
+        Date now = new Date();
+        Date lastGenerated = rt.getLastGeneratedDate();
+        Calendar nextGenerationDate = Calendar.getInstance();
+
+        if (lastGenerated == null) {
+            missingDates.add(rt.getDate());
+            nextGenerationDate.setTime(rt.getDate());
+        } else {
+            nextGenerationDate.setTime(lastGenerated);
+        }
+
+        while (true) {
+            nextGenerationDate.setTime(getNextGenerationDate(nextGenerationDate.getTime(), rt.getRecurrenceType(), rt.getRecurrenceInterval()));
+
+            if (nextGenerationDate.getTimeInMillis() > now.getTime()) break;
+            if (rt.getRecurrenceEndDate() != null && nextGenerationDate.getTime().after(rt.getRecurrenceEndDate())) break;
+
+            missingDates.add(nextGenerationDate.getTime());
+        }
+
+        return missingDates;
+    }
+
+    public static boolean shouldGenerateTransaction(RecurringTransactionEntity rt) {
+        Date now = new Date();
+        Date lastGenerated = rt.getLastGeneratedDate();
+
+        if (lastGenerated == null) return true;
+
+        Date nextGeneration = getNextGenerationDate(lastGenerated, rt.getRecurrenceType(), rt.getRecurrenceInterval());
+
+        return nextGeneration.getTime() <= now.getTime() &&
+                (rt.getRecurrenceEndDate() == null || nextGeneration.before(rt.getRecurrenceEndDate()));
+    }
+
+    private static Date getNextGenerationDate(Date baseDate, RecurrenceTypeEnum type, int interval) {
+        Calendar nextDate = Calendar.getInstance();
+        nextDate.setTime(baseDate);
+
+        switch (type) {
+            case DAILY:
+                nextDate.add(Calendar.DAY_OF_YEAR, interval);
+                break;
+            case WEEKLY:
+                nextDate.add(Calendar.WEEK_OF_YEAR, interval);
+                break;
+            case MONTHLY:
+                nextDate.add(Calendar.MONTH, interval);
+                break;
+            case YEARLY:
+                nextDate.add(Calendar.YEAR, interval);
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo di ricorrenza non valido: " + type);
+        }
+
+        return nextDate.getTime();
     }
 
 }

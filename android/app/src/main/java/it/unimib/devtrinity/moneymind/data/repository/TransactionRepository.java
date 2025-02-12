@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
 import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntityWithCategory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
@@ -97,6 +98,11 @@ public class TransactionRepository extends GenericRepository {
                 new Handler(Looper.getMainLooper()).post(() -> callback.onFailure(e.getMessage()));
             }
         });
+    }
+
+    public void insertTransactionFromRecurring(RecurringTransactionEntity recurringTransaction){
+        TransactionEntity transaction = new TransactionEntity(recurringTransaction);
+        transactionDao.insertOrUpdate(transaction);
     }
 
     public void delete(List<TransactionEntity> transactions) {

@@ -54,4 +54,12 @@ public interface RecurringTransactionDao {
     @Query("SELECT MAX(updatedAt) FROM recurring_transactions WHERE synced = 1")
     Long getLastSyncedTimestamp();
 
+    @Query("SELECT * FROM recurring_transactions " +
+            "WHERE deleted = 0 " +
+            "AND (recurrenceEndDate IS NULL OR recurrenceEndDate > strftime('%s', 'now') * 1000)")
+    List<RecurringTransactionEntity> getActiveRecurringTransactions();
+
+    @Query("UPDATE recurring_transactions SET lastGeneratedDate = :generatedDate WHERE id = :id")
+    void setLastGeneratedDate(int id, long generatedDate);
+
 }
