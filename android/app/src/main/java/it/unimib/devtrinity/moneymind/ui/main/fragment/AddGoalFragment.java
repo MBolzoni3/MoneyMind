@@ -158,12 +158,11 @@ public class AddGoalFragment extends Fragment {
         BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
         BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
 
-        if(targetAmount.compareTo(savedAmount) <= 0){
-            Toast.makeText(requireContext(), R.string.invalid_amounts_error, Toast.LENGTH_SHORT).show();
-            targetAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            savedAmountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+        if(targetAmount.compareTo(savedAmount) <= 0) {
+            TextInputHelper.setError(targetAmountFieldLayout, getString(R.string.invalid_amounts_error));
             return false;
         } else {
+            TextInputHelper.clearError(targetAmountFieldLayout);
             return true;
         }
     }

@@ -53,14 +53,14 @@ public class TextInputHelper {
         });
     }
 
-    private static void setError(TextInputLayout textInputLayout, String errorMessage) {
+    public static void setError(TextInputLayout textInputLayout, String errorMessage) {
         if (textInputLayout != null) {
             textInputLayout.setError(errorMessage);
             textInputLayout.setErrorEnabled(true);
         }
     }
 
-    private static void clearError(TextInputLayout textInputLayout) {
+    public static void clearError(TextInputLayout textInputLayout) {
         if (textInputLayout != null) {
             textInputLayout.setError(null);
             textInputLayout.setErrorEnabled(false);
