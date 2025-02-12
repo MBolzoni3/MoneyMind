@@ -127,20 +127,6 @@ public class AddTransactionFragment extends Fragment {
         amountField = view.findViewById(R.id.edit_transaction_amount);
         amountField.addTextChangedListener(amountFieldTextWatcher);
         amountFieldLayout = view.findViewById(R.id.input_transaction_amount);
-        amountField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                triggerConvertedAmount();
-            }
-        });
 
         convertedAmountField = view.findViewById(R.id.edit_transaction_converted_amount);
         viewModel.getConvertedAmount().observe(getViewLifecycleOwner(), convertedAmount -> {
@@ -220,9 +206,9 @@ public class AddTransactionFragment extends Fragment {
         endDateField = view.findViewById(R.id.edit_end_date);
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
-        autoCompile = true;
         categoryFieldLayout = view.findViewById(R.id.input_category);
 
+        autoCompile = true;
         compileTransaction();
         autoCompile = false;
 

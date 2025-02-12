@@ -282,5 +282,13 @@
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/spacing_extra_large"
+            android:layout_marginBottom="@dimen/spacing_extra_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/input_end_date" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
