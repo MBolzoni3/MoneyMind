@@ -1,21 +1,23 @@
 package it.unimib.devtrinity.moneymind.ui.auth.fragment;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.regex.Pattern;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
@@ -23,15 +25,14 @@ import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.viewmodel.RegisterViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericState;
+import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class RegisterFragment extends Fragment {
     private RegisterViewModel registerViewModel;
 
-    private EditText emailInput;
-    private EditText passwordInput;
-    private EditText confirmPasswordInput;
-    private EditText nameInput;
+    private TextInputEditText emailInput, passwordInput, confirmPasswordInput, nameInput;
+    private TextInputLayout emailLayout, passwordLayout, confirmPasswordLayout, nameLayout;
     private ProgressBar loadingIndicator;
     private View loadingOverlay;
     private View thisView;
@@ -52,6 +53,11 @@ public class RegisterFragment extends Fragment {
         emailInput = view.findViewById(R.id.register_email_input);
         passwordInput = view.findViewById(R.id.register_password_input);
         confirmPasswordInput = view.findViewById(R.id.register_confirm_password_input);
+
+        nameLayout = view.findViewById(R.id.register_name_layout);
+        emailLayout = view.findViewById(R.id.register_email_layout);
+        passwordLayout = view.findViewById(R.id.register_password_layout);
+        confirmPasswordLayout = view.findViewById(R.id.register_confirm_password_layout);
 
         loadingIndicator = view.findViewById(R.id.loading_indicator);
         loadingOverlay = view.findViewById(R.id.loading_overlay);
@@ -89,6 +95,14 @@ public class RegisterFragment extends Fragment {
                 Utils.makeSnackBar(view, error);
             }
         });
+
+        bindInputValidation();
+    }
+
+    public void bindInputValidation() {
+        TextInputHelper.addValidationWatcher(nameLayout, nameInput, getString(R.string.error_field_required), getString(R.string.error_name_invalid), TextInputHelper.LOGIN_NAME_REGEX);
+        TextInputHelper.addValidationWatcher(emailLayout, emailInput, getString(R.string.error_field_required), getString(R.string.error_email_invalid), TextInputHelper.LOGIN_EMAIL_REGEX);
+        TextInputHelper.addValidationWatcher(passwordLayout, passwordInput, getString(R.string.error_field_required), getString(R.string.error_password_invalid), TextInputHelper.LOGIN_PASSWORD_REGEX);
     }
 
     public void registerAction() {
@@ -97,18 +111,19 @@ public class RegisterFragment extends Fragment {
         String password = passwordInput.getText().toString().trim();
         String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
-            Utils.makeSnackBar(thisView, getString(R.string.field_error));
+        if (!TextInputHelper.validateField(nameLayout, nameInput, getString(R.string.error_field_required), getString(R.string.error_name_invalid), TextInputHelper.LOGIN_NAME_REGEX)) {
             return;
         }
 
-        if (!password.equals(confirmPassword)) {
-            Utils.makeSnackBar(thisView, getString(R.string.password_error));
+        if (!TextInputHelper.validateField(emailLayout, emailInput, getString(R.string.error_field_required), getString(R.string.error_email_invalid), TextInputHelper.LOGIN_EMAIL_REGEX)) {
             return;
         }
 
-        if (password.length() < 6) {
-            Utils.makeSnackBar(thisView, getString(R.string.password_length));
+        if (!TextInputHelper.validateField(passwordLayout, passwordInput, getString(R.string.error_field_required), getString(R.string.error_password_invalid), TextInputHelper.LOGIN_PASSWORD_REGEX)) {
+            return;
+        }
+
+        if (!TextInputHelper.validateField(confirmPasswordLayout, confirmPasswordInput, getString(R.string.error_field_required), getString(R.string.error_confirm_password_invalid), Pattern.quote(password))) {
             return;
         }
 

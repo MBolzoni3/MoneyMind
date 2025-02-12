@@ -135,17 +135,24 @@
     <string name="field_error">Compila tutti i campi</string>
     <string name="password_error">Le password non coincidono</string>
     <string name="password_length">La password deve avere almeno 6 caratteri</string>
-    <string name="empty_name_error">Il campo relativo al nome del budget non può essere vuoto</string>
+    <string name="empty_name_error">Il campo relativo al nome non può essere vuoto</string>
     <string name="empty_amount_error">Il campo relativo all\'importo non può essere vuoto</string>
     <string name="empty_category_error">Il campo relativo alla categoria non può essere vuoto</string>"
     <string name="empty_startdate_error">Il campo relativo alla data di inizio non può essere vuoto</string>
     <string name="empty_enddate_error">Il campo relativo alla data di fine non può essere vuoto</string>
     <string name="empty_date_error">Il campo relativo alla data non può essere vuoto</string>"
-    <string name="invalid_name_error">Il nome inserito deve contenere solo lettere</string>
     <string name="empty_targetamount_error">Il campo relativo all\'importo target non può essere vuoto</string>
     <string name="empty_savedamount_error">Il campo relativo all\'importo risparmiato non può essere vuoto</string>
     <string name="empty_currency_error">Il campo relativo alla valuta non può essere vuoto</string>
     <string name="empty_type_error">Il campo relativo al tipo di movimento non può essere vuoto</string>
     <string name="empty_recurrence_error">Il campo relativo alla ricorrenza non può essere vuoto</string>
+    <string name="empty_recurrence_interval_error">Il campo relativo all\' intervallo della ricorrenza non può essere vuoto</string>
     <string name="invalid_amounts_error">L\'importo target deve essere maggiore dell\'importo risparmiato</string>
+
+    <string name="error_field_required">Il campo non può essere vuoto</string>
+    <string name="error_name_invalid">Il nome può contenere solo lettere</string>
+    <string name="error_email_invalid">Inserisci un\'email valida (es. nome@esempio.com)</string>
+    <string name="error_password_invalid">La password deve avere almeno 6 caratteri, una maiuscola, una minuscola, un numero e un carattere speciale</string>
+    <string name="error_confirm_password_invalid">Le password non coincidono</string>
+    <string name="invalid_name_error">Il nome inserito deve contenere solo lettere, numeri o spazi</string>
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="max_length_name">50</integer>
+    <integer name="max_length_email">100</integer>
+    <integer name="max_length_password">20</integer>
+    <integer name="max_length_name_entity">20</integer>
+    <integer name="max_length_amount">15</integer>
+    <integer name="max_length_notes">250</integer>
+    <integer name="max_length_interval">3</integer>
+</resources>

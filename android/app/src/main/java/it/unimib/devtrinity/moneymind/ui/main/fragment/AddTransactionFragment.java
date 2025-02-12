@@ -2,13 +2,11 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -45,6 +43,7 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionTypeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddTransactionViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddTransactionViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
@@ -75,7 +74,7 @@ public class AddTransactionFragment extends Fragment {
     private TextInputEditText recurrenceInterval;
     private TextInputEditText endDateField;
 
-    private TextInputLayout nameFieldLayout, amountFieldLayout, categoryFieldLayout;
+    private TextInputLayout nameFieldLayout, amountFieldLayout, categoryFieldLayout, recurrenceIntervalLayout;
 
     private View thisView;
 
@@ -207,6 +206,7 @@ public class AddTransactionFragment extends Fragment {
         endDateField.setOnClickListener(v -> Utils.showDatePicker(endDateField::setText, this));
 
         categoryFieldLayout = view.findViewById(R.id.input_category);
+        recurrenceIntervalLayout = view.findViewById(R.id.input_recurrence_interval);
 
         autoCompile = true;
         compileTransaction();
@@ -215,6 +215,8 @@ public class AddTransactionFragment extends Fragment {
         if (dateField.getText().toString().trim().isEmpty()) {
             dateField.setText(Utils.dateToString(new Date()));
         }
+
+        bindInputValidation();
     }
 
     private final TextWatcher amountFieldTextWatcher = new TextWatcher() {
@@ -239,55 +241,38 @@ public class AddTransactionFragment extends Fragment {
         }
     }
 
+    private void bindInputValidation(){
+        TextInputHelper.addValidationWatcher(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX);
+        TextInputHelper.addValidationWatcher(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null);
+        TextInputHelper.addValidationWatcher(categoryFieldLayout, categoryDropdown, getString(R.string.empty_category_error), null, null);
+        TextInputHelper.addValidationWatcher(recurrenceLayout, recurrenceTypeDropdown, getString(R.string.empty_recurrence_error), null, null);
+        TextInputHelper.addValidationWatcher(recurrenceIntervalLayout, recurrenceInterval, getString(R.string.empty_recurrence_interval_error), null, null);
+    }
+
     private boolean validateFields() {
-
-        if (isEmptyField(nameField, nameFieldLayout, getString(R.string.empty_name_error))){
+        if(!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)){
             return false;
-        } else if (!validateName(nameField, nameFieldLayout)){
-            return false;
-        } else {
-            nameFieldLayout.setError(null);
-            nameFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
-        if (isEmptyField(amountField, amountFieldLayout, getString(R.string.empty_amount_error))) {
+        if(!TextInputHelper.validateField(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null)){
             return false;
-        } else {
-            amountFieldLayout.setError(null);
-            amountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
-        if (selectedCategory == null){
-            categoryFieldLayout.setError(getString(R.string.empty_category_error));
-            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+        if(!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)){
             return false;
-        } else {
-            categoryFieldLayout.setError(null);
-            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
+        }
+
+        if(recurringCheckbox.isChecked()){
+            if(!TextInputHelper.validateField(recurrenceLayout, selectedRecurrence == null ? "" : "recurrence", getString(R.string.empty_recurrence_error), null, null)){
+                return false;
+            }
+
+            if(!TextInputHelper.validateField(recurrenceIntervalLayout, recurrenceInterval, getString(R.string.empty_recurrence_interval_error), null, null)){
+                return false;
+            }
         }
 
         return true;
-    }
-
-    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
-        String name = field.getText().toString();
-        if (!name.matches("[a-zA-Z]+")) {
-            fieldLayout.setError(getString(R.string.invalid_name_error));
-            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
-        if (TextUtils.isEmpty(field.getText())) {
-            fieldLayout.setError(fieldError);
-            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void setupCurrencyDropdown(View view) {
@@ -396,10 +381,6 @@ public class AddTransactionFragment extends Fragment {
                 Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO),
                 selectedCurrency
         );
-    }
-
-    private void triggerFirstConversion(){
-
     }
 
     private void navigateBack() {

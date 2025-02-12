@@ -2,12 +2,10 @@ package it.unimib.devtrinity.moneymind.ui.main.fragment;
 
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -21,7 +19,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
@@ -34,6 +31,7 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
@@ -140,14 +138,14 @@ public class AddBudgetFragment extends Fragment {
         });
 
         compileFields();
+        bindInputValidation();
     }
 
     public void onSaveButtonClick() {
-        if(validateFields()){
+        if (validateFields()) {
             saveBudget();
             navigateBack();
         }
-
     }
 
     private void compileFields() {
@@ -159,69 +157,36 @@ public class AddBudgetFragment extends Fragment {
         endDateField.setText(Utils.dateToString(currentBudget.getEndDate()));
     }
 
+    private void bindInputValidation(){
+        TextInputHelper.addValidationWatcher(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX);
+        TextInputHelper.addValidationWatcher(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null);
+        TextInputHelper.addValidationWatcher(categoryFieldLayout, categoryDropdown, getString(R.string.empty_category_error), null, null);
+        TextInputHelper.addValidationWatcher(startDateFieldLayout, startDateField, getString(R.string.empty_startdate_error), null, null);
+        TextInputHelper.addValidationWatcher(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null);
+    }
+
     private boolean validateFields() {
-
-        if (isEmptyField(nameField, nameFieldLayout, getString(R.string.empty_name_error))) {
+        if(!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)){
             return false;
-        } else if (!validateName(nameField, nameFieldLayout)) {
-            return false;
-        } else {
-            nameFieldLayout.setError(null);
-            nameFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
-        if (isEmptyField(amountField, amountFieldLayout, getString(R.string.empty_amount_error))) {
+        if(!TextInputHelper.validateField(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null)){
             return false;
-        } else {
-            amountFieldLayout.setError(null);
-            amountFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
-        if (selectedCategory == null) {
-            categoryFieldLayout.setError(getString(R.string.empty_category_error));
-            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
+        if(!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)){
             return false;
-        } else {
-            categoryFieldLayout.setError(null);
-            categoryFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
-        if (isEmptyField(startDateField, startDateFieldLayout, getString(R.string.empty_startdate_error))) {
+        if(!TextInputHelper.validateField(startDateFieldLayout, startDateField, getString(R.string.empty_startdate_error), null, null)){
             return false;
-        } else {
-            startDateFieldLayout.setError(null);
-            startDateFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
-        if (isEmptyField(endDateField, endDateFieldLayout, getString(R.string.empty_enddate_error))) {
+        if(!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)){
             return false;
-        } else {
-            endDateFieldLayout.setError(null);
-            endDateFieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_background));
         }
 
         return true;
-    }
-
-    private boolean validateName(TextInputEditText field, TextInputLayout fieldLayout){
-        String name = Objects.requireNonNull(field.getText()).toString();
-        if (!name.matches("[a-zA-Z]+")) {
-            fieldLayout.setError(getString(R.string.invalid_name_error));
-            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean isEmptyField(TextInputEditText field, TextInputLayout fieldLayout, String fieldError) {
-        if (TextUtils.isEmpty(field.getText())) {
-            fieldLayout.setError(fieldError);
-            fieldLayout.setBoxBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_errorContainer));
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void navigateBack() {
