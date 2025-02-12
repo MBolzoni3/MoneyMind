@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.FirebaseApp;
 
+import java.util.concurrent.CompletableFuture;
+
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.activity.viewmodel.MainActivityViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;
@@ -36,14 +38,10 @@ public class MainActivity extends AppCompatActivity {
         WorkerHelper.scheduleSyncJob(this);
         WorkerHelper.scheduleRecurringJob(this);
 
-        mainActivityViewModel.getNavigateToMain().observe(this, navigate -> {
-            if (navigate) {
+        mainActivityViewModel.getUserState().observe(this, state -> {
+            if (state == 1) {
                 NavigationHelper.navigateToMain(this);
-            }
-        });
-
-        mainActivityViewModel.getShowLogin().observe(this, showLogin -> {
-            if (showLogin && savedInstanceState == null) {
+            } else if (state == 0 && savedInstanceState == null) {
                 loadingIndicator.setVisibility(View.GONE);
                 NavigationHelper.loadFragment(this, new LoginFragment(), false);
             }

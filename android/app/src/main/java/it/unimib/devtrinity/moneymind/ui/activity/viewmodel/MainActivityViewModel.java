@@ -10,15 +10,11 @@ import it.unimib.devtrinity.moneymind.utils.WorkerHelper;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class MainActivityViewModel extends ViewModel {
-    private final MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> showLogin = new MutableLiveData<>();
 
-    public LiveData<Boolean> getNavigateToMain() {
-        return navigateToMain;
-    }
+    private final MutableLiveData<Integer> userState = new MutableLiveData<>(-1);
 
-    public LiveData<Boolean> getShowLogin() {
-        return showLogin;
+    public MutableLiveData<Integer> getUserState() {
+        return userState;
     }
 
     public void checkUserState(Context context) {
@@ -26,10 +22,10 @@ public class MainActivityViewModel extends ViewModel {
             WorkerHelper.triggerManualSync(context)
                     .thenRun(() -> {
                         WorkerHelper.triggerManualRecurring(context)
-                                .thenRun(() -> navigateToMain.postValue(true));
+                                .thenRun(() -> userState.postValue(1));
                     });
         } else {
-            showLogin.postValue(true);
+            userState.postValue(0);
         }
     }
 }
