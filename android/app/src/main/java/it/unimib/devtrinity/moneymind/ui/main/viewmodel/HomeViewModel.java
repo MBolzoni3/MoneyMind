@@ -16,6 +16,7 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 
 
 public class HomeViewModel extends ViewModel {
+
     private final TransactionRepository transactionRepository;
 
     private final MutableLiveData<Integer> monthsBack = new MutableLiveData<>(3);

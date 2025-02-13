@@ -14,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 import it.unimib.devtrinity.moneymind.utils.SharedPreferencesHelper;
 
 public abstract class GenericRepository {
+
     protected final ExecutorService executorService;
     protected final SharedPreferences sharedPreferences;
     private final String SYNC_KEY;
@@ -33,13 +34,11 @@ public abstract class GenericRepository {
     public CompletableFuture<Void> sync(long lastSyncedTimestamp) {
         return CompletableFuture.supplyAsync(() -> {
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<Void> future = executor.submit(() -> {
-                syncLocalToRemoteAsync().get();
-                return null;
-            });
+            Future<Long> future = executor.submit(() -> syncLocalToRemoteAsync().get());
 
+            long lastTimestampRoom;
             try {
-                future.get(15, TimeUnit.SECONDS);
+                lastTimestampRoom = future.get(15, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
                 throw new RuntimeException("Timeout during syncLocalToRemoteAsync", e);
             } catch (Exception e) {
@@ -48,11 +47,11 @@ public abstract class GenericRepository {
                 executor.shutdown();
             }
 
-            return null;
-        }).thenCompose(v -> CompletableFuture.supplyAsync(() -> {
+            return resolveLastSyncedTimestamp(lastTimestampRoom, lastSyncedTimestamp);
+        }).thenCompose(finalLastSyncedTimestamp -> CompletableFuture.supplyAsync(() -> {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<Void> future = executor.submit(() -> {
-                syncRemoteToLocalAsync(lastSyncedTimestamp).get();
+                syncRemoteToLocalAsync(finalLastSyncedTimestamp).get();
                 return null;
             });
 
@@ -67,24 +66,13 @@ public abstract class GenericRepository {
             }
 
             return null;
+        }).thenRun(() -> {
+            sharedPreferences.edit().putLong(SYNC_KEY, finalLastSyncedTimestamp).apply();
+        }).exceptionally(e -> {
+            Log.e(TAG, e.getMessage(), e);
+            return null;
         }));
     }
-
-    /*public CompletableFuture<Void> sync(long lastSyncedTimestamp) {
-        return syncLocalToRemoteAsync()
-                .thenCompose(lastTimestampRoom -> {
-                    long finalLastSyncedTimestamp = resolveLastSyncedTimestamp(lastTimestampRoom, lastSyncedTimestamp);
-                    return syncRemoteToLocalAsync(finalLastSyncedTimestamp)
-                            .thenRun(() -> {
-                                sharedPreferences.edit().putLong(SYNC_KEY, finalLastSyncedTimestamp).apply();
-                            });
-                })
-                .whenComplete((v, e) -> {
-                    if (e != null) {
-                        Log.e(TAG, "Error syncing: " + e.getMessage(), e);
-                    }
-                });
-    }*/
 
     protected CompletableFuture<Long> syncLocalToRemoteAsync() {
         return CompletableFuture.completedFuture(null);
@@ -95,6 +83,10 @@ public abstract class GenericRepository {
     }
 
     private long resolveLastSyncedTimestamp(Long roomTimestamp, long sharedTimestamp) {
+        if ((roomTimestamp == null || roomTimestamp == 0L) && sharedTimestamp == 0L) {
+            return 0L;
+        }
+
         if (roomTimestamp == null || roomTimestamp == 0L) {
             return sharedTimestamp;
         }
@@ -102,6 +94,7 @@ public abstract class GenericRepository {
         if (sharedTimestamp == 0L) {
             return roomTimestamp;
         }
+
         return Math.max(roomTimestamp, sharedTimestamp);
     }
 

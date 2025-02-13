@@ -23,9 +23,9 @@ import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 public class CategoryRepository extends GenericRepository {
 
     private static final String TAG = CategoryRepository.class.getSimpleName();
-    private static final String COLLECTION_NAME = "categories";
 
     private final CategoryDao categoryDao;
+
 
     public CategoryRepository(Application application) {
         super(application, Constants.CATEGORIES_LAST_SYNC_KEY, TAG);
@@ -66,7 +66,7 @@ public class CategoryRepository extends GenericRepository {
     private CompletableFuture<QuerySnapshot> runFirestoreCategoryQuery(long lastSyncedTimestamp) {
         CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
 
-        FirestoreHelper.getInstance().getGlobalCollection(COLLECTION_NAME)
+        FirestoreHelper.getInstance().getGlobalCollection(Constants.CATEGORIES_COLLECTION_NAME)
                 .whereGreaterThan("updatedAt", new Timestamp(lastSyncedTimestamp, 0))
                 .orderBy("order", Query.Direction.ASCENDING)
                 .get()

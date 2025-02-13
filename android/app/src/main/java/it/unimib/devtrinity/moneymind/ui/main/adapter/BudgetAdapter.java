@@ -92,7 +92,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         holder.cardView.setChecked(isSelected);
 
         holder.budgetName.setText(budget.getBudget().getName());
-        holder.categoryName.setText(budget.getCategory() != null ? budget.getCategory().getName() : "");
+        holder.categoryName.setText(budget.getCategory() != null ? ResourceHelper.getCategoryName(holder.itemView.getContext(), budget.getCategory().getName()) : "");
         holder.dateRange.setText(ResourceHelper.getFormattedDateRange(holder.itemView.getContext(), budget.getBudget().getStartDate(), budget.getBudget().getEndDate()));
 
         LiveData<Long> progressLiveData = budgetViewModel.getSpentAmount(budget);
@@ -152,7 +152,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         notifyDataSetChanged();
     }
 
-    static class BudgetViewHolder extends RecyclerView.ViewHolder {
+    public static class BudgetViewHolder extends RecyclerView.ViewHolder {
         TextView budgetName, categoryName, spentAmount, dateRange;
         LinearProgressIndicator budgetProgress;
         ShapeableImageView categoryIcon;
@@ -169,4 +169,5 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
             budgetProgress = itemView.findViewById(R.id.budget_progress);
         }
     }
+
 }

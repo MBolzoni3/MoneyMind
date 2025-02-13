@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class HomeViewModelFactory implements ViewModelProvider.Factory {
+
     private final TransactionRepository transactionRepository;
 
     public HomeViewModelFactory(TransactionRepository transactionRepository) {
@@ -21,4 +22,5 @@ public class HomeViewModelFactory implements ViewModelProvider.Factory {
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
+
 }

@@ -25,7 +25,6 @@ import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 public class BudgetRepository extends GenericRepository {
 
     private static final String TAG = BudgetRepository.class.getSimpleName();
-    private static final String COLLECTION_NAME = "budgets";
 
     private final BudgetDao budgetDao;
 
@@ -71,10 +70,10 @@ public class BudgetRepository extends GenericRepository {
                         DocumentReference docRef;
 
                         if (documentId == null || documentId.isEmpty()) {
-                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                            docRef = FirestoreHelper.getInstance().getUserCollection(Constants.BUDGETS_COLLECTION_NAME).document();
                             budget.setFirestoreId(docRef.getId());
                         } else {
-                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                            docRef = FirestoreHelper.getInstance().getUserCollection(Constants.BUDGETS_COLLECTION_NAME).document(documentId);
                         }
 
                         CompletableFuture<Void> future = runFirestoreSet(docRef, budget)
@@ -126,7 +125,7 @@ public class BudgetRepository extends GenericRepository {
     private CompletableFuture<QuerySnapshot> runFirestoreQuery(long lastSyncedTimestamp) {
         CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
 
-        FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
+        FirestoreHelper.getInstance().getUserCollection(Constants.BUDGETS_COLLECTION_NAME)
                 .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
                 .get()
                 .addOnSuccessListener(executorService, future::complete)

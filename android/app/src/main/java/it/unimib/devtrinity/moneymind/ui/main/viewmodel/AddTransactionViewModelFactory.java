@@ -31,4 +31,5 @@ public class AddTransactionViewModelFactory implements ViewModelProvider.Factory
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new AddTransactionViewModel(transactionRepository, recurringTransactionRepository, categoryRepository, exchangeRepository);
     }
+
 }

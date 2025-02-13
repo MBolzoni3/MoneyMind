@@ -2,9 +2,6 @@ package it.unimib.devtrinity.moneymind.data.remote;
 
 
 import android.app.Application;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
+
     private static Retrofit retrofit;
 
     public static Retrofit getInstance(Application application) {

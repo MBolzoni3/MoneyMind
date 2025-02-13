@@ -13,6 +13,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.ExchangeEntity;
 
 @Dao
 public interface ExchangeDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<ExchangeEntity> rates);
 

@@ -10,7 +10,6 @@ import android.widget.AutoCompleteTextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -31,6 +30,7 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddBudgetViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
@@ -42,13 +42,9 @@ public class AddBudgetFragment extends Fragment {
 
     private BudgetEntity currentBudget;
 
-    private TextInputEditText nameField;
-    private TextInputEditText amountField;
+    private TextInputEditText nameField, amountField, startDateField, endDateField;
     private AutoCompleteTextView categoryDropdown;
     private CategoryEntity selectedCategory;
-    private TextInputEditText startDateField;
-    private TextInputEditText endDateField;
-
     private TextInputLayout nameFieldLayout, amountFieldLayout, startDateFieldLayout, endDateFieldLayout, categoryFieldLayout;
 
     private View thisView;
@@ -112,7 +108,7 @@ public class AddBudgetFragment extends Fragment {
 
                     if (category != null && category.getFirestoreId().equals(currentBudget.getCategoryId())) {
                         selectedCategory = category;
-                        categoryDropdown.setText(category.getName(), false);
+                        categoryDropdown.setText(ResourceHelper.getCategoryName(getContext(), category.getName()), false);
                         break;
                     }
                 }
@@ -122,7 +118,7 @@ public class AddBudgetFragment extends Fragment {
         categoryDropdown.setOnItemClickListener((parent, view1, position, id) -> {
             selectedCategory = (CategoryEntity) parent.getItemAtPosition(position);
             if (selectedCategory != null) {
-                categoryDropdown.setText(selectedCategory.getName(), false);
+                categoryDropdown.setText(ResourceHelper.getCategoryName(getContext(), selectedCategory.getName()), false);
             }
         });
 
@@ -157,7 +153,7 @@ public class AddBudgetFragment extends Fragment {
         endDateField.setText(Utils.dateToString(currentBudget.getEndDate()));
     }
 
-    private void bindInputValidation(){
+    private void bindInputValidation() {
         TextInputHelper.addValidationWatcher(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX);
         TextInputHelper.addValidationWatcher(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null);
         TextInputHelper.addValidationWatcher(categoryFieldLayout, categoryDropdown, getString(R.string.empty_category_error), null, null);
@@ -166,23 +162,23 @@ public class AddBudgetFragment extends Fragment {
     }
 
     private boolean validateFields() {
-        if(!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)){
+        if (!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null)){
+        if (!TextInputHelper.validateField(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)){
+        if (!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(startDateFieldLayout, startDateField, getString(R.string.empty_startdate_error), null, null)){
+        if (!TextInputHelper.validateField(startDateFieldLayout, startDateField, getString(R.string.empty_startdate_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)){
+        if (!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)) {
             return false;
         }
 
@@ -226,6 +222,5 @@ public class AddBudgetFragment extends Fragment {
             }
         });
     }
-
 
 }

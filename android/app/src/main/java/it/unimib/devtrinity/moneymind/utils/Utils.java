@@ -3,14 +3,11 @@ package it.unimib.devtrinity.moneymind.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -19,7 +16,6 @@ import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,10 +27,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
 
-import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
@@ -134,6 +128,7 @@ public class Utils {
         });
         datePicker.show(fragment.getParentFragmentManager(), "DATE_PICKER");
     }
+
     public static void showNonFutureDatePicker(OnDateSelectedListener listener, Fragment fragment) {
         CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
         constraintsBuilder.setValidator(DateValidatorPointBackward.now());
@@ -149,17 +144,17 @@ public class Utils {
         datePicker.show(fragment.getParentFragmentManager(), "DATE_PICKER");
     }
 
-    public static List<String> getCurrencyDropdownItems(List<String> currencyCodes) {
+    public static List<String> getCurrencyDropdownItems(List<String> currencyCodes, Context context) {
         List<String> items = new ArrayList<>();
 
         for (String currencyCode : currencyCodes) {
-            items.add(CurrencyHelper.getCurrencyDescription(currencyCode));
+            items.add(CurrencyHelper.getCurrencyDescription(context, currencyCode));
         }
 
         return items;
     }
 
-    public static void makeSnackBar(View view, String message){
+    public static void makeSnackBar(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
@@ -224,7 +219,7 @@ public class Utils {
         return calendar.getTime();
     }
 
-    public static Date getDataBceValid(Date date){
+    public static Date getDataBceValid(Date date) {
         TimeZone cetTimeZone = TimeZone.getTimeZone("Europe/Paris");
         Calendar calendar = Calendar.getInstance(cetTimeZone);
         calendar.setTimeZone(cetTimeZone);
@@ -241,7 +236,7 @@ public class Utils {
             safeCycle++;
         }
 
-        if(safeCycle >= 20){
+        if (safeCycle >= 20) {
             Log.e("ExchangeRepository", "Errore: impossibile trovare un giorno lavorativo valido dopo 20 tentativi.");
             return date;
         }
@@ -284,7 +279,8 @@ public class Utils {
             nextGenerationDate.setTime(getNextGenerationDate(nextGenerationDate.getTime(), rt.getRecurrenceType(), rt.getRecurrenceInterval()));
 
             if (nextGenerationDate.getTimeInMillis() > now.getTime()) break;
-            if (rt.getRecurrenceEndDate() != null && nextGenerationDate.getTime().after(rt.getRecurrenceEndDate())) break;
+            if (rt.getRecurrenceEndDate() != null && nextGenerationDate.getTime().after(rt.getRecurrenceEndDate()))
+                break;
 
             missingDates.add(nextGenerationDate.getTime());
         }

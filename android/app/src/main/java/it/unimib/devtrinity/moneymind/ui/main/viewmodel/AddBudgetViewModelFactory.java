@@ -8,6 +8,7 @@ import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.CategoryRepository;
 
 public class AddBudgetViewModelFactory implements ViewModelProvider.Factory {
+
     private final CategoryRepository categoryRepository;
     private final BudgetRepository budgetRepository;
 
@@ -21,4 +22,5 @@ public class AddBudgetViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new AddBudgetViewModel(budgetRepository, categoryRepository);
     }
+
 }

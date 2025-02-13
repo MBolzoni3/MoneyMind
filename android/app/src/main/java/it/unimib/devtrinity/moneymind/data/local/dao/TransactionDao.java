@@ -44,9 +44,6 @@ public interface TransactionDao {
             "AND deleted = 0")
     LiveData<Long> getSumForCategoryAndDateRange(String categoryId, long startDate, long endDate);
 
-    @Query("SELECT * FROM transactions WHERE deleted = 0 ORDER BY date ASC")
-    LiveData<List<TransactionEntity>> selectTransactions();
-
     @Query("SELECT transactions.*, " +
             "categories.firestoreId AS category_firestoreId, " +
             "categories.name AS category_name, " +

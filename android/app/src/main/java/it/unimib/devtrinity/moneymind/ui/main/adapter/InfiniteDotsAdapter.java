@@ -14,6 +14,7 @@ import com.google.android.material.R;
 import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 
 public class InfiniteDotsAdapter extends RecyclerView.Adapter<InfiniteDotsAdapter.DotViewHolder> {
+
     private static final int DOT_COUNT = 3;
     private int selectedPosition = 0;
     private final Context context;
@@ -76,7 +77,7 @@ public class InfiniteDotsAdapter extends RecyclerView.Adapter<InfiniteDotsAdapte
         return drawable;
     }
 
-    static class DotViewHolder extends RecyclerView.ViewHolder {
+    public static class DotViewHolder extends RecyclerView.ViewHolder {
         View dotView;
 
         DotViewHolder(View itemView) {
@@ -84,4 +85,5 @@ public class InfiniteDotsAdapter extends RecyclerView.Adapter<InfiniteDotsAdapte
             dotView = itemView;
         }
     }
+
 }

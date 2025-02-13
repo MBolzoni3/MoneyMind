@@ -8,6 +8,7 @@ import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionReposi
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class TransactionViewModelFactory implements ViewModelProvider.Factory {
+
     private final TransactionRepository transactionRepository;
     private final RecurringTransactionRepository recurringTransactionRepository;
 
@@ -24,4 +25,5 @@ public class TransactionViewModelFactory implements ViewModelProvider.Factory {
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
+
 }

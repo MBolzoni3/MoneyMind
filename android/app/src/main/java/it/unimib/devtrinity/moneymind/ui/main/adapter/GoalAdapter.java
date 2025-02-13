@@ -84,7 +84,7 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder
         holder.cardView.setChecked(isSelected);
 
         holder.goalName.setText(goal.getGoal().getName());
-        holder.categoryName.setText(goal.getCategory() != null ? goal.getCategory().getName() : "");
+        holder.categoryName.setText(goal.getCategory() != null ? ResourceHelper.getCategoryName(holder.itemView.getContext(), goal.getCategory().getName()) : "");
         holder.dateRange.setText(ResourceHelper.getFormattedDateRange(holder.itemView.getContext(), goal.getGoal().getStartDate(), goal.getGoal().getEndDate()));
 
         int progress = 0;
@@ -139,7 +139,7 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder
         notifyDataSetChanged();
     }
 
-    static class GoalViewHolder extends RecyclerView.ViewHolder {
+    public static class GoalViewHolder extends RecyclerView.ViewHolder {
         TextView goalName, categoryName, savedAmount, dateRange;
         LinearProgressIndicator goalProgress;
         ShapeableImageView categoryIcon;
@@ -156,4 +156,5 @@ public class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalViewHolder
             goalProgress = itemView.findViewById(R.id.goal_progress);
         }
     }
+
 }

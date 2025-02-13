@@ -31,6 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ExchangeRepository {
+
     private final ExchangeDataSource exchangeDataSource;
     private final ExchangeDao exchangeDao;
     private final ExecutorService executorService;
@@ -100,26 +101,26 @@ public class ExchangeRepository {
         });
     }
 
-    private List<ExchangeEntity> getExchangeRatesSync(Date date){
+    private List<ExchangeEntity> getExchangeRatesSync(Date date) {
         Date validDate = Utils.getDataBceValid(date);
 
         List<ExchangeEntity> ratesRoom = exchangeDao.getRatesByDateSync(validDate.getTime());
-        if(ratesRoom != null && !ratesRoom.isEmpty()){
+        if (ratesRoom != null && !ratesRoom.isEmpty()) {
             return ratesRoom;
         }
 
         try {
             return toEntities(exchangeDataSource.fetchExchangeRatesSync(date));
-        } catch (IOException e){
+        } catch (IOException e) {
             Log.e("ExchangeRepository", e.getMessage(), e);
         }
 
         return Collections.emptyList();
     }
 
-    public BigDecimal getConvertedAmount(BigDecimal amount, String currency, Date date){
-        if(amount == null || amount.compareTo(BigDecimal.ZERO) == 0) return amount;
-        if(currency.equals("EUR")) return amount;
+    public BigDecimal getConvertedAmount(BigDecimal amount, String currency, Date date) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) == 0) return amount;
+        if (currency.equals("EUR")) return amount;
 
         List<ExchangeEntity> rates = getExchangeRatesSync(date);
         for (ExchangeEntity entity : rates) {
@@ -137,9 +138,9 @@ public class ExchangeRepository {
         return amount;
     }
 
-    public BigDecimal getInverseConvertedAmount(BigDecimal amount, String currency, Date date){
-        if(amount == null || amount.compareTo(BigDecimal.ZERO) == 0) return amount;
-        if(currency.equals("EUR")) return amount;
+    public BigDecimal getInverseConvertedAmount(BigDecimal amount, String currency, Date date) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) == 0) return amount;
+        if (currency.equals("EUR")) return amount;
 
         List<ExchangeEntity> rates = getExchangeRatesSync(date);
         for (ExchangeEntity entity : rates) {

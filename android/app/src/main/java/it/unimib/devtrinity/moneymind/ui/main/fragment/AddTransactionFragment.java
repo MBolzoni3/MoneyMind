@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -43,6 +42,7 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.TransactionTypeAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddTransactionViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddTransactionViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
@@ -54,27 +54,16 @@ public class AddTransactionFragment extends Fragment {
     private TransactionEntity currentTransaction;
     private AddTransactionViewModel viewModel;
 
-    private TextInputEditText nameField;
-    private TextInputEditText amountField;
-    private TextInputEditText convertedAmountField;
-    private TextInputEditText dateField;
+    private TextInputEditText nameField, amountField, convertedAmountField, dateField, notesField, recurrenceInterval, endDateField;
     private Date selectedDate;
-    private MaterialAutoCompleteTextView currencyDropdown;
+    private MaterialAutoCompleteTextView currencyDropdown, typeDropdown, categoryDropdown, recurrenceTypeDropdown;
     private String selectedCurrency;
-    private MaterialAutoCompleteTextView typeDropdown;
     private MovementTypeEnum selectedType;
-    private MaterialAutoCompleteTextView categoryDropdown;
     private CategoryEntity selectedCategory;
-    private TextInputEditText notesField;
     private MaterialCheckBox recurringCheckbox;
-    private TextInputLayout recurrenceLayout;
-    private MaterialAutoCompleteTextView recurrenceTypeDropdown;
     private RecurrenceTypeAdapter recurrenceTypeAdapter;
     private RecurrenceTypeEnum selectedRecurrence;
-    private TextInputEditText recurrenceInterval;
-    private TextInputEditText endDateField;
-
-    private TextInputLayout nameFieldLayout, amountFieldLayout, categoryFieldLayout, recurrenceIntervalLayout;
+    private TextInputLayout nameFieldLayout, amountFieldLayout, categoryFieldLayout, recurrenceLayout, recurrenceIntervalLayout;
 
     private View thisView;
 
@@ -152,7 +141,7 @@ public class AddTransactionFragment extends Fragment {
                 selectedDate = Utils.stringToDate(dateString);
 
                 if (selectedDate != null) {
-                    viewModel.fetchExchangeRates(selectedDate, new GenericCallback<>() {
+                    viewModel.fetchExchangeRates(selectedDate, requireContext(), new GenericCallback<>() {
 
                         @Override
                         public void onSuccess(Void result) {
@@ -161,7 +150,7 @@ public class AddTransactionFragment extends Fragment {
 
                         @Override
                         public void onFailure(String errorMessage) {
-                            Utils.makeSnackBar(view.getRootView(), errorMessage);
+                            Utils.makeSnackBar(view.getRootView(), getString(R.string.error_fetching_exchange_rates));
                         }
                     });
                 }
@@ -237,13 +226,13 @@ public class AddTransactionFragment extends Fragment {
     };
 
     public void onSaveButtonClick() {
-        if (validateFields()){
+        if (validateFields()) {
             saveTransaction();
             navigateBack();
         }
     }
 
-    private void bindInputValidation(){
+    private void bindInputValidation() {
         TextInputHelper.addValidationWatcher(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX);
         TextInputHelper.addValidationWatcher(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null);
         TextInputHelper.addValidationWatcher(categoryFieldLayout, categoryDropdown, getString(R.string.empty_category_error), null, null);
@@ -252,24 +241,24 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private boolean validateFields() {
-        if(!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)){
+        if (!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null)){
+        if (!TextInputHelper.validateField(amountFieldLayout, amountField, getString(R.string.empty_amount_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)){
+        if (!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)) {
             return false;
         }
 
-        if(recurringCheckbox.isChecked()){
-            if(!TextInputHelper.validateField(recurrenceLayout, selectedRecurrence == null ? "" : "recurrence", getString(R.string.empty_recurrence_error), null, null)){
+        if (recurringCheckbox.isChecked()) {
+            if (!TextInputHelper.validateField(recurrenceLayout, selectedRecurrence == null ? "" : "recurrence", getString(R.string.empty_recurrence_error), null, null)) {
                 return false;
             }
 
-            if(!TextInputHelper.validateField(recurrenceIntervalLayout, recurrenceInterval, getString(R.string.empty_recurrence_interval_error), null, null)){
+            if (!TextInputHelper.validateField(recurrenceIntervalLayout, recurrenceInterval, getString(R.string.empty_recurrence_interval_error), null, null)) {
                 return false;
             }
         }
@@ -344,7 +333,7 @@ public class AddTransactionFragment extends Fragment {
                     CategoryEntity category = adapter.getItem(i);
                     if (category != null && category.getFirestoreId().equals(currentTransaction.getCategoryId())) {
                         selectedCategory = category;
-                        categoryDropdown.setText(category.getName(), false);
+                        categoryDropdown.setText(ResourceHelper.getCategoryName(getContext(), category.getName()), false);
                         break;
                     }
                 }
@@ -354,7 +343,7 @@ public class AddTransactionFragment extends Fragment {
         categoryDropdown.setOnItemClickListener((parent, view1, position, id) -> {
             selectedCategory = (CategoryEntity) parent.getItemAtPosition(position);
             if (selectedCategory != null) {
-                categoryDropdown.setText(selectedCategory.getName(), false);
+                categoryDropdown.setText(ResourceHelper.getCategoryName(getContext(), selectedCategory.getName()), false);
             }
         });
     }
@@ -365,10 +354,10 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private void triggerConvertedAmount() {
-        if(autoCompile) return;
-        if(selectedCurrency == null) return;
+        if (autoCompile) return;
+        if (selectedCurrency == null) return;
 
-        if(oneTime && !selectedCurrency.equals("EUR")) {
+        if (oneTime && !selectedCurrency.equals("EUR")) {
             oneTime = false;
             BigDecimal convertedEur = viewModel.reverseConversion(
                     Utils.safeParseBigDecimal(convertedAmountField.getText().toString(), BigDecimal.ZERO),
@@ -398,7 +387,7 @@ public class AddTransactionFragment extends Fragment {
 
         nameField.setText(currentTransaction.getName());
 
-        if(currentTransaction.getCurrency().equals("EUR")){
+        if (currentTransaction.getCurrency().equals("EUR")) {
             amountField.setText(currentTransaction.getAmount().toString());
         } else {
             convertedAmountField.setEnabled(true);
@@ -519,4 +508,5 @@ public class AddTransactionFragment extends Fragment {
             });
         }
     }
+
 }

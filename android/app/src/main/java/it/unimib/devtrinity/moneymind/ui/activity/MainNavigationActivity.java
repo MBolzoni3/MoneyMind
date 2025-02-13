@@ -35,7 +35,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     private GoalFragment goalFragment;
     private TransactionFragment transactionFragment;
     private SettingsFragment settingsFragment;
-    //private ExchangeFragment exchangeFragment;
 
     private Fragment currentFragment;
     private Fragment previousFragment;
@@ -65,7 +64,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
             budgetFragment = (BudgetFragment) getSupportFragmentManager().getFragment(savedInstanceState, "budgetFragment");
             goalFragment = (GoalFragment) getSupportFragmentManager().getFragment(savedInstanceState, "goalFragment");
             settingsFragment = (SettingsFragment) getSupportFragmentManager().getFragment(savedInstanceState, "settingsFragment");
-            //exchangeFragment = (ExchangeFragment) getSupportFragmentManager().getFragment(savedInstanceState, "exchangeFragment");
 
             currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "currentFragment");
             previousFragment = getSupportFragmentManager().getFragment(savedInstanceState, "previousFragment");
@@ -100,7 +98,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         getSupportFragmentManager().putFragment(outState, "budgetFragment", budgetFragment);
         getSupportFragmentManager().putFragment(outState, "goalFragment", goalFragment);
         getSupportFragmentManager().putFragment(outState, "settingsFragment", settingsFragment);
-        //getSupportFragmentManager().putFragment(outState, "exchangeFragment", exchangeFragment);
 
         if (currentFragment != null) {
             getSupportFragmentManager().putFragment(outState, "currentFragment", currentFragment);
@@ -143,7 +140,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
         budgetFragment = new BudgetFragment();
         goalFragment = new GoalFragment();
         settingsFragment = new SettingsFragment();
-        //exchangeFragment = new ExchangeFragment();
 
         NavigationHelper.addFragments(this, List.of(
                 homeFragment,
@@ -151,7 +147,6 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
                 budgetFragment,
                 goalFragment,
                 settingsFragment
-                //exchangeFragment
         ));
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
@@ -309,14 +304,12 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
     }
 
     private boolean handleMenuClick(int itemId) {
-        /*if (itemId == R.id.menu_currency_converter && currentFragment != exchangeFragment) {
-            navigateToFragment(exchangeFragment);
-            return true;
-        } else*/ if (itemId == R.id.menu_settings && currentFragment != settingsFragment) {
+        if (itemId == R.id.menu_settings && currentFragment != settingsFragment) {
             topAppBar.setTitle(R.string.settings);
             navigateToFragment(settingsFragment);
             return true;
         }
+
         return false;
     }
 
@@ -356,7 +349,7 @@ public class MainNavigationActivity extends AppCompatActivity implements Selecti
 
     private void navigateToFragment(Fragment fragment) {
         if (currentFragment != fragment) {
-            if (currentFragment != settingsFragment /*&& currentFragment != exchangeFragment*/) {
+            if (currentFragment != settingsFragment) {
                 previousFragment = currentFragment;
             }
 

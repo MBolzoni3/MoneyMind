@@ -10,8 +10,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.FirebaseApp;
 
-import java.util.concurrent.CompletableFuture;
-
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.ui.activity.viewmodel.MainActivityViewModel;
 import it.unimib.devtrinity.moneymind.ui.auth.fragment.LoginFragment;

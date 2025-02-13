@@ -23,8 +23,8 @@ import it.unimib.devtrinity.moneymind.utils.GenericCallback;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class GoalRepository extends GenericRepository {
+
     private static final String TAG = GoalRepository.class.getSimpleName();
-    private static final String COLLECTION_NAME = "goals";
 
     private final GoalDao goalDao;
 
@@ -70,10 +70,10 @@ public class GoalRepository extends GenericRepository {
                         DocumentReference docRef;
 
                         if (documentId == null || documentId.isEmpty()) {
-                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                            docRef = FirestoreHelper.getInstance().getUserCollection(Constants.GOALS_COLLECTION_NAME).document();
                             goal.setFirestoreId(docRef.getId());
                         } else {
-                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                            docRef = FirestoreHelper.getInstance().getUserCollection(Constants.GOALS_COLLECTION_NAME).document(documentId);
                         }
 
                         CompletableFuture<Void> future = runFirestoreSet(docRef, goal)
@@ -125,7 +125,7 @@ public class GoalRepository extends GenericRepository {
     private CompletableFuture<QuerySnapshot> runFirestoreQuery(long lastSyncedTimestamp) {
         CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
 
-        FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
+        FirestoreHelper.getInstance().getUserCollection(Constants.GOALS_COLLECTION_NAME)
                 .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
                 .get()
                 .addOnSuccessListener(executorService, future::complete)

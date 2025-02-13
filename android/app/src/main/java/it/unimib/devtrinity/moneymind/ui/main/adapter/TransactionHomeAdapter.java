@@ -60,4 +60,5 @@ public class TransactionHomeAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             selectionListener.onEnterEditMode(addTransactionFragment);
         });
     }
+
 }

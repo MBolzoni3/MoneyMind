@@ -96,7 +96,7 @@ public class WorkerHelper {
         return triggerManualWorker(workManager, request);
     }
 
-    private static CompletableFuture<Void> triggerManualWorker(WorkManager workManager, OneTimeWorkRequest request){
+    private static CompletableFuture<Void> triggerManualWorker(WorkManager workManager, OneTimeWorkRequest request) {
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         LiveData<WorkInfo> liveData = workManager.getWorkInfoByIdLiveData(request.getId());
 

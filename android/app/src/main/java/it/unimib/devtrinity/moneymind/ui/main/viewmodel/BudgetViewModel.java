@@ -10,6 +10,7 @@ import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class BudgetViewModel extends ViewModel {
+
     private final BudgetRepository budgetRepository;
     private final TransactionRepository transactionRepository;
 
@@ -33,4 +34,5 @@ public class BudgetViewModel extends ViewModel {
     public void deleteBudgets(List<BudgetEntityWithCategory> budgets) {
         budgetRepository.delete(budgets);
     }
+
 }

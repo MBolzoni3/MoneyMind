@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import it.unimib.devtrinity.moneymind.data.repository.UserRepository;
 
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
+
     private final UserRepository userRepository;
 
     public LoginViewModelFactory(UserRepository userRepository) {
@@ -21,5 +22,6 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
+
 }
 

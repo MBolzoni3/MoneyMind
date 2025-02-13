@@ -33,6 +33,7 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
     private BudgetAdapter budgetAdapter;
     private FloatingActionButton fabAddBudget;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -113,4 +114,5 @@ public class BudgetFragment extends Fragment implements SelectionModeListener {
     public void onEnterEditMode(Fragment fragment) {
         ((SelectionModeListener) requireActivity()).onEnterEditMode(fragment);
     }
+
 }

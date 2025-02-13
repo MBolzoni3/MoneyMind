@@ -12,5 +12,4 @@ public interface SelectionModeListener {
     void onEnterEditMode(Fragment fragment);
 
     void onExitEditMode();
-
 }

@@ -5,10 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +28,7 @@ import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class LoginFragment extends Fragment {
+
     private LoginViewModel loginViewModel;
     private ProgressBar loadingIndicator;
     private View loadingOverlay;
@@ -117,4 +115,5 @@ public class LoginFragment extends Fragment {
         loadingIndicator.setVisibility(visibility);
         loadingOverlay.setVisibility(visibility);
     }
+
 }

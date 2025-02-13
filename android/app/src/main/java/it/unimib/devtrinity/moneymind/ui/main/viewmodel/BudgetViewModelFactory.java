@@ -8,6 +8,7 @@ import it.unimib.devtrinity.moneymind.data.repository.BudgetRepository;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class BudgetViewModelFactory implements ViewModelProvider.Factory {
+
     private final BudgetRepository budgetRepository;
     private final TransactionRepository transactionRepository;
 
@@ -24,4 +25,5 @@ public class BudgetViewModelFactory implements ViewModelProvider.Factory {
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
+
 }

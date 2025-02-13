@@ -9,10 +9,8 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
 import it.unimib.devtrinity.moneymind.data.repository.ExchangeRepository;
@@ -20,7 +18,6 @@ import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionReposi
 import it.unimib.devtrinity.moneymind.data.repository.ServiceLocator;
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 import it.unimib.devtrinity.moneymind.utils.Utils;
-import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class RecurringTransactionWorker extends Worker {
 
@@ -45,7 +42,7 @@ public class RecurringTransactionWorker extends Worker {
     public Result doWork() {
         try {
             List<RecurringTransactionEntity> transactionsToGenerate = recurringTransactionRepository.getRecurringTransactionsToGenerate();
-            for(RecurringTransactionEntity transactionToGenerate : transactionsToGenerate){
+            for (RecurringTransactionEntity transactionToGenerate : transactionsToGenerate) {
                 BigDecimal realAmount = exchangeRepository.getInverseConvertedAmount(
                         transactionToGenerate.getAmount(),
                         transactionToGenerate.getCurrency(),
@@ -53,7 +50,7 @@ public class RecurringTransactionWorker extends Worker {
                 );
 
                 List<Date> datesToGenerate = Utils.getAllMissingGenerationDates(transactionToGenerate);
-                for(Date generationDate : datesToGenerate) {
+                for (Date generationDate : datesToGenerate) {
                     BigDecimal convertedAmount = exchangeRepository.getConvertedAmount(
                             realAmount,
                             transactionToGenerate.getCurrency(),

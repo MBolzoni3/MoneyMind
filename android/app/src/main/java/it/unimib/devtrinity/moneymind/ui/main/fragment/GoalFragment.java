@@ -32,6 +32,7 @@ public class GoalFragment extends Fragment implements SelectionModeListener {
     private GoalAdapter goalAdapter;
     private FloatingActionButton fabAddGoal;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

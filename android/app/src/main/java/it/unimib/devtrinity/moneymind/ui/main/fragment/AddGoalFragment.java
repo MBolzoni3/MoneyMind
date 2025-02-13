@@ -6,12 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -32,6 +30,7 @@ import it.unimib.devtrinity.moneymind.ui.main.adapter.CategoryAdapter;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModel;
 import it.unimib.devtrinity.moneymind.ui.main.viewmodel.AddGoalViewModelFactory;
 import it.unimib.devtrinity.moneymind.utils.GenericCallback;
+import it.unimib.devtrinity.moneymind.utils.ResourceHelper;
 import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
@@ -43,14 +42,9 @@ public class AddGoalFragment extends Fragment {
 
     private GoalEntity currentGoal;
 
-    private TextInputEditText nameField;
-    private TextInputEditText targetAmountField;
-    private TextInputEditText savedAmountField;
+    private TextInputEditText nameField, targetAmountField, savedAmountField, startDateField, endDateField;
     private AutoCompleteTextView categoryDropdown;
     private CategoryEntity selectedCategory;
-    private TextInputEditText startDateField;
-    private TextInputEditText endDateField;
-
     private TextInputLayout nameFieldLayout, targetAmountFieldLayout, savedAmountFieldLayout, startDateFieldLayout, endDateFieldLayout, categoryFieldLayout;
 
     private View thisView;
@@ -117,7 +111,7 @@ public class AddGoalFragment extends Fragment {
 
                     if (category != null && category.getFirestoreId().equals(currentGoal.getCategoryId())) {
                         selectedCategory = category;
-                        categoryDropdown.setText(category.getName(), false);
+                        categoryDropdown.setText(ResourceHelper.getCategoryName(getContext(), category.getName()), false);
                         break;
                     }
                 }
@@ -127,7 +121,7 @@ public class AddGoalFragment extends Fragment {
         categoryDropdown.setOnItemClickListener((parent, view1, position, id) -> {
             selectedCategory = (CategoryEntity) parent.getItemAtPosition(position);
             if (selectedCategory != null) {
-                categoryDropdown.setText(selectedCategory.getName(), false);
+                categoryDropdown.setText(ResourceHelper.getCategoryName(getContext(), selectedCategory.getName()), false);
             }
         });
 
@@ -147,7 +141,7 @@ public class AddGoalFragment extends Fragment {
     }
 
     public void onSaveButtonClick() {
-        if (validateFields() && validateAmounts()){
+        if (validateFields() && validateAmounts()) {
             saveGoal();
             navigateBack();
         }
@@ -158,7 +152,7 @@ public class AddGoalFragment extends Fragment {
         BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
         BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
 
-        if(targetAmount.compareTo(savedAmount) <= 0) {
+        if (targetAmount.compareTo(savedAmount) <= 0) {
             TextInputHelper.setError(targetAmountFieldLayout, getString(R.string.invalid_amounts_error));
             return false;
         } else {
@@ -167,7 +161,7 @@ public class AddGoalFragment extends Fragment {
         }
     }
 
-    private void bindInputValidation(){
+    private void bindInputValidation() {
         TextInputHelper.addValidationWatcher(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX);
         TextInputHelper.addValidationWatcher(targetAmountFieldLayout, targetAmountField, getString(R.string.empty_targetamount_error), null, null);
         TextInputHelper.addValidationWatcher(savedAmountFieldLayout, savedAmountField, getString(R.string.empty_savedamount_error), null, null);
@@ -177,27 +171,27 @@ public class AddGoalFragment extends Fragment {
     }
 
     private boolean validateFields() {
-        if(!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)){
+        if (!TextInputHelper.validateField(nameFieldLayout, nameField, getString(R.string.error_field_required), getString(R.string.invalid_name_error), TextInputHelper.ENTITY_NAME_REGEX)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(targetAmountFieldLayout, targetAmountField, getString(R.string.empty_targetamount_error), null, null)){
+        if (!TextInputHelper.validateField(targetAmountFieldLayout, targetAmountField, getString(R.string.empty_targetamount_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(savedAmountFieldLayout, savedAmountField, getString(R.string.empty_savedamount_error), null, null)){
+        if (!TextInputHelper.validateField(savedAmountFieldLayout, savedAmountField, getString(R.string.empty_savedamount_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)){
+        if (!TextInputHelper.validateField(categoryFieldLayout, selectedCategory == null ? "" : "category", getString(R.string.empty_category_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(startDateFieldLayout, startDateField, getString(R.string.empty_startdate_error), null, null)){
+        if (!TextInputHelper.validateField(startDateFieldLayout, startDateField, getString(R.string.empty_startdate_error), null, null)) {
             return false;
         }
 
-        if(!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)){
+        if (!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)) {
             return false;
         }
 
@@ -253,4 +247,5 @@ public class AddGoalFragment extends Fragment {
             }
         });
     }
+
 }

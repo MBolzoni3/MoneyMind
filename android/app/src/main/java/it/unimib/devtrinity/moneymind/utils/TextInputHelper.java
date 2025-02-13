@@ -66,4 +66,5 @@ public class TextInputHelper {
             textInputLayout.setErrorEnabled(false);
         }
     }
+
 }

@@ -29,8 +29,8 @@ import it.unimib.devtrinity.moneymind.utils.Utils;
 import it.unimib.devtrinity.moneymind.utils.google.FirestoreHelper;
 
 public class TransactionRepository extends GenericRepository {
+
     private static final String TAG = TransactionRepository.class.getSimpleName();
-    private static final String COLLECTION_NAME = "transactions";
 
     private final TransactionDao transactionDao;
 
@@ -100,7 +100,7 @@ public class TransactionRepository extends GenericRepository {
         });
     }
 
-    public void insertTransactionFromRecurring(RecurringTransactionEntity recurringTransaction){
+    public void insertTransactionFromRecurring(RecurringTransactionEntity recurringTransaction) {
         TransactionEntity transaction = new TransactionEntity(recurringTransaction);
         transactionDao.insertOrUpdate(transaction);
     }
@@ -126,10 +126,10 @@ public class TransactionRepository extends GenericRepository {
                         DocumentReference docRef;
 
                         if (documentId == null || documentId.isEmpty()) {
-                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document();
+                            docRef = FirestoreHelper.getInstance().getUserCollection(Constants.TRANSACTIONS_COLLECTION_NAME).document();
                             transaction.setFirestoreId(docRef.getId());
                         } else {
-                            docRef = FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME).document(documentId);
+                            docRef = FirestoreHelper.getInstance().getUserCollection(Constants.TRANSACTIONS_COLLECTION_NAME).document(documentId);
                         }
 
                         CompletableFuture<Void> future = runFirestoreSet(docRef, transaction)
@@ -183,7 +183,7 @@ public class TransactionRepository extends GenericRepository {
     private CompletableFuture<QuerySnapshot> runFirestoreQuery(long lastSyncedTimestamp) {
         CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
 
-        FirestoreHelper.getInstance().getUserCollection(COLLECTION_NAME)
+        FirestoreHelper.getInstance().getUserCollection(Constants.TRANSACTIONS_COLLECTION_NAME)
                 .whereGreaterThan("lastSyncedAt", lastSyncedTimestamp)
                 .get()
                 .addOnSuccessListener(executorService, future::complete)

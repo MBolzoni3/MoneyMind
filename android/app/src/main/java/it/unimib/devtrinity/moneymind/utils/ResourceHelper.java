@@ -8,12 +8,26 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
 
 public class ResourceHelper {
+
+    private static final Map<String, Integer> CATEGORY_MAP = Map.of(
+            "lavoro", R.string.category_lavoro,
+            "investimenti", R.string.category_investimenti,
+            "casa", R.string.category_casa,
+            "utilità", R.string.category_utilita,
+            "trasporti", R.string.category_trasporti,
+            "alimentazione", R.string.category_alimentazione,
+            "salute e benessere", R.string.category_salute_benessere,
+            "educazione", R.string.category_educazione,
+            "svago", R.string.category_svago,
+            "varie", R.string.category_varie
+    );
 
     public static int getThemeColor(Context context, int colorAttribute) {
         TypedValue typedValue = new TypedValue();
@@ -53,13 +67,18 @@ public class ResourceHelper {
         }
     }
 
+    public static String getCategoryName(Context context, String categoryKey) {
+        Integer resId = CATEGORY_MAP.get(categoryKey.toLowerCase());
+        return (resId != null) ? context.getString(resId) : categoryKey;
+    }
+
     public static int getTypeIcon(MovementTypeEnum movementTypeEnum) {
         return movementTypeEnum == MovementTypeEnum.INCOME ? R.drawable.ic_trending_up : R.drawable.ic_trending_down;
     }
 
     public static String getBudgetMessage(Context context, BigDecimal spent, BigDecimal budget) {
-        if(spent == null) spent = BigDecimal.ZERO;
-        if(budget == null) budget = BigDecimal.ZERO;
+        if (spent == null) spent = BigDecimal.ZERO;
+        if (budget == null) budget = BigDecimal.ZERO;
 
         String spentFormatted = Utils.formatTransactionAmount(spent);
         String budgetFormatted = Utils.formatTransactionAmount(budget);
@@ -76,8 +95,8 @@ public class ResourceHelper {
     }
 
     public static String getGoalMessage(Context context, BigDecimal saved, BigDecimal goal) {
-        if(saved == null) saved = BigDecimal.ZERO;
-        if(goal == null) goal = BigDecimal.ZERO;
+        if (saved == null) saved = BigDecimal.ZERO;
+        if (goal == null) goal = BigDecimal.ZERO;
 
         String savedFormatted = Utils.formatTransactionAmount(saved);
         String goalFormatted = Utils.formatTransactionAmount(goal);
@@ -105,7 +124,7 @@ public class ResourceHelper {
 
         BigDecimal balance = incomes.subtract(expenses);
 
-        if(expenses.compareTo(BigDecimal.ZERO) == 0 && incomes.compareTo(BigDecimal.ZERO) == 0) {
+        if (expenses.compareTo(BigDecimal.ZERO) == 0 && incomes.compareTo(BigDecimal.ZERO) == 0) {
             return context.getString(R.string.balance_no_activity);
         }
 

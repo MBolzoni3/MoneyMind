@@ -29,6 +29,7 @@ import it.unimib.devtrinity.moneymind.utils.TextInputHelper;
 import it.unimib.devtrinity.moneymind.utils.Utils;
 
 public class RegisterFragment extends Fragment {
+
     private RegisterViewModel registerViewModel;
 
     private TextInputEditText emailInput, passwordInput, confirmPasswordInput, nameInput;
@@ -36,6 +37,7 @@ public class RegisterFragment extends Fragment {
     private ProgressBar loadingIndicator;
     private View loadingOverlay;
     private View thisView;
+
 
     @Nullable
     @Override

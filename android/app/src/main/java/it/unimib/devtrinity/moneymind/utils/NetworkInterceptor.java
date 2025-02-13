@@ -1,10 +1,5 @@
 package it.unimib.devtrinity.moneymind.utils;
 
-import android.app.Application;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -14,6 +9,7 @@ import okhttp3.Interceptor;
 import okhttp3.Response;
 
 public class NetworkInterceptor implements Interceptor {
+
     private final Supplier<Boolean> isInternetAvailableSupplier;
 
     public NetworkInterceptor(Supplier<Boolean> isInternetAvailableSupplier) {

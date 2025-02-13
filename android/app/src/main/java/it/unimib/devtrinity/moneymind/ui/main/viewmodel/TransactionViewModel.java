@@ -14,6 +14,7 @@ import it.unimib.devtrinity.moneymind.data.repository.RecurringTransactionReposi
 import it.unimib.devtrinity.moneymind.data.repository.TransactionRepository;
 
 public class TransactionViewModel extends ViewModel {
+
     private final TransactionRepository transactionRepository;
     private final RecurringTransactionRepository recurringTransactionRepository;
 
@@ -65,4 +66,5 @@ public class TransactionViewModel extends ViewModel {
         transactionRepository.delete(transactionsToDelete);
         recurringTransactionRepository.delete(recurringTransactionsToDelete);
     }
+
 }

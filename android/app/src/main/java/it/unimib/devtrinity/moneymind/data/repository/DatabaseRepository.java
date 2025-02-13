@@ -13,6 +13,7 @@ import it.unimib.devtrinity.moneymind.data.local.AppDatabase;
 import it.unimib.devtrinity.moneymind.data.local.DatabaseClient;
 
 public class DatabaseRepository {
+
     private static final String TAG = CategoryRepository.class.getSimpleName();
 
     private final AppDatabase database;
@@ -36,7 +37,7 @@ public class DatabaseRepository {
         return CompletableFuture.runAsync(() -> {
             database.runInTransaction(() -> {
                 for (String table : tableNames) {
-                    try (SupportSQLiteStatement statement = database.compileStatement("DELETE FROM " + table)){
+                    try (SupportSQLiteStatement statement = database.compileStatement("DELETE FROM " + table)) {
                         statement.execute();
                     } catch (IOException e) {
                         throw new RuntimeException(e);

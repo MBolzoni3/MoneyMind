@@ -2,7 +2,6 @@ package it.unimib.devtrinity.moneymind.ui.activity.viewmodel;
 
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -28,5 +27,6 @@ public class MainActivityViewModel extends ViewModel {
             userState.postValue(0);
         }
     }
+
 }
 

@@ -31,6 +31,7 @@ public class HomeFragment extends Fragment implements SelectionModeListener {
     private HomeViewModel viewModel;
     private ViewPager2 monthsViewPager;
     private MonthCarouselAdapter monthCarouselAdapter;
+
     private final Observer<Integer> pageObserver = savedPage -> {
         if (monthCarouselAdapter != null) {
             int pageToLoad = (savedPage != null && savedPage >= 0) ? savedPage : monthCarouselAdapter.getItemCount() - 1;

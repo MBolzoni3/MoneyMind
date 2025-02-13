@@ -9,6 +9,7 @@ import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntityWithCategory;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 
 public class GoalViewModel extends ViewModel {
+
     private final GoalRepository goalRepository;
 
     public GoalViewModel(GoalRepository goalRepository) {
@@ -22,4 +23,5 @@ public class GoalViewModel extends ViewModel {
     public void deleteGoals(List<GoalEntityWithCategory> goals) {
         goalRepository.delete(goals);
     }
+
 }

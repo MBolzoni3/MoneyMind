@@ -73,5 +73,6 @@ public class FirebaseHelper {
     public void logoutUser() {
         auth.signOut();
     }
+
 }
 

@@ -1,6 +1,7 @@
 package it.unimib.devtrinity.moneymind.utils;
 
 public abstract class GenericState<T> {
+
     private GenericState() {
     }
 
@@ -30,4 +31,5 @@ public abstract class GenericState<T> {
             return errorMessage;
         }
     }
+
 }

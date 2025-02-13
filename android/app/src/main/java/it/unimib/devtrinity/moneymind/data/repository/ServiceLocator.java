@@ -6,6 +6,7 @@ import it.unimib.devtrinity.moneymind.data.remote.ExchangeDataSource;
 import it.unimib.devtrinity.moneymind.data.remote.RetrofitClient;
 
 public class ServiceLocator {
+
     private static volatile ServiceLocator instance;
 
     private DatabaseRepository databaseRepository;

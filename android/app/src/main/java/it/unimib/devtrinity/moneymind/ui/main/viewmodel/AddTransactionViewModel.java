@@ -92,7 +92,7 @@ public class AddTransactionViewModel extends ViewModel {
         );
     }
 
-    public void fetchExchangeRates(Date date, GenericCallback<Void> callback) {
+    public void fetchExchangeRates(Date date, Context context, GenericCallback<Void> callback) {
         LiveData<List<ExchangeEntity>> liveData = exchangeRepository.getExchangeRates(date);
 
         liveData.observeForever(rates -> {
@@ -111,10 +111,10 @@ public class AddTransactionViewModel extends ViewModel {
                 callback.onSuccess(null);
             } else {
                 exchangeRates.setValue(Collections.emptyList());
-                callback.onFailure("No exchange rates found for the selected date."); // TODO move this to strings
+                callback.onFailure(null);
             }
 
-            currencies.setValue(Utils.getCurrencyDropdownItems(newCurrencies));
+            currencies.setValue(Utils.getCurrencyDropdownItems(newCurrencies, context));
         });
     }
 
@@ -149,7 +149,7 @@ public class AddTransactionViewModel extends ViewModel {
         convertedAmount.setValue(amount);
     }
 
-    public BigDecimal reverseConversion(BigDecimal amount, String selectedCurrency){
+    public BigDecimal reverseConversion(BigDecimal amount, String selectedCurrency) {
         if (amount == null || selectedCurrency == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             return BigDecimal.ZERO;
         }

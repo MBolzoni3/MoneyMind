@@ -32,6 +32,7 @@ public class TransactionFragment extends Fragment implements SelectionModeListen
     private TransactionAdapter transactionAdapter;
     private FloatingActionButton fabAddTransaction;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

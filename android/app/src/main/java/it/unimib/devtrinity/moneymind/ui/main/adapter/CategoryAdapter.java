@@ -36,7 +36,7 @@ public class CategoryAdapter extends ArrayAdapter<CategoryEntity> {
 
         CategoryEntity category = getItem(position);
         if (category != null) {
-            categoryName.setText(category.getName());
+            categoryName.setText(ResourceHelper.getCategoryName(getContext(), category.getName()));
 
             int iconResource = ResourceHelper.getCategoryIcon(category);
             categoryIcon.setImageResource(iconResource);
@@ -44,5 +44,6 @@ public class CategoryAdapter extends ArrayAdapter<CategoryEntity> {
 
         return convertView;
     }
+
 }
 

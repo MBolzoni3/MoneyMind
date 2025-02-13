@@ -47,7 +47,7 @@ public class SyncWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            if(!Utils.isInternetAvailable(getApplicationContext())){
+            if (!Utils.isInternetAvailable(getApplicationContext())) {
                 return Result.failure();
             }
 

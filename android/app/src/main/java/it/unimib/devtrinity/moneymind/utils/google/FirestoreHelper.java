@@ -4,6 +4,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirestoreHelper {
+
     private static final String TAG = FirestoreHelper.class.getSimpleName();
 
     private static FirestoreHelper instance;
@@ -36,5 +37,6 @@ public class FirestoreHelper {
     public CollectionReference getGlobalCollection(String collectionName) {
         return firestore.collection(collectionName);
     }
+
 }
 

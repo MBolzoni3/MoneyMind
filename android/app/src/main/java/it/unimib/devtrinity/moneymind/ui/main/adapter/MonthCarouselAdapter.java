@@ -28,6 +28,7 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
     private final List<String> monthKeys = new ArrayList<>();
     private final Map<String, List<TransactionEntity>> transactionsListByMonth = new LinkedHashMap<>();
 
+
     @NonNull
     @Override
     public MonthViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -114,5 +115,6 @@ public class MonthCarouselAdapter extends RecyclerView.Adapter<MonthCarouselAdap
             expenseText = itemView.findViewById(R.id.outflow_amount);
         }
     }
+
 }
 

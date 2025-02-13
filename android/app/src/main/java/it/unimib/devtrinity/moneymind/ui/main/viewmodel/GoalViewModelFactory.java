@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import it.unimib.devtrinity.moneymind.data.repository.GoalRepository;
 
 public class GoalViewModelFactory implements ViewModelProvider.Factory {
+
     private final GoalRepository goalRepository;
 
     public GoalViewModelFactory(GoalRepository goalRepository) {
@@ -21,4 +22,5 @@ public class GoalViewModelFactory implements ViewModelProvider.Factory {
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
+
 }

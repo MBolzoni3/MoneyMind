@@ -58,7 +58,7 @@ public class TransactionEntity extends FirestoreEntity {
     }
 
     @Ignore
-    public TransactionEntity(RecurringTransactionEntity recurringTransaction){
+    public TransactionEntity(RecurringTransactionEntity recurringTransaction) {
         super(false, Timestamp.now(), Timestamp.now(), recurringTransaction.userId, null, false);
         this.name = recurringTransaction.name;
         this.type = recurringTransaction.type;
