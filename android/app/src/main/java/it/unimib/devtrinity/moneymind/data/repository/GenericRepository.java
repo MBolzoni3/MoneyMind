@@ -36,7 +36,7 @@ public abstract class GenericRepository {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<Long> future = executor.submit(() -> syncLocalToRemoteAsync().get());
 
-            long lastTimestampRoom;
+            Long lastTimestampRoom;
             try {
                 lastTimestampRoom = future.get(15, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
@@ -88,14 +88,14 @@ public abstract class GenericRepository {
         }
 
         if (roomTimestamp == null || roomTimestamp == 0L) {
-            return sharedTimestamp;
+            return sharedTimestamp / 1000;
         }
 
         if (sharedTimestamp == 0L) {
-            return roomTimestamp;
+            return roomTimestamp / 1000;
         }
 
-        return Math.max(roomTimestamp, sharedTimestamp);
+        return Math.max(roomTimestamp, sharedTimestamp) / 1000;
     }
 
 }
