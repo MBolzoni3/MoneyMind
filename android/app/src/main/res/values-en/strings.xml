@@ -171,4 +171,23 @@
     <string name="category_educazione">Education</string>
     <string name="category_svago">Leisure</string>
     <string name="category_varie">Miscellaneous</string>
+    <string name="recurrence_every">Every</string>
+    <string name="recurrence_from">starting from</string>
+    <string name="recurrence_until">until</string>
+    <plurals name="recurrence_day">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <plurals name="recurrence_week">
+        <item quantity="one">week</item>
+        <item quantity="other">weeks</item>
+    </plurals>
+    <plurals name="recurrence_month">
+        <item quantity="one">month</item>
+        <item quantity="other">months</item>
+    </plurals>
+    <plurals name="recurrence_year">
+        <item quantity="one">year</item>
+        <item quantity="other">years</item>
+    </plurals>
 </resources>

@@ -174,20 +174,23 @@ public class AddTransactionFragment extends Fragment {
         recurrenceTypeDropdown.setOnItemClickListener((parent, view1, position, id) -> {
             selectedRecurrence = (RecurrenceTypeEnum) parent.getItemAtPosition(position);
             if (selectedRecurrence != null) {
+                String label = "";
                 switch (selectedRecurrence) {
                     case DAILY:
-                        recurrenceTypeDropdown.setText(R.string.daily);
+                        label = getString(R.string.daily);
                         break;
                     case WEEKLY:
-                        recurrenceTypeDropdown.setText(R.string.weekly);
+                        label = getString(R.string.weekly);
                         break;
                     case MONTHLY:
-                        recurrenceTypeDropdown.setText(R.string.monthly);
+                        label = getString(R.string.monthly);
                         break;
                     case YEARLY:
-                        recurrenceTypeDropdown.setText(R.string.yearly);
+                        label = getString(R.string.yearly);
                         break;
                 }
+
+                recurrenceTypeDropdown.setText(label, false);
             }
         });
 
@@ -402,25 +405,27 @@ public class AddTransactionFragment extends Fragment {
             RecurringTransactionEntity recurringTransaction = (RecurringTransactionEntity) currentTransaction;
             recurringCheckbox.setChecked(true);
 
+            String label = "";
             switch (recurringTransaction.getRecurrenceType()) {
                 case DAILY:
-                    recurrenceTypeDropdown.setText(R.string.daily);
+                    label = getString(R.string.daily);
                     selectedRecurrence = RecurrenceTypeEnum.DAILY;
                     break;
                 case WEEKLY:
-                    recurrenceTypeDropdown.setText(R.string.weekly);
+                    label = getString(R.string.weekly);
                     selectedRecurrence = RecurrenceTypeEnum.WEEKLY;
                     break;
                 case MONTHLY:
-                    recurrenceTypeDropdown.setText(R.string.monthly);
+                    label = getString(R.string.monthly);
                     selectedRecurrence = RecurrenceTypeEnum.MONTHLY;
                     break;
                 case YEARLY:
-                    recurrenceTypeDropdown.setText(R.string.yearly);
+                    label = getString(R.string.yearly);
                     selectedRecurrence = RecurrenceTypeEnum.YEARLY;
                     break;
             }
 
+            recurrenceTypeDropdown.setText(label, false);
             recurrenceInterval.setText(String.valueOf(recurringTransaction.getRecurrenceInterval()));
             endDateField.setText(Utils.dateToString(recurringTransaction.getRecurrenceEndDate()));
         }

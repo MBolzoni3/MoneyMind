@@ -20,18 +20,17 @@ import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
 public class RecurrenceTypeAdapter extends ArrayAdapter<RecurrenceTypeEnum> {
 
     public RecurrenceTypeAdapter(@NonNull Context context, @NonNull List<RecurrenceTypeEnum> types) {
-        super(context, R.layout.category_item_layout, types);
+        super(context, R.layout.custom_spinner_item, types);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.category_item_layout, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.custom_spinner_item, parent, false);
         }
 
-        ShapeableImageView icon = convertView.findViewById(R.id.category_icon);
-        TextView name = convertView.findViewById(R.id.category_name);
+        TextView name = convertView.findViewById(R.id.text1);
 
         RecurrenceTypeEnum type = getItem(position);
         if (type != null) {
@@ -50,8 +49,6 @@ public class RecurrenceTypeAdapter extends ArrayAdapter<RecurrenceTypeEnum> {
                     break;
             }
         }
-
-        icon.setVisibility(View.GONE);
 
         return convertView;
     }

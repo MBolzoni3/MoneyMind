@@ -264,25 +264,28 @@ public class Utils {
 
     public static List<Date> getAllMissingGenerationDates(RecurringTransactionEntity rt) {
         List<Date> missingDates = new ArrayList<>();
+
         Date now = new Date();
         Date lastGenerated = rt.getLastGeneratedDate();
+        Date startDate = rt.getDate();
+        Date endDate = rt.getRecurrenceEndDate();
+
         Calendar nextGenerationDate = Calendar.getInstance();
 
         if (lastGenerated == null) {
-            missingDates.add(rt.getDate());
-            nextGenerationDate.setTime(rt.getDate());
+            nextGenerationDate.setTime(startDate);
         } else {
             nextGenerationDate.setTime(lastGenerated);
         }
 
         while (true) {
-            nextGenerationDate.setTime(getNextGenerationDate(nextGenerationDate.getTime(), rt.getRecurrenceType(), rt.getRecurrenceInterval()));
+            Date nextDate = getNextGenerationDate(nextGenerationDate.getTime(), rt.getRecurrenceType(), rt.getRecurrenceInterval());
 
-            if (nextGenerationDate.getTimeInMillis() > now.getTime()) break;
-            if (rt.getRecurrenceEndDate() != null && nextGenerationDate.getTime().after(rt.getRecurrenceEndDate()))
-                break;
+            if (!nextDate.before(now)) break;
+            if (endDate != null && nextDate.after(endDate)) break;
 
-            missingDates.add(nextGenerationDate.getTime());
+            missingDates.add(nextDate);
+            nextGenerationDate.setTime(nextDate);
         }
 
         return missingDates;
@@ -296,8 +299,12 @@ public class Utils {
 
         Date nextGeneration = getNextGenerationDate(lastGenerated, rt.getRecurrenceType(), rt.getRecurrenceInterval());
 
-        return nextGeneration.getTime() <= now.getTime() &&
-                (rt.getRecurrenceEndDate() == null || nextGeneration.before(rt.getRecurrenceEndDate()));
+        boolean shouldGenerate = !nextGeneration.after(now);
+        if (rt.getRecurrenceEndDate() != null && nextGeneration.after(rt.getRecurrenceEndDate())) {
+            return false;
+        }
+
+        return shouldGenerate;
     }
 
     private static Date getNextGenerationDate(Date baseDate, RecurrenceTypeEnum type, int interval) {

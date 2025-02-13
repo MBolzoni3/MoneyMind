@@ -202,4 +202,25 @@
     <string name="category_educazione">Educazione</string>
     <string name="category_svago">Svago</string>
     <string name="category_varie">Varie</string>
+
+    <string name="recurrence_every">Ogni</string>
+    <string name="recurrence_from">a partire dal</string>
+    <string name="recurrence_until">fino al</string>
+    <plurals name="recurrence_day">
+        <item quantity="one">giorno</item>
+        <item quantity="other">giorni</item>
+    </plurals>
+    <plurals name="recurrence_week">
+        <item quantity="one">settimana</item>
+        <item quantity="other">settimane</item>
+    </plurals>
+    <plurals name="recurrence_month">
+        <item quantity="one">mese</item>
+        <item quantity="other">mesi</item>
+    </plurals>
+    <plurals name="recurrence_year">
+        <item quantity="one">anno</item>
+        <item quantity="other">anni</item>
+    </plurals>
+
 </resources>

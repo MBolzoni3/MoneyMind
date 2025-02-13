@@ -47,16 +47,13 @@ public interface RecurringTransactionDao {
             "FROM recurring_transactions " +
             "LEFT JOIN categories ON recurring_transactions.categoryId = categories.firestoreId " +
             "WHERE recurring_transactions.deleted = 0 " +
-            "AND (recurring_transactions.recurrenceEndDate IS NULL OR recurring_transactions.recurrenceEndDate >= strftime('%s', 'now') * 1000) " +
-            "ORDER BY recurring_transactions.date DESC ")
+            "ORDER BY recurring_transactions.date DESC, recurring_transactions.createdAt DESC ")
     LiveData<List<RecurringTransactionEntityWithCategory>> getAll();
 
     @Query("SELECT MAX(updatedAt) FROM recurring_transactions WHERE synced = 1")
     Long getLastSyncedTimestamp();
 
-    @Query("SELECT * FROM recurring_transactions " +
-            "WHERE deleted = 0 " +
-            "AND (recurrenceEndDate IS NULL OR recurrenceEndDate > strftime('%s', 'now') * 1000)")
+    @Query("SELECT * FROM recurring_transactions WHERE deleted = 0")
     List<RecurringTransactionEntity> getActiveRecurringTransactions();
 
     @Query("UPDATE recurring_transactions SET lastGeneratedDate = :generatedDate WHERE id = :id")

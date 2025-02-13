@@ -1,5 +1,8 @@
 package it.unimib.devtrinity.moneymind.data.local.entity;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
@@ -11,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.constant.Constants;
 import it.unimib.devtrinity.moneymind.constant.MovementTypeEnum;
 import it.unimib.devtrinity.moneymind.constant.RecurrenceTypeEnum;
@@ -87,42 +91,44 @@ public class RecurringTransactionEntity extends TransactionEntity {
 
     @Ignore
     @Exclude
-    public String getFormattedRecurrence() {
+    public String getFormattedRecurrence(Context context) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         StringBuilder description = new StringBuilder();
+        Resources res = context.getResources();
 
-        String recurrenceUnit;
+        int quantity = recurrenceInterval;
+        int pluralId;
+
         switch (recurrenceType) {
             case DAILY:
-                recurrenceUnit = recurrenceInterval == 1 ? "giorno" : "giorni";
+                pluralId = R.plurals.recurrence_day;
                 break;
             case WEEKLY:
-                recurrenceUnit = recurrenceInterval == 1 ? "settimana" : "settimane";
+                pluralId = R.plurals.recurrence_week;
                 break;
             case MONTHLY:
-                recurrenceUnit = recurrenceInterval == 1 ? "mese" : "mesi";
+                pluralId = R.plurals.recurrence_month;
                 break;
             case YEARLY:
-                recurrenceUnit = recurrenceInterval == 1 ? "anno" : "anni";
+                pluralId = R.plurals.recurrence_year;
                 break;
             default:
                 throw new IllegalArgumentException("Tipo di ricorrenza non valido: " + recurrenceType);
         }
 
-        description.append("Ogni ");
-        if (recurrenceInterval > 1) {
-            description.append(recurrenceInterval).append(" ");
-        }
-        description.append(recurrenceUnit);
+        String recurrenceUnit = res.getQuantityString(pluralId, quantity, quantity);
+
+        description.append(res.getString(R.string.recurrence_every)).append(" ").append(recurrenceUnit);
 
         if (date != null) {
-            description.append(" a partire dal ").append(dateFormat.format(date));
+            description.append(" ").append(res.getString(R.string.recurrence_from)).append(" ").append(dateFormat.format(date));
         }
 
         if (recurrenceEndDate != null) {
-            description.append(" fino al ").append(dateFormat.format(recurrenceEndDate));
+            description.append(" ").append(res.getString(R.string.recurrence_until)).append(" ").append(dateFormat.format(recurrenceEndDate));
         }
 
         return description.toString();
     }
+
 }

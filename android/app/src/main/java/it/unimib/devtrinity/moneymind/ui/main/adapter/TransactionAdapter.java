@@ -224,7 +224,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             if (transaction.getTransaction() instanceof RecurringTransactionEntity) {
                 RecurringTransactionEntity recurringTransaction = (RecurringTransactionEntity) transaction.getTransaction();
-                date.setText(recurringTransaction.getFormattedRecurrence());
+                date.setText(recurringTransaction.getFormattedRecurrence(context));
             } else {
                 date.setText(Utils.dateToString(transaction.getTransaction().getDate()));
             }
