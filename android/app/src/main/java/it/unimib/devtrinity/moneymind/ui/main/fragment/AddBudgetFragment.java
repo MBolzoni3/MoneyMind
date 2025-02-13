@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
@@ -130,7 +131,7 @@ public class AddBudgetFragment extends Fragment {
         });
 
         endDateField.setOnClickListener(v -> {
-            Utils.showEndDatePicker(endDateField::setText, this, startDateField);
+            Utils.showEndDatePicker(endDateField::setText, this, startDateField, getString(R.string.select_date));
         });
 
         compileFields();
@@ -180,6 +181,23 @@ public class AddBudgetFragment extends Fragment {
 
         if (!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)) {
             return false;
+        }
+
+        BigDecimal amount = Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO);
+        if(amount.compareTo(BigDecimal.ZERO) <= 0){
+            TextInputHelper.setError(amountFieldLayout, getString(R.string.not_zero_amount_error));
+            return false;
+        } else {
+            TextInputHelper.clearError(amountFieldLayout);
+        }
+
+        Date startDate = Utils.stringToDate(startDateField.getText().toString());
+        Date endDate = Utils.stringToDate(endDateField.getText().toString());
+        if(startDate.compareTo(endDate) > 0){
+            TextInputHelper.setError(startDateFieldLayout, getString(R.string.invalid_start_date));
+            return false;
+        } else {
+            TextInputHelper.clearError(startDateFieldLayout);
         }
 
         return true;

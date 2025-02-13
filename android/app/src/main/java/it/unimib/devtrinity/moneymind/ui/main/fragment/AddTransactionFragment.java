@@ -150,13 +150,15 @@ public class AddTransactionFragment extends Fragment {
 
                         @Override
                         public void onFailure(String errorMessage) {
-                            Utils.makeSnackBar(view.getRootView(), getString(R.string.error_fetching_exchange_rates));
+                            if (getContext() != null) {
+                                Utils.makeSnackBar(view.getRootView(), getString(R.string.error_fetching_exchange_rates));
+                            }
                         }
                     });
                 }
             }
         });
-        dateField.setOnClickListener(v -> Utils.showNonFutureDatePicker(dateField::setText, this));
+        dateField.setOnClickListener(v -> Utils.showNonFutureDatePicker(dateField::setText, this, getString(R.string.select_date)));
 
         setupCurrencyDropdown(view);
         setupTransactionTypeDropdown(view);
@@ -256,6 +258,14 @@ public class AddTransactionFragment extends Fragment {
             return false;
         }
 
+        BigDecimal checkAmount = Utils.safeParseBigDecimal(amountField.getText().toString(), BigDecimal.ZERO);
+        if (checkAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            TextInputHelper.setError(amountFieldLayout, getString(R.string.not_zero_amount_error));
+            return false;
+        } else {
+            TextInputHelper.clearError(amountFieldLayout);
+        }
+
         if (recurringCheckbox.isChecked()) {
             if (!TextInputHelper.validateField(recurrenceLayout, selectedRecurrence == null ? "" : "recurrence", getString(R.string.empty_recurrence_error), null, null)) {
                 return false;
@@ -263,6 +273,14 @@ public class AddTransactionFragment extends Fragment {
 
             if (!TextInputHelper.validateField(recurrenceIntervalLayout, recurrenceInterval, getString(R.string.empty_recurrence_interval_error), null, null)) {
                 return false;
+            }
+
+            BigDecimal interval = Utils.safeParseBigDecimal(recurrenceInterval.getText().toString(), BigDecimal.ZERO);
+            if (interval.compareTo(BigDecimal.ZERO) <= 0) {
+                TextInputHelper.setError(amountFieldLayout, getString(R.string.not_zero_amount_error));
+                return false;
+            } else {
+                TextInputHelper.clearError(amountFieldLayout);
             }
         }
 
@@ -429,6 +447,9 @@ public class AddTransactionFragment extends Fragment {
             recurrenceInterval.setText(String.valueOf(recurringTransaction.getRecurrenceInterval()));
             endDateField.setText(Utils.dateToString(recurringTransaction.getRecurrenceEndDate()));
         }
+
+        recurringCheckbox.setEnabled(false);
+        recurringCheckbox.setVisibility(View.GONE);
     }
 
     private void toggleRecurringSection(boolean show) {

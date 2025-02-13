@@ -206,6 +206,10 @@
     <string name="recurrence_every">Ogni</string>
     <string name="recurrence_from">a partire dal</string>
     <string name="recurrence_until">fino al</string>
+    <string name="not_zero_amount_error">L\'importo non può essere minore o uguale a 0</string>
+    <string name="invalid_start_date">La data di inizio non può essere maggiore delle data di fine</string>
+    <string name="saved_amount_not_greater">L\'importo risparmiato non può essere maggiore dell\'importo obiettivo</string>
+    <string name="select_date">Seleziona una data</string>
     <plurals name="recurrence_day">
         <item quantity="one">giorno</item>
         <item quantity="other">giorni</item>
