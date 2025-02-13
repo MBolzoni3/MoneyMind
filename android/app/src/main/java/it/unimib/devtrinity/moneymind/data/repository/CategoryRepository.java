@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -67,7 +68,7 @@ public class CategoryRepository extends GenericRepository {
         CompletableFuture<QuerySnapshot> future = new CompletableFuture<>();
 
         FirestoreHelper.getInstance().getGlobalCollection(Constants.CATEGORIES_COLLECTION_NAME)
-                .whereGreaterThan("updatedAt", new Timestamp(lastSyncedTimestamp, 0))
+                .whereGreaterThan("updatedAt", lastSyncedTimestamp > 0 ? lastSyncedTimestamp / 1000 : new Timestamp(0,0))
                 .orderBy("order", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener(executorService, future::complete)
