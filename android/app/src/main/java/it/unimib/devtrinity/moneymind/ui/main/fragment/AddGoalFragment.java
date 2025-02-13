@@ -192,7 +192,7 @@ public class AddGoalFragment extends Fragment {
             TextInputHelper.clearError(targetAmountFieldLayout);
         }
 
-        if(savedAmount.compareTo(BigDecimal.ZERO) <= 0){
+        if(savedAmount.compareTo(BigDecimal.ZERO) < 0){
             TextInputHelper.setError(savedAmountFieldLayout, getString(R.string.not_zero_amount_error));
             return false;
         } else {
