@@ -174,6 +174,7 @@
     <string name="recurrence_every">Every</string>
     <string name="recurrence_from">starting from</string>
     <string name="recurrence_until">until</string>
+    <string name="not_zero_amount_error">The amount cannot be less than or equal than 0</string>
     <plurals name="recurrence_day">
         <item quantity="one">day</item>
         <item quantity="other">days</item>
@@ -190,4 +191,7 @@
         <item quantity="one">year</item>
         <item quantity="other">years</item>
     </plurals>
+    <string name="invalid_start_date">The start date cannot be greater than the end date</string>
+    <string name="saved_amount_not_greater">The amount saved cannot be greater than the target amount</string>
+    <string name="select_date">Select a date</string>
 </resources>

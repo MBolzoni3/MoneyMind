@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import it.unimib.devtrinity.moneymind.R;
 import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
@@ -133,7 +134,7 @@ public class AddGoalFragment extends Fragment {
         });
 
         endDateField.setOnClickListener(v -> {
-            Utils.showEndDatePicker(endDateField::setText, this, startDateField);
+            Utils.showEndDatePicker(endDateField::setText, this, startDateField, getString(R.string.select_date));
         });
 
         compileFields();
@@ -141,23 +142,9 @@ public class AddGoalFragment extends Fragment {
     }
 
     public void onSaveButtonClick() {
-        if (validateFields() && validateAmounts()) {
+        if (validateFields()) {
             saveGoal();
             navigateBack();
-        }
-
-    }
-
-    private boolean validateAmounts() {
-        BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
-        BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
-
-        if (targetAmount.compareTo(savedAmount) <= 0) {
-            TextInputHelper.setError(targetAmountFieldLayout, getString(R.string.invalid_amounts_error));
-            return false;
-        } else {
-            TextInputHelper.clearError(targetAmountFieldLayout);
-            return true;
         }
     }
 
@@ -193,6 +180,39 @@ public class AddGoalFragment extends Fragment {
 
         if (!TextInputHelper.validateField(endDateFieldLayout, endDateField, getString(R.string.empty_enddate_error), null, null)) {
             return false;
+        }
+
+        BigDecimal targetAmount = Utils.safeParseBigDecimal(targetAmountField.getText().toString(), BigDecimal.ZERO);
+        BigDecimal savedAmount = Utils.safeParseBigDecimal(savedAmountField.getText().toString(), BigDecimal.ZERO);
+
+        if(targetAmount.compareTo(BigDecimal.ZERO) <= 0){
+            TextInputHelper.setError(targetAmountFieldLayout, getString(R.string.not_zero_amount_error));
+            return false;
+        } else {
+            TextInputHelper.clearError(targetAmountFieldLayout);
+        }
+
+        if(savedAmount.compareTo(BigDecimal.ZERO) <= 0){
+            TextInputHelper.setError(savedAmountFieldLayout, getString(R.string.not_zero_amount_error));
+            return false;
+        } else {
+            TextInputHelper.clearError(savedAmountFieldLayout);
+        }
+
+        if(savedAmount.compareTo(targetAmount) > 0){
+            TextInputHelper.setError(savedAmountFieldLayout, getString(R.string.saved_amount_not_greater));
+            return false;
+        } else {
+            TextInputHelper.clearError(savedAmountFieldLayout);
+        }
+
+        Date startDate = Utils.stringToDate(startDateField.getText().toString());
+        Date endDate = Utils.stringToDate(endDateField.getText().toString());
+        if(startDate.compareTo(endDate) > 0){
+            TextInputHelper.setError(startDateFieldLayout, getString(R.string.invalid_start_date));
+            return false;
+        } else {
+            TextInputHelper.clearError(startDateFieldLayout);
         }
 
         return true;
