@@ -1,32 +1,55 @@
 package it.unimib.devtrinity.moneymind.data.local;
 
-import android.content.Context;
+import static it.unimib.devtrinity.moneymind.constant.Constants.DATABASE_VERSION;
 
 import androidx.room.Database;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import it.unimib.devtrinity.moneymind.data.local.dao.UserDao;
-import it.unimib.devtrinity.moneymind.data.local.entity.UserEntity;
+import androidx.room.TypeConverters;
 
-@Database(entities = {UserEntity.class}, version = 1, exportSchema = false)
+import it.unimib.devtrinity.moneymind.data.local.converter.BigDecimalConverter;
+import it.unimib.devtrinity.moneymind.data.local.converter.MovementTypeConverter;
+import it.unimib.devtrinity.moneymind.data.local.converter.RecurrenceTypeConverter;
+import it.unimib.devtrinity.moneymind.data.local.converter.TimestampConverter;
+import it.unimib.devtrinity.moneymind.data.local.dao.BudgetDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.CategoryDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.ExchangeDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.GoalDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.RecurringTransactionDao;
+import it.unimib.devtrinity.moneymind.data.local.dao.TransactionDao;
+import it.unimib.devtrinity.moneymind.data.local.entity.BudgetEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.CategoryEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.ExchangeEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.GoalEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.RecurringTransactionEntity;
+import it.unimib.devtrinity.moneymind.data.local.entity.TransactionEntity;
+
+@Database(entities = {
+        BudgetEntity.class,
+        CategoryEntity.class,
+        GoalEntity.class,
+        TransactionEntity.class,
+        RecurringTransactionEntity.class,
+        ExchangeEntity.class
+}, version = DATABASE_VERSION, exportSchema = false)
+@TypeConverters({
+        TimestampConverter.class,
+        MovementTypeConverter.class,
+        RecurrenceTypeConverter.class,
+        BigDecimalConverter.class
+})
 public abstract class AppDatabase extends RoomDatabase {
-    private static volatile AppDatabase INSTANCE;
 
-    public abstract UserDao userDao();
+    public abstract BudgetDao budgetDao();
 
-    public static AppDatabase getInstance(Context context) {
-        if (INSTANCE == null) {
-            synchronized (AppDatabase.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(
-                            context.getApplicationContext(),
-                            AppDatabase.class,
-                            "moneymind_database"
-                    ).build();
-                }
-            }
-        }
-        return INSTANCE;
-    }
+    public abstract CategoryDao categoryDao();
+
+    public abstract GoalDao goalDao();
+
+    public abstract TransactionDao transactionDao();
+
+    public abstract RecurringTransactionDao recurringTransactionDao();
+
+    public abstract ExchangeDao exchangeDao();
+
 }
 

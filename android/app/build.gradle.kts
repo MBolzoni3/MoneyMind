@@ -43,13 +43,25 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.material.v1110)
+    implementation(libs.google.material.v190)
+
+    //android worker
+    implementation(libs.work.runtime.v291)
+    implementation(libs.guava)
 
     //firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth)
+
+    //firestore
+    implementation(libs.firebase.firestore)
 
     //room
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+
+    //Retrofit
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+
 }

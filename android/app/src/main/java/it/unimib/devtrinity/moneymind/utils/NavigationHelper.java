@@ -6,52 +6,92 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import it.unimib.devtrinity.moneymind.R;
+import it.unimib.devtrinity.moneymind.data.repository.DatabaseRepository;
 import it.unimib.devtrinity.moneymind.ui.activity.MainActivity;
 import it.unimib.devtrinity.moneymind.ui.activity.MainNavigationActivity;
+import it.unimib.devtrinity.moneymind.utils.google.FirebaseHelper;
 
 public class NavigationHelper {
-   private static final String TAG = "NavigationHelper";
 
-   public static void navigateToActivity(Context context, Class<?> targetActivity) {
-      Intent intent = new Intent(context, targetActivity);
-      context.startActivity(intent);
+    public static void navigateToActivity(Context context, Class<?> targetActivity) {
+        Intent intent = new Intent(context, targetActivity);
+        context.startActivity(intent);
 
-      // Se il Context è un'Activity, chiudila
-      if (context instanceof Activity) {
-         ((Activity) context).finish();
-      }
-   }
+        if (context instanceof Activity) {
+            ((Activity) context).finish();
+        }
+    }
 
-   public static void navigateToMain(Context context){
-      navigateToActivity(context, MainNavigationActivity.class);
-   }
+    public static void navigateToMain(Context context) {
+        navigateToActivity(context, MainNavigationActivity.class);
+    }
 
-   public static void navigateToLogin(Context context){
-      navigateToActivity(context, MainActivity.class);
-   }
+    public static void navigateToLogin(Context context) {
+        navigateToActivity(context, MainActivity.class);
+    }
 
-   public static void loadFragment(AppCompatActivity activity, Fragment fragment, boolean addToBackStack) {
-      String fragmentTag = fragment.getClass().getSimpleName();
+    public static void addFragments(AppCompatActivity activity, List<Fragment> fragments) {
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-      // Controlla se il Fragment è già nello stack
-      if (activity.getSupportFragmentManager().findFragmentByTag(fragmentTag) != null) {
-         return;
-      }
+        for (Fragment fragment : fragments) {
+            if (fragmentManager.findFragmentByTag(fragment.getClass().getName()) == null) {
+                fragmentTransaction.add(R.id.fragment_container, fragment, fragment.getClass().getName());
+                fragmentTransaction.hide(fragment);
+            }
+        }
 
-      FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-      transaction.replace(R.id.fragment_container, fragment, fragmentTag);
+        fragmentTransaction.commitNow();
+    }
 
-      if (addToBackStack) {
-         transaction.addToBackStack(fragmentTag);
-      }
+    public static void showFragment(AppCompatActivity activity, Fragment fragmentToShow) {
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-      transaction.commit();
-   }
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment == fragmentToShow) {
+                fragmentTransaction.show(fragment);
+            } else if (fragment.isAdded()) {
+                fragmentTransaction.hide(fragment);
+            }
+        }
 
-   public static void loadFragment(AppCompatActivity activity, Fragment fragment){
-      loadFragment(activity, fragment, true);
-   }
+        fragmentTransaction.commit();
+    }
+
+    public static void loadFragment(AppCompatActivity activity, Fragment fragment, boolean addToBackStack) {
+        String fragmentTag = fragment.getClass().getSimpleName();
+
+        if (activity.getSupportFragmentManager().findFragmentByTag(fragmentTag) != null) {
+            return;
+        }
+
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment, fragmentTag);
+
+        if (addToBackStack) {
+            transaction.addToBackStack(fragmentTag);
+        }
+
+        transaction.commit();
+    }
+
+    public static void loadFragment(AppCompatActivity activity, Fragment fragment) {
+        loadFragment(activity, fragment, true);
+    }
+
+    public static CompletableFuture<Void> logout(Activity activity, DatabaseRepository databaseRepository) {
+        return WorkerHelper.triggerManualSync(activity)
+                .thenRun(() -> FirebaseHelper.getInstance().logoutUser())
+                .thenRun(() -> SharedPreferencesHelper.clearSharedPrefs(activity.getApplication()))
+                .thenCompose(v -> databaseRepository.clearUserTables());
+    }
 
 }

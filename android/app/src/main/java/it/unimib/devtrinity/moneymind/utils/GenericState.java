@@ -1,31 +1,35 @@
 package it.unimib.devtrinity.moneymind.utils;
 
 public abstract class GenericState<T> {
-   private GenericState() {}
 
-   public static class Loading<T> extends GenericState<T> {}
+    private GenericState() {
+    }
 
-   public static class Success<T> extends GenericState<T> {
-      private final T data;
+    public static class Loading<T> extends GenericState<T> {
+    }
 
-      public Success(T data) {
-         this.data = data;
-      }
+    public static class Success<T> extends GenericState<T> {
+        private final T data;
 
-      public T getData() {
-         return data;
-      }
-   }
+        public Success(T data) {
+            this.data = data;
+        }
 
-   public static class Failure<T> extends GenericState<T> {
-      private final String errorMessage;
+        public T getData() {
+            return data;
+        }
+    }
 
-      public Failure(String errorMessage) {
-         this.errorMessage = errorMessage;
-      }
+    public static class Failure<T> extends GenericState<T> {
+        private final String errorMessage;
 
-      public String getErrorMessage() {
-         return errorMessage;
-      }
-   }
+        public Failure(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
 }
